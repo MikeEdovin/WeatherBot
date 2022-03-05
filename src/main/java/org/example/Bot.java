@@ -2,6 +2,7 @@ package org.example;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.send.SendSticker;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
@@ -31,7 +32,13 @@ public class Bot extends TelegramLongPollingBot {
     public void setBotToken(String token){
         this.botToken=token;
     }
-
+    public void sendSticker(SendSticker sendSticker){
+        try {
+            this.execute(sendSticker);
+        }catch (TelegramApiException e){
+            logger.warning(e.getMessage());
+        }
+}
     @Override
     public String getBotUsername() {
         logger.info("Bot name: "+this.botName);

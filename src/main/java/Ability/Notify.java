@@ -40,10 +40,7 @@ public class Notify implements Runnable{
 
     private SendSticker getSecondSticker() {
         SendSticker sendSticker = new SendSticker();
-        InputFile inputFile=new InputFile();
-        inputFile.setMedia("images\\calcicon.png");
-        sendSticker.setSticker(inputFile);
-        //sendSticker.setSticker("CAADBQADiQMAAukKyAPZH7wCI2BwFxYE");
+        sendSticker.setSticker(new InputFile("CAACAgIAAxkBAANSYiNxRNZqkJTjE6wXiazPmLvDAy8AAn0TAAKjd6hLwlg7A4hvzeAjBA"));
         sendSticker.setChatId(chatID);
         return sendSticker;
     }

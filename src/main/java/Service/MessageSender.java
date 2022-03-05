@@ -51,7 +51,7 @@ public class MessageSender implements Runnable{
                 case STICKER:
                     SendSticker sendSticker = (SendSticker) object;
                     log.info("Use SendSticker for " + object);
-                    //bot.sendSticker(sendSticker);
+                    bot.sendSticker(sendSticker);
                     break;
                 default:
                     log.warning("Cant detect type of object. " + object);

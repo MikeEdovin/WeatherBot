@@ -61,7 +61,7 @@ public class MessageReceiver implements Runnable{
         }else{
             Sticker sticker= message.getSticker();
             if(sticker!=null){
-                parsedCommand=new ParsedCommand(Command.STICKER,sticker.getFileId());
+                parsedCommand=new ParsedCommand(Command.STICKER,sticker.getFileId());//получение ID стикера
             }
         }
 
