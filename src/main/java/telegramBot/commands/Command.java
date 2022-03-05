@@ -13,7 +13,8 @@ package telegramBot.commands;
         NOTIFICATIONS,
         SETTINGS,
         ID,
-        NOTIFY
+        NOTIFY,
+        STICKER
     }
 
 

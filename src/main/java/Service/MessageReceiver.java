@@ -6,7 +6,9 @@ import Handler.NotifyHandler;
 import Handler.SystemHandler;
 import org.example.Bot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.stickers.Sticker;
 import telegramBot.commands.Command;
 import telegramBot.commands.ParsedCommand;
 import telegramBot.commands.Parser;
@@ -51,20 +53,27 @@ public class MessageReceiver implements Runnable{
     }
 
     private void analyzeForUpdateType(Update update) {
+        Message message= update.getMessage();
         Long chatId = update.getMessage().getChatId();
-        String inputText = update.getMessage().getText();
+        ParsedCommand parsedCommand = new ParsedCommand(Command.NONE, "");
+        if(message.hasText()) {
+            parsedCommand = parser.getParsedCommand(message.getText());
+        }else{
+            Sticker sticker= message.getSticker();
+            if(sticker!=null){
+                parsedCommand=new ParsedCommand(Command.STICKER,sticker.getFileId());
+            }
+        }
 
-        ParsedCommand parsedCommand = parser.getParsedCommand(inputText);
-        System.out.print(parsedCommand.getCommand().toString());
         AbstractHandler handlerForCommand = getHandlerForCommand(parsedCommand.getCommand());
 
         String operationResult = handlerForCommand.operate(chatId.toString(), parsedCommand, update);
 
         if (!"".equals(operationResult)) {
-            SendMessage message = new SendMessage();
-            message.setChatId(String.valueOf(chatId));
-            message.setText(operationResult);
-            bot.sendQueue.add(message);
+            SendMessage messageOut = new SendMessage();
+            messageOut.setChatId(String.valueOf(chatId));
+            messageOut.setText(operationResult);
+            bot.sendQueue.add(messageOut);
         }
     }
     private AbstractHandler getHandlerForCommand(Command command) {
@@ -76,6 +85,7 @@ public class MessageReceiver implements Runnable{
             case START:
             case HELP:
             case ID:
+            case STICKER:
                 SystemHandler systemHandler = new SystemHandler(bot);
                 log.info("Handler for command[" + command.toString() + "] is: " + systemHandler);
                 return systemHandler;

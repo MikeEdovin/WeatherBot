@@ -27,6 +27,8 @@ public class SystemHandler extends AbstractHandler{
                 break;
             case ID:
                 return "Your telegramID: " + update.getMessage().getFrom().getId();
+            case STICKER:
+                return "Sticker ID: "+parsedCommand.getText();
         }
         return "";
     }

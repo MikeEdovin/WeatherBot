@@ -7,29 +7,41 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.SynchronousQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 public class Bot extends TelegramLongPollingBot {
     private static final Logger logger=Logger.getLogger("Bot logger");
-    String BOT_ADMIN="";
+
     int RECONNECT_PAUSE = 10000;
     public final Queue<Object> sendQueue = new ConcurrentLinkedQueue<>();
     public final Queue<Object> receiveQueue = new ConcurrentLinkedQueue<>();
+    private String botName;
+    private String botToken;
+    public Bot(String name, String token){
+        this.botName=name;
+        this.botToken=token;
+    }
 
+    public void setBotName(String name){
+        this.botName=name;
+    }
+    public void setBotToken(String token){
+        this.botToken=token;
+    }
 
     @Override
     public String getBotUsername() {
-        return "EdovinWeatherBot";
+        logger.info("Bot name: "+this.botName);
+        return this.botName;
     }
 
     @Override
     public String getBotToken() {
-        return "5295256851:AAHhA46BhJUzvzIE29rpjE8KlVCsDobF-is";
+        logger.info("Bot token: "+this.botToken);
+        return this.botToken;
     }
 
     @Override
@@ -43,8 +55,8 @@ public class Bot extends TelegramLongPollingBot {
         logger.setLevel(Level.ALL);
         try {
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-            logger.info("TelegramAPI started. Look for messages");
-            botsApi.registerBot(new Bot());
+            logger.info("[STARTED] TelegramAPI. Bot Connected. Bot class: " + this);
+            botsApi.registerBot(this);
         } catch (TelegramApiException e) {
             logger.warning("Cant Connect. Pause " + RECONNECT_PAUSE / 1000 + "sec and try again. Error: " + e.getMessage());
             try {
@@ -57,13 +69,8 @@ public class Bot extends TelegramLongPollingBot {
 
         }
     }
-    /*
-    private static void sendStartReport(Bot bot) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(BOT_ADMIN);
-        sendMessage.setText("Запустился");
-        bot.sendQueue.add(sendMessage);
-    }
 
-     */
+
+
+
 }
