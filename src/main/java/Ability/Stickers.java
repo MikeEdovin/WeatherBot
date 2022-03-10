@@ -1,9 +1,10 @@
 package Ability;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendSticker;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 
 public enum Stickers {
-    FUNNY_JIM_CARREY("AAHhA46BhJUzvzIE29rpjE8KlVCsDobF-is"),
+    FUNNY_JIM_CARREY("CAACAgIAAxkBAANSYiNxRNZqkJTjE6wXiazPmLvDAy8AAn0TAAKjd6hLwlg7A4hvzeAjBA"),
     ;
 
     String stickerId;
@@ -21,7 +22,7 @@ public enum Stickers {
 
     public SendSticker getSendSticker() {
         SendSticker sendSticker = new SendSticker();
-        //sendSticker.setSticker(stickerId);
+        sendSticker.setSticker(new InputFile(stickerId));
         return sendSticker;
     }
 }

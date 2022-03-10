@@ -1,7 +1,10 @@
 package telegramBot.commands;
 
 
+import com.vdurmont.emoji.EmojiParser;
 import javafx.util.Pair;
+
+import java.util.List;
 import java.util.logging.Logger;
 
 public class Parser {
@@ -32,6 +35,10 @@ public class Parser {
                 result.setText(commandAndText.getValue());
             }
 
+        }
+        if (result.getCommand() == Command.NONE) {
+            List<String> emojiContainsInText = EmojiParser.extractEmojis(result.getText());
+            if (emojiContainsInText.size() > 0) result.setCommand(Command.TEXT_CONTAIN_EMOJI);
         }
         return result;
     }

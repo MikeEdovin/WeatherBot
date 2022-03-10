@@ -1,9 +1,6 @@
 package Service;
 
-import Handler.AbstractHandler;
-import Handler.DefaultHandler;
-import Handler.NotifyHandler;
-import Handler.SystemHandler;
+import Handler.*;
 import org.example.Bot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -93,6 +90,14 @@ public class MessageReceiver implements Runnable{
                 NotifyHandler notifyHandler = new NotifyHandler(bot);
                 log.info("Handler for command[" + command.toString() + "] is: " + notifyHandler);
                 return notifyHandler;
+            case TEXT_CONTAIN_EMOJI:
+                EmojiHandler emojiHandler=new EmojiHandler(bot);
+                log.info("Handler for command[" + command.toString() + "] is: " + emojiHandler);
+                return emojiHandler;
+            case WEATHER_NOW:
+                WeatherHandler weatherHandler=new WeatherHandler(bot);
+                log.info("Handler for command[" + command.toString() + "] is: " + weatherHandler);
+                return weatherHandler;
             default:
                 log.info("Handler for command[" + command.toString() + "] not Set. Return DefaultHandler");
                 return new DefaultHandler(bot);

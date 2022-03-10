@@ -14,7 +14,8 @@ package telegramBot.commands;
         SETTINGS,
         ID,
         NOTIFY,
-        STICKER
+        STICKER,
+        TEXT_CONTAIN_EMOJI
     }
 
 
