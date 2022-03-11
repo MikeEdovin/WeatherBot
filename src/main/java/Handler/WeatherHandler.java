@@ -27,10 +27,9 @@ public class WeatherHandler extends AbstractHandler{
     @Override
     public String operate(String chatId, ParsedCommand parsedCommand, Update update) {
         String wdata=WeatherProvider.getWeatherInformation("Saint Petersburg");
-        String response = wdata.toString();
-        WeatherData data=WeatherProvider.getWeatherData(response);
+        WeatherData data=WeatherProvider.getWeatherData(wdata.toString());
         bot.sendQueue.add(sendCurrentForecast(chatId,data));
-return response;
+        return "";
 
     }
     private SendMessage sendCurrentForecast(String chatID,WeatherData data){
