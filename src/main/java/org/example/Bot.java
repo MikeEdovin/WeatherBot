@@ -1,12 +1,20 @@
 package org.example;
 
+import Ability.Emojies;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendSticker;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
@@ -76,8 +84,32 @@ public class Bot extends TelegramLongPollingBot {
 
         }
     }
+    public SendMessage sendMenuKeyboard(String chatId) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText("Menu");
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();//создание объекта клавиатуры
+        List<KeyboardRow> keyboard = new ArrayList<>();//список рядов кнопок
+        KeyboardRow row = new KeyboardRow();//ряд кнопок
+        KeyboardButton button=new KeyboardButton();
+        row.add(new KeyboardButton("Weather now"+ Emojies.PARTLY_SUNNY.getEmoji()));
+        row.add("For " +Emojies.FOR_48_HOURS.getEmoji()+" hours");
+        keyboard.add(row);
+        // Create another keyboard row
+        row = new KeyboardRow();
+        row.add("For " +Emojies.FOR_7_DAYS.getEmoji()+ " days");
+        keyboard.add(row);
+        row=new KeyboardRow();
+        row.add("Notifications "+Emojies.NOTIFICATIONS.getEmoji());
+        keyboard.add(row);
+        row=new KeyboardRow();
+        row.add("Settings "+Emojies.SETTINGS.getEmoji());
+        keyboard.add(row);
+        // Set the keyboard to the markup
+        keyboardMarkup.setKeyboard(keyboard);
+        // Add it to the message
+        message.setReplyMarkup(keyboardMarkup);
+        return message;
 
-
-
-
-}
+    }
+    }

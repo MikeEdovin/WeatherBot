@@ -2,6 +2,7 @@ package Handler;
 
 import org.example.Bot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegramBot.commands.Command;
 import telegramBot.commands.ParsedCommand;
@@ -20,7 +21,9 @@ public class SystemHandler extends AbstractHandler{
         Command command=parsedCommand.getCommand();
 
         switch (command){
-            case START:bot.sendQueue.add(getMessageStart(chatId));
+            case START:
+            bot.sendQueue.add(getMessageStart(chatId));
+            bot.sendQueue.add(bot.sendMenuKeyboard(chatId));
             break;
             case HELP:
                 bot.sendQueue.add(getMessageHelp(chatId));

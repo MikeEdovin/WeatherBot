@@ -5,6 +5,7 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendSticker;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.stickers.Sticker;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -68,6 +69,6 @@ public class MessageSender implements Runnable{
     }
 
     enum MessageType {
-        EXECUTE, STICKER, NOT_DETECTED,
+        EXECUTE, STICKER, NOT_DETECTED
     }
 }

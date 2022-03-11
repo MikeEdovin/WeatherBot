@@ -25,14 +25,10 @@ public class WeatherHandler extends AbstractHandler{
 
     @Override
     public String operate(String chatId, ParsedCommand parsedCommand, Update update) {
-        bot.sendQueue.add(getCity(chatId));
-        try {
-            String city = parsedCommand.getText();
-            logger.info(update.getMessage().getText());
-        }catch(Exception e){
-            logger.warning(e.getMessage());
-        }
+        String wdata=WeatherProvider.getWeatherInformation("Saint Petersburg");
+        String response = wdata.toString();
+        bot.sendQueue.add(response);
+return response;
 
-        return null;
     }
 }
