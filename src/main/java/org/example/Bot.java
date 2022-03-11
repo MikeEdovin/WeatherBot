@@ -7,7 +7,9 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendSticker;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -87,29 +89,55 @@ public class Bot extends TelegramLongPollingBot {
     public SendMessage sendMenuKeyboard(String chatId) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
-        message.setText("Menu");
+        message.setText("Main menu");
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();//создание объекта клавиатуры
         List<KeyboardRow> keyboard = new ArrayList<>();//список рядов кнопок
         KeyboardRow row = new KeyboardRow();//ряд кнопок
-        KeyboardButton button=new KeyboardButton();
-        row.add(new KeyboardButton("Weather now"+ Emojies.PARTLY_SUNNY.getEmoji()));
+        row.add("Weather now "+ Emojies.PARTLY_SUNNY.getEmoji());
         row.add("For " +Emojies.FOR_48_HOURS.getEmoji()+" hours");
         keyboard.add(row);
         // Create another keyboard row
         row = new KeyboardRow();
         row.add("For " +Emojies.FOR_7_DAYS.getEmoji()+ " days");
-        keyboard.add(row);
-        row=new KeyboardRow();
         row.add("Notifications "+Emojies.NOTIFICATIONS.getEmoji());
         keyboard.add(row);
         row=new KeyboardRow();
         row.add("Settings "+Emojies.SETTINGS.getEmoji());
+        row.add("Help "+Emojies.HELP.getEmoji());
         keyboard.add(row);
         // Set the keyboard to the markup
         keyboardMarkup.setKeyboard(keyboard);
+        keyboardMarkup.setOneTimeKeyboard(true);
+        keyboardMarkup.setResizeKeyboard(true);
         // Add it to the message
         message.setReplyMarkup(keyboardMarkup);
         return message;
 
     }
+    /*
+    public SendMessage sendInlineKeyBoard(String chatID){
+        SendMessage sendMessage=new SendMessage();
+        sendMessage.setChatId(chatID);
+        sendMessage.setText("menu");
+
+        InlineKeyboardMarkup inlineKeyboardMarkup=new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+        List<InlineKeyboardButton> buttons = new ArrayList<>();//список рядов кнопок
+        InlineKeyboardButton button=new InlineKeyboardButton();
+        button.setText("Weather now"+ Emojies.PARTLY_SUNNY.getEmoji());
+        button.setCallbackData("/weather_now");
+        buttons.add(button);
+        InlineKeyboardButton button48=new InlineKeyboardButton();
+        button48.setText("For " +Emojies.FOR_48_HOURS.getEmoji()+" hours");
+        button48.setCallbackData("for_48_hours");
+        keyboard.add(buttons);
+        inlineKeyboardMarkup.setKeyboard(keyboard);
+        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+        return sendMessage;
+
+    }
+
+     */
+
     }

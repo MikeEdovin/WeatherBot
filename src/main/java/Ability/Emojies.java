@@ -11,8 +11,9 @@ public enum Emojies {
     WIND("\uD83C\uDF2C️"),
     FOR_48_HOURS("4️⃣8️⃣"),
     FOR_7_DAYS("7️⃣"),
-    NOTIFICATIONS(":alarm_clock"),
+    NOTIFICATIONS(":alarm_clock:"),
     SETTINGS(":gear:"),
+    HELP("ℹ️")
 
     ;
     String emojiUnicode;

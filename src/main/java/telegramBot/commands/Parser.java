@@ -1,10 +1,7 @@
 package telegramBot.commands;
 
-
 import com.vdurmont.emoji.EmojiParser;
 import javafx.util.Pair;
-
-import java.util.List;
 import java.util.logging.Logger;
 
 public class Parser {
@@ -17,6 +14,41 @@ public class Parser {
         this.botName = botName;
     }
 
+    public ParsedCommand getCommand(String text){
+        String trimText="";
+        if(text!=null){
+            trimText=EmojiParser.removeAllEmojis(text).trim();
+        }
+        ParsedCommand result = new ParsedCommand(Command.NONE, trimText);
+
+        if(trimText.equalsIgnoreCase(Command.START.description)){
+            result.setCommand(Command.START);
+        }
+        else if(trimText.equalsIgnoreCase(EmojiParser.removeAllEmojis(Command.WEATHER_NOW.description).trim())){
+            result.setCommand(Command.WEATHER_NOW);
+        }
+        else if(trimText.equalsIgnoreCase(EmojiParser.removeAllEmojis(Command.FOR_48_HOURS.description).trim())){
+            result.setCommand(Command.FOR_48_HOURS);
+        }
+        else if(trimText.equalsIgnoreCase(EmojiParser.removeAllEmojis(Command.FOR_7_DAYS.description).trim())){
+            result.setCommand(Command.FOR_7_DAYS);
+        }
+        else if(trimText.equalsIgnoreCase(EmojiParser.removeAllEmojis(Command.NOTIFY.description).trim())){
+            result.setCommand(Command.NOTIFY);
+        }
+        else if(trimText.equalsIgnoreCase(EmojiParser.removeAllEmojis(Command.SETTINGS.description).trim())){
+            result.setCommand(Command.SETTINGS);
+        }
+        else if(trimText.equalsIgnoreCase(EmojiParser.removeAllEmojis(Command.HELP.description).trim())){
+            result.setCommand(Command.HELP);
+        }
+        else{
+            result.setCommand(Command.NONE);
+        }
+
+        return result;
+    }
+/*
     public ParsedCommand getParsedCommand(String text) {
         String trimText = "";
         if (text != null) trimText = text.trim();
@@ -42,6 +74,8 @@ public class Parser {
         }
         return result;
     }
+
+ */
 
     private String cutCommandFromFullText(String text) {
         return text.contains(DELIMITER_COMMAND_BOTNAME) ?

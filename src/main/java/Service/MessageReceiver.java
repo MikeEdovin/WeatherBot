@@ -54,13 +54,19 @@ public class MessageReceiver implements Runnable{
         Long chatId = update.getMessage().getChatId();
         ParsedCommand parsedCommand = new ParsedCommand(Command.NONE, "");
         if(message.hasText()) {
-            parsedCommand = parser.getParsedCommand(message.getText());
+            //parsedCommand = parser.getParsedCommand(message.getText());
+            parsedCommand=parser.getCommand(message.getText());
+            /*
         }else{
             Sticker sticker= message.getSticker();
             if(sticker!=null){
                 parsedCommand=new ParsedCommand(Command.STICKER,sticker.getFileId());//получение ID стикера
             }
+
+             */
         }
+
+
 
         AbstractHandler handlerForCommand = getHandlerForCommand(parsedCommand.getCommand());
 
@@ -81,8 +87,6 @@ public class MessageReceiver implements Runnable{
         switch (command) {
             case START:
             case HELP:
-            case ID:
-            case STICKER:
                 SystemHandler systemHandler = new SystemHandler(bot);
                 log.info("Handler for command[" + command.toString() + "] is: " + systemHandler);
                 return systemHandler;
@@ -90,10 +94,6 @@ public class MessageReceiver implements Runnable{
                 NotifyHandler notifyHandler = new NotifyHandler(bot);
                 log.info("Handler for command[" + command.toString() + "] is: " + notifyHandler);
                 return notifyHandler;
-            case TEXT_CONTAIN_EMOJI:
-                EmojiHandler emojiHandler=new EmojiHandler(bot);
-                log.info("Handler for command[" + command.toString() + "] is: " + emojiHandler);
-                return emojiHandler;
             case WEATHER_NOW:
                 WeatherHandler weatherHandler=new WeatherHandler(bot);
                 log.info("Handler for command[" + command.toString() + "] is: " + weatherHandler);

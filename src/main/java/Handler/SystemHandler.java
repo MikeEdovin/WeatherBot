@@ -22,16 +22,11 @@ public class SystemHandler extends AbstractHandler{
 
         switch (command){
             case START:
-            bot.sendQueue.add(getMessageStart(chatId));
             bot.sendQueue.add(bot.sendMenuKeyboard(chatId));
             break;
             case HELP:
                 bot.sendQueue.add(getMessageHelp(chatId));
                 break;
-            case ID:
-                return "Your telegramID: " + update.getMessage().getFrom().getId();
-            case STICKER:
-                return "Sticker ID: "+parsedCommand.getText();
         }
         return "";
     }
@@ -42,10 +37,13 @@ public class SystemHandler extends AbstractHandler{
 
         StringBuilder text = new StringBuilder();
         text.append("*This is help message*").append(END_LINE).append(END_LINE);
-        text.append("[/start](/start) - show start message").append(END_LINE);
+        text.append("[/start](/start) - show main menu").append(END_LINE);
         text.append("[/help](/help) - show help message").append(END_LINE);
-        text.append("[/id](/id) - know your ID in telegram ").append(END_LINE);
-        text.append("/*notify* _time-in-sec_  - receive notification from me after the specified time").append(END_LINE);
+        text.append("[/weather now](/weather now) - show current weather ").append(END_LINE);
+        text.append("[/for 48 hours](/for 48 hours) - show weather forecast for 48 hours ").append(END_LINE);
+        text.append("[/for 7 days](/for 7 days) - show weather forecast for 7 days ").append(END_LINE);
+        text.append("[/notifications](/notifications) - set weather notifications ").append(END_LINE);
+        text.append("[/settings](/settings) - show settings ").append(END_LINE);
 
         sendMessage.setText(text.toString());
         return sendMessage;
