@@ -1,12 +1,16 @@
 package Ability;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
 import javax.net.ssl.HttpsURLConnection;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
@@ -67,7 +71,11 @@ public class WeatherProvider {
             long pressure = (long) objMain.get("pressure");
             long humidity = (long) objMain.get("humidity");
             double feelsLikeTemp = (double) objMain.get("feels_like");
-            weatherData.setMeasurements(city, temp, pressure, humidity, feelsLikeTemp);
+            JSONArray arrWeather = (JSONArray) jsonObject.get("weather");
+            JSONObject objWeather= (JSONObject) arrWeather.get(0);
+            String skyIcon=(String)objWeather.get("icon");
+            String iconURL="https://openweathermap.org/img/wn/"+skyIcon+"@2x.png";
+            weatherData.setMeasurements(city, temp, pressure, humidity, feelsLikeTemp, skyIcon);
             return weatherData;
         } catch (ParseException e) {
             log.warning(e.getMessage());

@@ -3,6 +3,7 @@ package Service;
 import org.example.Bot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.send.SendSticker;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -54,6 +55,10 @@ public class MessageSender implements Runnable{
                     log.info("Use SendSticker for " + object);
                     bot.sendSticker(sendSticker);
                     break;
+                case PHOTO:
+                    SendPhoto sendPhoto=(SendPhoto) object;
+                    log.info("Use SendSticker for " + object);
+                    bot.sendPhoto(sendPhoto);
                 default:
                     log.warning("Cant detect type of object. " + object);
             }
@@ -65,10 +70,11 @@ public class MessageSender implements Runnable{
     private MessageType messageType(Object object) {
         if (object instanceof SendSticker) return MessageType.STICKER;
         if (object instanceof BotApiMethod) return MessageType.EXECUTE;
+        if (object instanceof SendPhoto) return MessageType.PHOTO;
         return MessageType.NOT_DETECTED;
     }
 
     enum MessageType {
-        EXECUTE, STICKER, NOT_DETECTED
+        EXECUTE, STICKER, NOT_DETECTED, PHOTO
     }
 }

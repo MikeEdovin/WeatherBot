@@ -8,6 +8,7 @@ public class WeatherData {
     private long humidity;
     private String city;
     private double feelsLikeTemp;
+    private String weatherIcon;
 
 
     void setTemp(double temperature){
@@ -32,11 +33,13 @@ public class WeatherData {
     public String getCity(){return this.city;}
     void setFeelsLikeTemp(double temp){this.feelsLikeTemp=temp;}
     public double getFeelsLikeTemp(){return this.feelsLikeTemp;}
-    void setMeasurements(String city,double temp, long pressure, long humidity,double feelsLikeTemp){
+    public String getWeatherIcon(){return this.weatherIcon;}
+    void setMeasurements(String city,double temp, long pressure, long humidity,double feelsLikeTemp, String icon){
         this.city=city;
         this.temp=temp;
         this.pressure=pressure;
         this.humidity=humidity;
         this.feelsLikeTemp=feelsLikeTemp;
+        this.weatherIcon=icon;
     }
 }

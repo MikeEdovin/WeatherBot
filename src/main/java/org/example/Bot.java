@@ -4,9 +4,11 @@ import Ability.Emojies;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.send.SendSticker;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -114,30 +116,18 @@ public class Bot extends TelegramLongPollingBot {
         return message;
 
     }
-    /*
-    public SendMessage sendInlineKeyBoard(String chatID){
-        SendMessage sendMessage=new SendMessage();
-        sendMessage.setChatId(chatID);
-        sendMessage.setText("menu");
 
-        InlineKeyboardMarkup inlineKeyboardMarkup=new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
-        List<InlineKeyboardButton> buttons = new ArrayList<>();//список рядов кнопок
-        InlineKeyboardButton button=new InlineKeyboardButton();
-        button.setText("Weather now"+ Emojies.PARTLY_SUNNY.getEmoji());
-        button.setCallbackData("/weather_now");
-        buttons.add(button);
-        InlineKeyboardButton button48=new InlineKeyboardButton();
-        button48.setText("For " +Emojies.FOR_48_HOURS.getEmoji()+" hours");
-        button48.setCallbackData("for_48_hours");
-        keyboard.add(buttons);
-        inlineKeyboardMarkup.setKeyboard(keyboard);
-        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
 
-        return sendMessage;
+    public void sendPhoto(SendPhoto sendPhoto) {
+        try{
+            execute(sendPhoto);
+        } catch (TelegramApiException e) {
+            logger.warning(e.getMessage());
+        }
+    }
+    public void saveLocation(Update update){
+        Message message=update.getMessage();
+        User user=update.getChatMember().getFrom();
 
     }
-
-     */
-
-    }
+}
