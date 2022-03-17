@@ -6,12 +6,11 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.send.SendSticker;
+import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -65,8 +64,13 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        logger.info("update "+update.getMessage().getText());
-        receiveQueue.add(update);
+            logger.info("update " + update.getMessage().getText());
+            receiveQueue.add(update);
+        if(update.getMessage().hasLocation()){
+            Location location=update.getMessage().getLocation();
+            logger.info("location "+location.getLongitude()+" "+location.getLatitude());
+            receiveQueue.add(location);
+        }
     }
 
 
@@ -109,9 +113,37 @@ public class Bot extends TelegramLongPollingBot {
         keyboard.add(row);
         // Set the keyboard to the markup
         keyboardMarkup.setKeyboard(keyboard);
-        keyboardMarkup.setOneTimeKeyboard(true);
+        //keyboardMarkup.setOneTimeKeyboard(true);
         keyboardMarkup.setResizeKeyboard(true);
         // Add it to the message
+        message.setReplyMarkup(keyboardMarkup);
+        return message;
+
+    }
+    public SendMessage sendSettingsKeyBoard(String chatID){
+        SendMessage message=new SendMessage();
+        message.setChatId(chatID);
+        message.setText("Set city");
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();//создание объекта клавиатуры
+        List<KeyboardRow> keyboard = new ArrayList<>();//список рядов кнопок
+        KeyboardRow row = new KeyboardRow();//ряд кнопок
+        row.add("Set city "+ Emojies.SET_CITY.getEmoji());
+        keyboard.add(row);
+        row=new KeyboardRow();
+        KeyboardButton getLocButton=new KeyboardButton("Get location " +Emojies.GET_LOCATION.getEmoji());
+        getLocButton.setRequestLocation(true);
+        getLocButton.getRequestLocation();
+        row.add(getLocButton);
+        keyboard.add(row);
+        row=new KeyboardRow();
+        row.add("Get from last 3"+Emojies.LAST_THREE.getEmoji());
+        keyboard.add(row);
+        row =new KeyboardRow();
+        row.add("Back"+Emojies.BACK.getEmoji());
+        keyboard.add(row);
+        keyboardMarkup.setKeyboard(keyboard);
+        keyboardMarkup.setOneTimeKeyboard(true);
+        keyboardMarkup.setResizeKeyboard(true);
         message.setReplyMarkup(keyboardMarkup);
         return message;
 

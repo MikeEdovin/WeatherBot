@@ -6,6 +6,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
+import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -25,6 +26,44 @@ public class WeatherProvider {
         HttpsURLConnection connection = null;
         try {
             URL u = new URL(URL_API + "?q=" + city + "&appid=" + APP_ID + "&units=metric");
+            connection = (HttpsURLConnection) u.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            int responseCode = connection.getResponseCode();
+            if (responseCode != HttpsURLConnection.HTTP_OK) {
+                log.warning("Server returned status code: " + responseCode);
+                return null;
+            }
+            StringBuilder stringBuilder = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+                String s;
+                while ((s = reader.readLine()) != null) {
+                    stringBuilder.append(s);
+                }
+            } catch (Exception e) {
+                log.warning(e.getMessage());
+            }
+            connection.disconnect();
+            return stringBuilder.toString();
+
+        } catch (IOException e) {
+            log.warning(e.getMessage());
+        } finally {
+            if (connection != null)
+                connection.disconnect();
+        }
+        return null;
+    }
+    public static String getWeatherInformation(Location location) {
+        Logger log= Logger.getLogger("Weather provider");
+        //получение данных о погоде с сервера в формате json
+        final String URL_API = "https://api.openweathermap.org/data/2.5/weather?";
+        final String APP_ID = "5a1a2ebae8f3c31263be33c36cdc727c";
+        HttpsURLConnection connection = null;
+        try {
+            URL u = new URL(URL_API + "lat=" + location.getLatitude()+"lon="+location.getLongitude()
+                    + "&appid=" + APP_ID + "&units=metric");
             connection = (HttpsURLConnection) u.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();

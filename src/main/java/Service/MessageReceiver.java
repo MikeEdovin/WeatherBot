@@ -1,8 +1,13 @@
 package Service;
 
+import Ability.CityData;
+import Ability.GeoProvider;
 import Handler.*;
+import Users.User;
+import Users.UsersProvider;
 import org.example.Bot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.stickers.Sticker;
@@ -17,10 +22,12 @@ public class MessageReceiver implements Runnable{
     private final int WAIT_FOR_NEW_MESSAGE_DELAY = 1000;
     Bot bot;
     Parser parser;
+    UsersProvider usersProvider;
 
-    public MessageReceiver(Bot b){
+    public MessageReceiver(Bot b, UsersProvider up){
         this.bot=b;
         parser=new Parser(bot.getBotUsername());
+        usersProvider=up;
     }
     @Override
     public void run() {
@@ -46,6 +53,11 @@ public class MessageReceiver implements Runnable{
             Update update = (Update) object;
             log.info("Update received: " + update.toString());
             analyzeForUpdateType(update);
+            if(update.getMessage().hasLocation()){
+              Location location= update.getMessage().getLocation();
+              log.info("Location received "+location.getLatitude()+" "+location.getLongitude());
+              CityData cityData=GeoProvider.getCityDataFromLocation(location);
+            }
         } else log.warning("Cant operate type of object: " + object.toString());
     }
 
@@ -54,20 +66,11 @@ public class MessageReceiver implements Runnable{
         Long chatId = update.getMessage().getChatId();
         ParsedCommand parsedCommand = new ParsedCommand(Command.NONE, "");
         if(message.hasText()) {
-            //parsedCommand = parser.getParsedCommand(message.getText());
             parsedCommand=parser.getCommand(message.getText());
-            /*
-        }else{
-            Sticker sticker= message.getSticker();
-            if(sticker!=null){
-                parsedCommand=new ParsedCommand(Command.STICKER,sticker.getFileId());//получение ID стикера
-            }
-
-             */
         }
-
-
-
+        else if(message.hasLocation()){
+            parsedCommand.setCommand(Command.ADD_CITY_TO_USER);
+        }
         AbstractHandler handlerForCommand = getHandlerForCommand(parsedCommand.getCommand());
 
         String operationResult = handlerForCommand.operate(chatId.toString(), parsedCommand, update);
@@ -82,25 +85,35 @@ public class MessageReceiver implements Runnable{
     private AbstractHandler getHandlerForCommand(Command command) {
         if (command == null) {
             log.warning("Null command accepted. This is not good scenario.");
-            return new DefaultHandler(bot);
+            return new DefaultHandler(bot, usersProvider);
         }
         switch (command) {
             case START:
             case HELP:
-                SystemHandler systemHandler = new SystemHandler(bot);
+            case SETTINGS:
+            case BACK:
+                SystemHandler systemHandler = new SystemHandler(bot,usersProvider);
                 log.info("Handler for command[" + command.toString() + "] is: " + systemHandler);
                 return systemHandler;
             case NOTIFY:
-                NotifyHandler notifyHandler = new NotifyHandler(bot);
+                NotifyHandler notifyHandler = new NotifyHandler(bot, usersProvider);
                 log.info("Handler for command[" + command.toString() + "] is: " + notifyHandler);
                 return notifyHandler;
             case WEATHER_NOW:
-                WeatherHandler weatherHandler=new WeatherHandler(bot);
+            case GET_CITY_FROM_INPUT:
+            case ADD_CITY_TO_USER:
+            case GET_FROM_LAST_THREE:
+            case SET_CITY:
+                WeatherHandler weatherHandler=new WeatherHandler(bot,usersProvider);
                 log.info("Handler for command[" + command.toString() + "] is: " + weatherHandler);
                 return weatherHandler;
+            case GET_LOCATION:
+                GeoHandler geoHandler=new GeoHandler(bot,usersProvider);
+                log.info("Handler for command[" + command.toString() + "] is: " + geoHandler);
+                return geoHandler;
             default:
                 log.info("Handler for command[" + command.toString() + "] not Set. Return DefaultHandler");
-                return new DefaultHandler(bot);
+                return new DefaultHandler(bot, usersProvider);
         }
     }
 }

@@ -42,8 +42,22 @@ public class Parser {
         else if(trimText.equalsIgnoreCase(EmojiParser.removeAllEmojis(Command.HELP.description).trim())){
             result.setCommand(Command.HELP);
         }
+        else if(trimText.equalsIgnoreCase(EmojiParser.removeAllEmojis(Command.SET_CITY.description).trim())) {
+            result.setCommand(Command.SET_CITY);
+        }
+        else if(trimText.equalsIgnoreCase(EmojiParser.removeAllEmojis(Command.GET_LOCATION.description).trim())) {
+            result.setCommand(Command.GET_LOCATION);
+        }
+        else if(trimText.equalsIgnoreCase(EmojiParser.removeAllEmojis(Command.GET_FROM_LAST_THREE.description).trim())) {
+            result.setCommand(Command.GET_FROM_LAST_THREE);
+        }
+        else if(trimText.equalsIgnoreCase(EmojiParser.removeAllEmojis(Command.BACK.description).trim())) {
+            result.setCommand(Command.BACK);
+        }else if(trimText.contains("Location")){
+            result.setCommand(Command.ADD_CITY_TO_USER);
+        }
         else{
-            result.setCommand(Command.NONE);
+            result.setCommand(Command.GET_CITY_FROM_INPUT);
         }
 
         return result;

@@ -1,6 +1,7 @@
 package Handler;
 
 import Ability.Notify;
+import Users.UsersProvider;
 import org.example.Bot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegramBot.commands.ParsedCommand;
@@ -12,8 +13,8 @@ public class NotifyHandler extends AbstractHandler{
     private final int MILLISEC_IN_SEC = 1000;
     private String WRONG_INPUT_MESSAGE = "Wrong input. Time must be specified as an integer greater than 0";
 
-    public NotifyHandler(Bot b){
-        super(b);
+    public NotifyHandler(Bot b, UsersProvider up){
+        super(b, up);
     }
     @Override
     public String operate(String chatId, ParsedCommand parsedCommand, Update update) {

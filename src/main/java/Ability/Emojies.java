@@ -13,7 +13,12 @@ public enum Emojies {
     FOR_7_DAYS("7️⃣"),
     NOTIFICATIONS(":alarm_clock:"),
     SETTINGS(":gear:"),
-    HELP("ℹ️")
+    HELP("ℹ️"),
+    SET_CITY("✏"),
+    TEMPERATURE("\uD83C\uDF21️"),
+    GET_LOCATION("\uD83D\uDCCD"),
+    LAST_THREE("\uD83E\uDDFE"),
+    BACK("↩")
 
     ;
     String emojiUnicode;

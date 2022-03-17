@@ -3,6 +3,7 @@ package org.example;
 
 import Service.MessageReceiver;
 import Service.MessageSender;
+import Users.UsersProvider;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -15,7 +16,9 @@ public class App {
 
     public static void main( String[] args ) throws TelegramApiException {
         Bot bot=new Bot("EdovinWeatherBot", "5295256851:AAHhA46BhJUzvzIE29rpjE8KlVCsDobF-is");
-        MessageReceiver messageReceiver=new MessageReceiver(bot);
+        UsersProvider usersProvider=new UsersProvider();
+        usersProvider.getUsersFromBase();
+        MessageReceiver messageReceiver=new MessageReceiver(bot, usersProvider);
         MessageSender messageSender=new MessageSender(bot);
         bot.botConnect();
         sendStartReport(bot, "5277149986");
@@ -33,6 +36,10 @@ public class App {
         sender.start();
 
 
+
+    }
+
+    public void exit(){
 
     }
     private static void sendStartReport(Bot bot, String BOT_ADMIN) {

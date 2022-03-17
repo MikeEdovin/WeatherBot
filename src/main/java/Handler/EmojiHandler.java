@@ -1,5 +1,6 @@
 package Handler;
 
+import Users.UsersProvider;
 import com.vdurmont.emoji.Emoji;
 import com.vdurmont.emoji.EmojiManager;
 import com.vdurmont.emoji.EmojiParser;
@@ -13,8 +14,8 @@ import java.util.logging.Logger;
 
 public class EmojiHandler extends AbstractHandler{
     Logger logger=Logger.getLogger("Emoji Handler");
-    public EmojiHandler(Bot b) {
-        super(b);
+    public EmojiHandler(Bot b, UsersProvider up) {
+        super(b, up);
     }
 
     @Override
