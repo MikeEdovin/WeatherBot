@@ -1,12 +1,13 @@
 package Handler;
 
-import Ability.GeoProvider;
+import Ability.Emojies;
 import Users.User;
 import Users.UsersProvider;
 import org.example.Bot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import telegramBot.commands.Command;
 import telegramBot.commands.ParsedCommand;
@@ -28,7 +29,6 @@ public class SystemHandler extends AbstractHandler{
         Long userID=update.getMessage().getFrom().getId();
         User user= usersProvider.getUserByID(userID);
         switch (command) {
-
             case START:
                 if(user==null){
                     usersProvider.addUserToList(new User(userID));
@@ -42,10 +42,37 @@ public class SystemHandler extends AbstractHandler{
                 bot.sendQueue.add(getMessageHelp(chatId));
                 break;
             case SETTINGS:
-                bot.sendQueue.add(bot.sendSettingsKeyBoard(chatId));
+                bot.sendQueue.add(sendSettingsKeyBoard(chatId));
                 break;
         }
         return "";
+    }
+    public SendMessage sendSettingsKeyBoard(String chatID){
+        SendMessage message=new SendMessage();
+        message.setChatId(chatID);
+        message.setText("Set city");
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();//создание объекта клавиатуры
+        List<KeyboardRow> keyboard = new ArrayList<>();//список рядов кнопок
+        KeyboardRow row = new KeyboardRow();//ряд кнопок
+        row.add("Set city "+ Emojies.SET_CITY.getEmoji());
+        keyboard.add(row);
+        row=new KeyboardRow();
+        KeyboardButton getLocButton=new KeyboardButton("Get location " +Emojies.GET_LOCATION.getEmoji());
+        getLocButton.setRequestLocation(true);
+        getLocButton.getRequestLocation();
+        row.add(getLocButton);
+        keyboard.add(row);
+        row=new KeyboardRow();
+        row.add("Get from last 3"+Emojies.LAST_THREE.getEmoji());
+        keyboard.add(row);
+        row =new KeyboardRow();
+        row.add("Back"+Emojies.BACK.getEmoji());
+        keyboard.add(row);
+        keyboardMarkup.setKeyboard(keyboard);
+        keyboardMarkup.setOneTimeKeyboard(true);
+        keyboardMarkup.setResizeKeyboard(true);
+        message.setReplyMarkup(keyboardMarkup);
+        return message;
     }
 
     private SendMessage getMessageHelp(String chatID) {

@@ -1,45 +1,45 @@
 package Ability;
 
+import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class WeatherData {
+public class WeatherData implements Serializable {
+    static final long serialVersionUID = 7588980448693010399L;
+    private LocalDate date;
+    private double latitude;
+    private double longitude;
     private double temp;
     private long pressure;
     private long humidity;
     private String city;
     private double feelsLikeTemp;
-    private String weatherIcon;
+    private long clouds;
 
-
-    void setTemp(double temperature){
-        this.temp=temperature;
-    }
+    public LocalDate getDate(){return this.date;}
     public double getTemp(){
         return this.temp;
-    }
-    void setPressure(long press){
-        this.pressure=press;
     }
     public long getPressure(){
         return this.pressure;
     }
-    void setHumidity(long hum){
-        this.humidity=hum;
-    }
     public long getHumidity(){
         return this.humidity;
     }
-    void setCity(String city){this.city=city;}
-    public String getCity(){return this.city;}
-    void setFeelsLikeTemp(double temp){this.feelsLikeTemp=temp;}
+    public long getClouds(){return this.clouds;}
     public double getFeelsLikeTemp(){return this.feelsLikeTemp;}
-    public String getWeatherIcon(){return this.weatherIcon;}
-    void setMeasurements(String city,double temp, long pressure, long humidity,double feelsLikeTemp, String icon){
-        this.city=city;
+    public double getLatitude(){return this.latitude;}
+    public double getLongitude(){return this.longitude;}
+    void setCurrentMeasurements(LocalDate date,double lat, double lon,
+                                double temp, long pressure, long humidity,
+                                double feelsLikeTemp, Long clouds){
+        this.date=date;
+        this.latitude=lat;
+        this.longitude=lon;
         this.temp=temp;
         this.pressure=pressure;
         this.humidity=humidity;
         this.feelsLikeTemp=feelsLikeTemp;
-        this.weatherIcon=icon;
+        this.clouds=clouds;
     }
 }

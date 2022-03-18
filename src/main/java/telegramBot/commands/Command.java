@@ -8,7 +8,7 @@ public enum Command{
         START("/start"),
         HELP("Help "+Emojies.HELP.getEmoji()),
         WEATHER_NOW("Weather now "+ Emojies.PARTLY_SUNNY.getEmoji()),
-        FOR_48_HOURS("\"For \" +Emojies.FOR_48_HOURS.getEmoji()+\" hours\""),
+        FOR_48_HOURS("For " +Emojies.FOR_48_HOURS.getEmoji()+" hours"),
         FOR_7_DAYS("For " +Emojies.FOR_7_DAYS.getEmoji()+ " days"),
         NOTIFY("Notifications "+Emojies.NOTIFICATIONS.getEmoji()),
         SETTINGS("Settings "+Emojies.SETTINGS.getEmoji()),

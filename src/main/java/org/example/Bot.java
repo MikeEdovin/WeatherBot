@@ -157,9 +157,5 @@ public class Bot extends TelegramLongPollingBot {
             logger.warning(e.getMessage());
         }
     }
-    public void saveLocation(Update update){
-        Message message=update.getMessage();
-        User user=update.getChatMember().getFrom();
 
-    }
 }

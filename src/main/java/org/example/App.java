@@ -1,12 +1,15 @@
 package org.example;
 
 
+import Ability.CityData;
 import Service.MessageReceiver;
 import Service.MessageSender;
+import Users.User;
 import Users.UsersProvider;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class App {
@@ -18,6 +21,16 @@ public class App {
         Bot bot=new Bot("EdovinWeatherBot", "5295256851:AAHhA46BhJUzvzIE29rpjE8KlVCsDobF-is");
         UsersProvider usersProvider=new UsersProvider();
         usersProvider.getUsersFromBase();
+        ArrayList<User>users= usersProvider.getUsers();
+        for(User user: users){
+            System.out.println(user.getUserID());
+            for(CityData city:user.getCitiesData()) {
+                if (city != null) {
+                    System.out.println("City " + city.getName());
+                }
+            }
+
+        }
         MessageReceiver messageReceiver=new MessageReceiver(bot, usersProvider);
         MessageSender messageSender=new MessageSender(bot);
         bot.botConnect();

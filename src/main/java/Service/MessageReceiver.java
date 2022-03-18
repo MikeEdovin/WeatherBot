@@ -3,14 +3,12 @@ package Service;
 import Ability.CityData;
 import Ability.GeoProvider;
 import Handler.*;
-import Users.User;
 import Users.UsersProvider;
 import org.example.Bot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.stickers.Sticker;
 import telegramBot.commands.Command;
 import telegramBot.commands.ParsedCommand;
 import telegramBot.commands.Parser;
@@ -53,12 +51,11 @@ public class MessageReceiver implements Runnable{
             Update update = (Update) object;
             log.info("Update received: " + update.toString());
             analyzeForUpdateType(update);
-            if(update.getMessage().hasLocation()){
-              Location location= update.getMessage().getLocation();
-              log.info("Location received "+location.getLatitude()+" "+location.getLongitude());
-              CityData cityData=GeoProvider.getCityDataFromLocation(location);
-            }
-        } else log.warning("Cant operate type of object: " + object.toString());
+            if (update.getMessage().hasLocation()) {
+                Location location = update.getMessage().getLocation();
+                log.info("Location received " + location.getLatitude() + " " + location.getLongitude());
+            } else log.warning("Cant operate type of object: " + object.toString());
+        }
     }
 
     private void analyzeForUpdateType(Update update) {
@@ -104,13 +101,17 @@ public class MessageReceiver implements Runnable{
             case ADD_CITY_TO_USER:
             case GET_FROM_LAST_THREE:
             case SET_CITY:
+            case FOR_48_HOURS:
                 WeatherHandler weatherHandler=new WeatherHandler(bot,usersProvider);
                 log.info("Handler for command[" + command.toString() + "] is: " + weatherHandler);
                 return weatherHandler;
+                /*
             case GET_LOCATION:
                 GeoHandler geoHandler=new GeoHandler(bot,usersProvider);
                 log.info("Handler for command[" + command.toString() + "] is: " + geoHandler);
                 return geoHandler;
+
+                 */
             default:
                 log.info("Handler for command[" + command.toString() + "] not Set. Return DefaultHandler");
                 return new DefaultHandler(bot, usersProvider);

@@ -1,6 +1,9 @@
 package Ability;
 
-public class CityData {
+import java.io.Serializable;
+
+public class CityData implements Serializable {
+    static final long serialVersionUID = 7588980448693010399L;
     private String name;
     private double longitude;
     private double lalitude;
