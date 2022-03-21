@@ -4,9 +4,6 @@ import Ability.*;
 import Users.User;
 import Users.UsersProvider;
 import org.example.Bot;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -14,11 +11,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import telegramBot.commands.Command;
 import telegramBot.commands.ParsedCommand;
 
-import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -38,22 +30,41 @@ public class WeatherHandler extends AbstractHandler{
         CityData currentCityData=getCurrentCityData(userID);
         User user= usersProvider.getUserByID(userID);
         Command command=parsedCommand.getCommand();
+        WeatherData data;
+        String wdata;
+        int nrOfDays;
         switch (command){
             case WEATHER_NOW:
+
                 if(currentCityData==null){
                     bot.sendQueue.add(bot.sendSettingsKeyBoard(chatId));
                 }
                 else {
-                    String wdata = WeatherProvider.getOneCallAPI(currentCityData.getLalitude(),currentCityData.getLongitude());
-                    WeatherData data = WeatherProvider.getOneCallData(wdata);
-                    bot.sendQueue.add(sendCurrentForecast(chatId, data));
+                    if (currentCityData.isFreshForecast()) {
+                        data = currentCityData.getCurrentWeather();
+                        System.out.println("Saved current "+data.getTimeOfUpdate()+data.getTemp());
+                        bot.sendQueue.add(sendCurrentWeather(chatId, data, currentCityData.getName()));
+                    } else {
+                        wdata = WeatherProvider.getOneCallAPI(currentCityData.getLalitude(), currentCityData.getLongitude());
+                        data = WeatherProvider.getOneCallData(wdata);
+                        WeatherData[]forecast=WeatherProvider.getForecast(wdata);
+                        currentCityData.setCurrentWeather(data);
+                        currentCityData.setForecastForSevenDays(forecast);
+                        usersProvider.refreshUser(userID,currentCityData);
+                        bot.sendQueue.add(sendCurrentWeather(chatId, data, currentCityData.getName()));
+                    }
                 }
                 break;
             case GET_CITY_FROM_INPUT:
-                String data=GeoProvider.getLocationFromCityName(update.getMessage().getText());
-                CityData city=GeoProvider.getCityData(data);
-                usersProvider.refreshUser(userID,city);
-                bot.sendQueue.add(bot.sendMenuKeyboard(chatId));
+                wdata=GeoProvider.getLocationFromCityName(update.getMessage().getText());
+                CityData city = GeoProvider.getCityData(wdata);
+                if(city!=null) {
+                    usersProvider.refreshUser(userID, city);
+                    bot.sendQueue.add(bot.sendMenuKeyboard(chatId));
+                }
+                else{
+                    bot.sendQueue.add(getCity(chatId));
+                }
                 break;
             case SET_CITY:
                 bot.sendQueue.add(getCity(chatId));
@@ -68,18 +79,39 @@ public class WeatherHandler extends AbstractHandler{
                 bot.sendQueue.add(bot.sendMenuKeyboard(chatId));
                 break;
             case FOR_48_HOURS:
+                nrOfDays=2;
+                if (currentCityData.isFreshForecast()) {
+                    WeatherData[] forecast = currentCityData.getForecastForSevenDays();
+                    WeatherData f=forecast[1];
+                    System.out.println("Saved forecast "+f.getTimeOfUpdate());
+                    bot.sendQueue.add(sendForecast(chatId, forecast,nrOfDays, currentCityData.getName()));
+                } else {
+                    wdata = WeatherProvider.getOneCallAPI(currentCityData.getLalitude(), currentCityData.getLongitude());
+                    data  = WeatherProvider.getOneCallData(wdata);
+                    WeatherData[]forecast=WeatherProvider.getForecast(wdata);
+                    currentCityData.setCurrentWeather(data);
+                    currentCityData.setForecastForSevenDays(forecast);
+                    usersProvider.refreshUser(userID,currentCityData);
+                    bot.sendQueue.add(sendForecast(chatId, forecast,nrOfDays, currentCityData.getName()));
+                }
+                break;
+            case FOR_7_DAYS:
+                nrOfDays=7;
+                if (currentCityData.isFreshForecast()) {
+                    WeatherData[] forecast = currentCityData.getForecastForSevenDays();
+                    System.out.println("Saved forecast "+currentCityData.getCurrentWeather().getTimeOfUpdate());
+                    bot.sendQueue.add(sendForecast(chatId, forecast,nrOfDays,currentCityData.getName()));
+                } else {
+                    wdata = WeatherProvider.getOneCallAPI(currentCityData.getLalitude(), currentCityData.getLongitude());
+                    data  = WeatherProvider.getOneCallData(wdata);
+                    WeatherData[]forecast=WeatherProvider.getForecast(wdata);
+                    currentCityData.setCurrentWeather(data);
+                    currentCityData.setForecastForSevenDays(forecast);
+                    usersProvider.refreshUser(userID,currentCityData);
+                    bot.sendQueue.add(sendForecast(chatId, forecast,nrOfDays,currentCityData.getName()));
+                }
+                break;
 
-                String response=WeatherProvider.getOneCallAPI(currentCityData.getLalitude(), currentCityData.getLongitude());
-                try(FileOutputStream fos=new FileOutputStream("response.txt")){
-            fos.write(response.getBytes(StandardCharsets.UTF_8));
-            System.out.println(response);
-
-
-
-            WeatherProvider.getOneCallData(response);
-        }catch (IOException  e){
-            logger.warning(e.getMessage());
-        }
         }
         return "";
 
@@ -114,18 +146,38 @@ public class WeatherHandler extends AbstractHandler{
             return null;
         }
     }
-    private SendMessage sendCurrentForecast(String chatID,WeatherData data){
+    private SendMessage sendCurrentWeather(String chatID, WeatherData data, String cityNamme){
         SendMessage message=new SendMessage();
         message.setChatId(chatID);
         StringBuilder text = new StringBuilder();
-        text.append("Current weather").append(END_LINE).append(END_LINE);
+        text.append("Current weather for "+cityNamme).append(END_LINE).append(END_LINE);
         text.append("Current date "+data.getDate()).append(END_LINE);
         text.append("Temperature "+data.getTemp()).append(END_LINE);
         text.append("Feels like temperature "+data.getFeelsLikeTemp()).append(END_LINE);
         text.append("Pressure "+data.getPressure()).append(END_LINE);
         text.append("Humidity "+data.getHumidity()).append(END_LINE);
         text.append("clouds "+data.getClouds()).append(END_LINE);
-
+        text.append("Update time "+data.getTimeOfUpdate()).append(END_LINE);
+        message.setText(text.toString());
+        return message;
+    }
+    private SendMessage sendForecast(String chatID, WeatherData[] forecast, int nrOfDays, String cityName){
+        SendMessage message=new SendMessage();
+        message.setChatId(chatID);
+        StringBuilder text = new StringBuilder();
+        text.append("Forecast for "+cityName).append(END_LINE).append(END_LINE);
+        for(int i=0;i< nrOfDays;i++){
+            WeatherData data=forecast[i];
+            if(data!=null) {
+                text.append("Date " + data.getDate()).append(END_LINE);
+                text.append("Temperature " + data.getTemp()).append(END_LINE);
+                text.append("Feels like temperature " + data.getFeelsLikeTemp()).append(END_LINE);
+                text.append("Pressure " + data.getPressure()).append(END_LINE);
+                text.append("Humidity " + data.getHumidity()).append(END_LINE);
+                text.append("clouds " + data.getClouds()).append(END_LINE);
+                text.append("Update time " + data.getTimeOfUpdate()).append(END_LINE).append(END_LINE);
+            }
+        }
         message.setText(text.toString());
         return message;
     }

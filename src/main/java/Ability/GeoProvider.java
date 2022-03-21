@@ -31,6 +31,8 @@ public class GeoProvider {
             return cityData;
         } catch (ParseException e) {
             log.warning(e.getMessage());
+        }catch (IndexOutOfBoundsException e){
+            log.warning(e.getMessage());
         }
         return null;
     }

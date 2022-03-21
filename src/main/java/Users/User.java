@@ -20,14 +20,26 @@ public class User implements Serializable {
     public void setCurrentCityData(CityData data){this.currentCityData=data;}
 
     public void addCityDataToList(CityData data){
-        if (nrOfCities<3) {
-            cityDates[nrOfCities++]=data;
+        if(notContainCityInList(data.getName())) {
+            if (nrOfCities < 3) {
+                cityDates[nrOfCities++] = data;
+            } else {
+                cityDates[0] = cityDates[1];
+                cityDates[1] = cityDates[2];
+                cityDates[2] = data;
+            }
         }
-        else{
-            cityDates[0]=cityDates[1];
-            cityDates[1]=cityDates[2];
-            cityDates[2]=data;
+    }
+    private boolean notContainCityInList(String cityName){
+        for(int i=0;i<cityDates.length;i++){
+            System.out.println(cityDates[i].getName());
+            if(cityDates[i].getName().equals(cityName)){
+                System.out.println("contain");
+                return false;
+            }
         }
+        System.out.println("not contain"+cityName);
+        return true;
     }
 
     public void setNotificationTime(LocalTime time){

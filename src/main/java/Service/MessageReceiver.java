@@ -102,6 +102,7 @@ public class MessageReceiver implements Runnable{
             case GET_FROM_LAST_THREE:
             case SET_CITY:
             case FOR_48_HOURS:
+            case FOR_7_DAYS:
                 WeatherHandler weatherHandler=new WeatherHandler(bot,usersProvider);
                 log.info("Handler for command[" + command.toString() + "] is: " + weatherHandler);
                 return weatherHandler;

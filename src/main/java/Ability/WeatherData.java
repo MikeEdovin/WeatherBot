@@ -2,6 +2,7 @@ package Ability;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class WeatherData implements Serializable {
@@ -15,6 +16,7 @@ public class WeatherData implements Serializable {
     private String city;
     private double feelsLikeTemp;
     private long clouds;
+    private LocalDateTime timeOfUpdate;
 
     public LocalDate getDate(){return this.date;}
     public double getTemp(){
@@ -30,9 +32,10 @@ public class WeatherData implements Serializable {
     public double getFeelsLikeTemp(){return this.feelsLikeTemp;}
     public double getLatitude(){return this.latitude;}
     public double getLongitude(){return this.longitude;}
+    public LocalDateTime getTimeOfUpdate(){return this.timeOfUpdate;}
     void setCurrentMeasurements(LocalDate date,double lat, double lon,
                                 double temp, long pressure, long humidity,
-                                double feelsLikeTemp, Long clouds){
+                                double feelsLikeTemp, Long clouds,LocalDateTime timeOfUpdate){
         this.date=date;
         this.latitude=lat;
         this.longitude=lon;
@@ -41,5 +44,6 @@ public class WeatherData implements Serializable {
         this.humidity=humidity;
         this.feelsLikeTemp=feelsLikeTemp;
         this.clouds=clouds;
+        this.timeOfUpdate=timeOfUpdate;
     }
 }
