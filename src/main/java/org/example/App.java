@@ -22,15 +22,21 @@ public class App {
         UsersProvider usersProvider=new UsersProvider();
         usersProvider.getUsersFromBase();
         ArrayList<User>users= usersProvider.getUsers();
+
         for(User user: users){
             System.out.println(user.getUserID());
             for(CityData city:user.getCitiesData()) {
                 if (city != null) {
                     System.out.println("City " + city.getName());
+                    if(city.getCurrentWeather()!=null){
+                        System.out.println(city.getCurrentWeather().getTimeOfUpdate());
+                    }
                 }
             }
 
         }
+
+
         MessageReceiver messageReceiver=new MessageReceiver(bot, usersProvider);
         MessageSender messageSender=new MessageSender(bot);
         bot.botConnect();

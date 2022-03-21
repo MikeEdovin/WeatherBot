@@ -31,6 +31,7 @@ public class WeatherHandler extends AbstractHandler{
         User user= usersProvider.getUserByID(userID);
         Command command=parsedCommand.getCommand();
         WeatherData data;
+        WeatherData[] forecast;
         String wdata;
         int nrOfDays;
         switch (command){
@@ -46,8 +47,8 @@ public class WeatherHandler extends AbstractHandler{
                         bot.sendQueue.add(sendCurrentWeather(chatId, data, currentCityData.getName()));
                     } else {
                         wdata = WeatherProvider.getOneCallAPI(currentCityData.getLalitude(), currentCityData.getLongitude());
-                        data = WeatherProvider.getOneCallData(wdata);
-                        WeatherData[]forecast=WeatherProvider.getForecast(wdata);
+                        data = WeatherProvider.getCurrentWeather(wdata);
+                        forecast=WeatherProvider.getForecast(wdata);
                         currentCityData.setCurrentWeather(data);
                         currentCityData.setForecastForSevenDays(forecast);
                         usersProvider.refreshUser(userID,currentCityData);
@@ -58,8 +59,13 @@ public class WeatherHandler extends AbstractHandler{
             case GET_CITY_FROM_INPUT:
                 wdata=GeoProvider.getLocationFromCityName(update.getMessage().getText());
                 CityData city = GeoProvider.getCityData(wdata);
-                if(city!=null) {
+
+                if(city!=null&&user.notContainCityInList(city.getName())) {
                     usersProvider.refreshUser(userID, city);
+                    bot.sendQueue.add(bot.sendMenuKeyboard(chatId));
+                }
+                else if(city!=null&&!user.notContainCityInList(city.getName())){
+                    usersProvider.refreshUser(userID, user.getCityDataByName(city.getName()));
                     bot.sendQueue.add(bot.sendMenuKeyboard(chatId));
                 }
                 else{
@@ -75,20 +81,26 @@ public class WeatherHandler extends AbstractHandler{
                 break;
             case ADD_CITY_TO_USER:
                 CityData addingCity = GeoProvider.getCityDataFromLocation(update.getMessage().getLocation());
-                usersProvider.refreshUser(userID, addingCity);
-                bot.sendQueue.add(bot.sendMenuKeyboard(chatId));
+                if(addingCity!=null&&user.notContainCityInList(addingCity.getName())) {
+                    usersProvider.refreshUser(userID, addingCity);
+                    bot.sendQueue.add(bot.sendMenuKeyboard(chatId));
+                }
+                else if(addingCity!=null&&!user.notContainCityInList(addingCity.getName())){
+                    usersProvider.refreshUser(userID, user.getCityDataByName(addingCity.getName()));
+                    bot.sendQueue.add(bot.sendMenuKeyboard(chatId));
+                }
                 break;
             case FOR_48_HOURS:
                 nrOfDays=2;
                 if (currentCityData.isFreshForecast()) {
-                    WeatherData[] forecast = currentCityData.getForecastForSevenDays();
+                    forecast = currentCityData.getForecastForSevenDays();
                     WeatherData f=forecast[1];
                     System.out.println("Saved forecast "+f.getTimeOfUpdate());
                     bot.sendQueue.add(sendForecast(chatId, forecast,nrOfDays, currentCityData.getName()));
                 } else {
                     wdata = WeatherProvider.getOneCallAPI(currentCityData.getLalitude(), currentCityData.getLongitude());
-                    data  = WeatherProvider.getOneCallData(wdata);
-                    WeatherData[]forecast=WeatherProvider.getForecast(wdata);
+                    data  = WeatherProvider.getCurrentWeather(wdata);
+                    forecast=WeatherProvider.getForecast(wdata);
                     currentCityData.setCurrentWeather(data);
                     currentCityData.setForecastForSevenDays(forecast);
                     usersProvider.refreshUser(userID,currentCityData);
@@ -98,13 +110,13 @@ public class WeatherHandler extends AbstractHandler{
             case FOR_7_DAYS:
                 nrOfDays=7;
                 if (currentCityData.isFreshForecast()) {
-                    WeatherData[] forecast = currentCityData.getForecastForSevenDays();
+                    forecast = currentCityData.getForecastForSevenDays();
                     System.out.println("Saved forecast "+currentCityData.getCurrentWeather().getTimeOfUpdate());
                     bot.sendQueue.add(sendForecast(chatId, forecast,nrOfDays,currentCityData.getName()));
                 } else {
                     wdata = WeatherProvider.getOneCallAPI(currentCityData.getLalitude(), currentCityData.getLongitude());
-                    data  = WeatherProvider.getOneCallData(wdata);
-                    WeatherData[]forecast=WeatherProvider.getForecast(wdata);
+                    data  = WeatherProvider.getCurrentWeather(wdata);
+                    forecast=WeatherProvider.getForecast(wdata);
                     currentCityData.setCurrentWeather(data);
                     currentCityData.setForecastForSevenDays(forecast);
                     usersProvider.refreshUser(userID,currentCityData);

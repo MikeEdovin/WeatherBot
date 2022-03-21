@@ -28,18 +28,29 @@ public class User implements Serializable {
                 cityDates[1] = cityDates[2];
                 cityDates[2] = data;
             }
+        }else{
+            for(int i=0;i< cityDates.length;i++){
+                if(cityDates[i].getName().equals(data.getName())){
+                    cityDates[i]=data;
+                }
+            }
         }
     }
-    private boolean notContainCityInList(String cityName){
+    public boolean notContainCityInList(String cityName){
         for(int i=0;i<cityDates.length;i++){
-            System.out.println(cityDates[i].getName());
             if(cityDates[i].getName().equals(cityName)){
-                System.out.println("contain");
                 return false;
             }
         }
-        System.out.println("not contain"+cityName);
         return true;
+    }
+    public CityData getCityDataByName(String cityName){
+        for(int i=0;i<cityDates.length;i++){
+            if(cityDates[i].getName().equals(cityName)){
+                return cityDates[i];
+            }
+        }
+        return null;
     }
 
     public void setNotificationTime(LocalTime time){
