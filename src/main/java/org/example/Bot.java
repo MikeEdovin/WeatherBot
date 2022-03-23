@@ -1,6 +1,8 @@
 package org.example;
 
+import Ability.CityData;
 import Ability.Emojies;
+import Ability.WeatherData;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -8,12 +10,15 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.send.SendSticker;
 import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -26,6 +31,7 @@ public class Bot extends TelegramLongPollingBot {
     private static final Logger logger=Logger.getLogger("Bot logger");
 
     int RECONNECT_PAUSE = 10000;
+    private final String END_LINE = "\n";
     public final Queue<Object> sendQueue = new ConcurrentLinkedQueue<>();
     public final Queue<Object> receiveQueue = new ConcurrentLinkedQueue<>();
     private String botName;
@@ -144,6 +150,91 @@ public class Bot extends TelegramLongPollingBot {
         return message;
 
     }
+    public SendMessage sendCurrentWeather(String chatID, WeatherData data, String cityNamme){
+        SendMessage message=new SendMessage();
+        message.setChatId(chatID);
+        StringBuilder text = new StringBuilder();
+        text.append("Current weather for "+cityNamme).append(END_LINE).append(END_LINE);
+        text.append("Current date "+data.getDate()).append(END_LINE);
+        text.append("Temperature "+data.getTemp()).append(END_LINE);
+        text.append("Feels like temperature "+data.getFeelsLikeTemp()).append(END_LINE);
+        text.append("Pressure "+data.getPressure()).append(END_LINE);
+        text.append("Humidity "+data.getHumidity()).append(END_LINE);
+        text.append("clouds "+data.getClouds()).append(END_LINE);
+        text.append("Update time "+data.getTimeOfUpdate()).append(END_LINE);
+        message.setText(text.toString());
+        return message;
+    }
+    public SendMessage sendForecast(String chatID, WeatherData[] forecast, int nrOfDays, String cityName){
+        SendMessage message=new SendMessage();
+        message.setChatId(chatID);
+        StringBuilder text = new StringBuilder();
+        text.append("Forecast for "+cityName).append(END_LINE).append(END_LINE);
+        for(int i=0;i< nrOfDays;i++){
+            WeatherData data=forecast[i];
+            if(data!=null) {
+                text.append("Date " + data.getDate()).append(END_LINE);
+                text.append("Temperature " + data.getTemp()).append(END_LINE);
+                text.append("Feels like temperature " + data.getFeelsLikeTemp()).append(END_LINE);
+                text.append("Pressure " + data.getPressure()).append(END_LINE);
+                text.append("Humidity " + data.getHumidity()).append(END_LINE);
+                text.append("clouds " + data.getClouds()).append(END_LINE);
+                text.append("Update time " + data.getTimeOfUpdate()).append(END_LINE).append(END_LINE);
+            }
+        }
+        message.setText(text.toString());
+        return message;
+    }
+    public SendMessage getCity(String chatID) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatID);
+        sendMessage.enableMarkdown(true);
+        sendMessage.setText("Please, type the city name ");
+        return sendMessage;
+    }
+    public SendMessage sendLastThree(String chatID, CityData[]cities){
+        SendMessage message=new SendMessage();
+        message.setChatId(chatID);
+        message.setText("Choose from last three cities");
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboard = new ArrayList<>();
+        for(CityData item:cities) {
+            if (item != null) {
+                KeyboardRow row = new KeyboardRow();
+                row.add(item.getName());
+                keyboard.add(row);
+            }
+        }
+        KeyboardRow row=new KeyboardRow();
+        row.add("Back"+ Emojies.BACK.getEmoji());
+        keyboard.add(row);
+        keyboardMarkup.setKeyboard(keyboard);
+        keyboardMarkup.setResizeKeyboard(true);
+        message.setReplyMarkup(keyboardMarkup);
+        keyboardMarkup.setOneTimeKeyboard(true);
+        return message;
+    }
+    public SendMessage sendTimeSettingMessage(String chatID){
+        SendMessage message=new SendMessage();
+        message.setChatId(chatID);
+        message.setText("Notifications settings");
+        ReplyKeyboardMarkup keyboardMarkup=new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboard = new ArrayList<>();
+        KeyboardRow row=new KeyboardRow();
+        row.add("Set notification time");
+        keyboard.add(row);
+        row=new KeyboardRow();
+        row.add("Reset notification time");
+        keyboard.add(row);
+        row=new KeyboardRow();
+        row.add("Back"+Emojies.BACK.getEmoji());
+        keyboard.add(row);
+        keyboardMarkup.setKeyboard(keyboard);
+        keyboardMarkup.setResizeKeyboard(true);
+        keyboardMarkup.setOneTimeKeyboard(true);
+        message.setReplyMarkup(keyboardMarkup);
+        return message;
+    }
 
 
     public void sendPhoto(SendPhoto sendPhoto) {
@@ -154,4 +245,30 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
+    public SendMessage sendNotificationWasSetted(String chatID,CityData currentCity, LocalTime time) {
+        SendMessage message=new SendMessage();
+        message.setChatId(chatID);
+        message.setText("Notifications was set for "+currentCity.getName()+" "+"at "+time);
+        return message;
+    }
+    public SendMessage sendTimeSettingsMessage(String chatID){
+        SendMessage message=new SendMessage();
+        message.setChatId(chatID);
+        message.setText("Enter notifications time in hh : mm");
+        return message;
+    }
+
+    public SendMessage sendResetNotificationsMessage(String chatID) {
+        SendMessage message=new SendMessage();
+        message.setChatId(chatID);
+        message.setText("Notifications time was reset");
+        return message;
+    }
+
+    public SendMessage sendWrongInputMessage(String chatID) {
+        SendMessage message=new SendMessage();
+        message.setChatId(chatID);
+        message.setText("Wrong input, please try again");
+        return message;
+    }
 }

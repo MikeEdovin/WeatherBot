@@ -30,8 +30,8 @@ public class Parser {
         else if(trimText.equalsIgnoreCase(EmojiParser.removeAllEmojis(Command.FOR_7_DAYS.description).trim())){
             result.setCommand(Command.FOR_7_DAYS);
         }
-        else if(trimText.equalsIgnoreCase(EmojiParser.removeAllEmojis(Command.NOTIFY.description).trim())){
-            result.setCommand(Command.NOTIFY);
+        else if(trimText.equalsIgnoreCase(EmojiParser.removeAllEmojis(Command.NOTIFICATION.description).trim())){
+            result.setCommand(Command.NOTIFICATION);
         }
         else if(trimText.equalsIgnoreCase(EmojiParser.removeAllEmojis(Command.SETTINGS.description).trim())){
             result.setCommand(Command.SETTINGS);
@@ -52,6 +52,15 @@ public class Parser {
             result.setCommand(Command.BACK);
         }else if(trimText.contains("Location")){
             result.setCommand(Command.ADD_CITY_TO_USER);
+        }else if(trimText.matches("\\d{2}(\\:|\\s*|\\.*\\,*)\\d{2}")){
+            result.setCommand(Command.SET_NOTIFICATION_TIME);
+            result.setText(trimText);
+        }
+        else if(trimText.equalsIgnoreCase(Command.SET_NOTIFICATION_TIME.description)){
+            result.setCommand(Command.SEND_TIME_SETTING_MESSAGE);
+        }
+        else if(trimText.equalsIgnoreCase(EmojiParser.removeAllEmojis(Command.RESET_NOTIFICATIONS.description))){
+            result.setCommand(Command.RESET_NOTIFICATIONS);
         }
         else{
             result.setCommand(Command.GET_CITY_FROM_INPUT);

@@ -1,7 +1,13 @@
 package Ability;
 
 import java.io.Serializable;
+import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalField;
 
 public class CityData implements Serializable {
     static final long serialVersionUID = 7588980448693010399L;
@@ -27,22 +33,22 @@ public class CityData implements Serializable {
     public String getName(){return this.name;}
     public double getLongitude(){return this.longitude;}
     public double getLalitude(){return this.lalitude;}
-    public WeatherData getCurrentWeather(){
-        if(isFreshForecast()) {
-            return this.currentWeather;
-        }else{
-            return null;
-        }
-    }
+    public WeatherData getCurrentWeather(){return this.currentWeather;}
     public WeatherData[] getForecastForSevenDays(){return this.forecastForSevenDays;}
     public boolean isFreshForecast(){
         if(currentWeather!=null) {
-            LocalDateTime now = LocalDateTime.now();
-            LocalDateTime timeOfUpdate = currentWeather.getTimeOfUpdate();
-            if (now.getHour() - timeOfUpdate.getHour() < 1) {
-                return true;
-            } else {
-                return false;
+            String zone= currentWeather.getTimeZone();
+            if(zone!=null) {
+                ZonedDateTime zdtNow = ZonedDateTime.now(ZoneId.of(currentWeather.getTimeZone()));
+                Long now = zdtNow.toEpochSecond();
+                LocalDateTime timeOfUpdate = currentWeather.getTimeOfUpdate();
+                ZonedDateTime zdtTimeOfUpdate = ZonedDateTime.of(timeOfUpdate, ZoneId.of(currentWeather.getTimeZone()));
+                Long tOfUpdate = zdtTimeOfUpdate.toEpochSecond();
+                if (now - tOfUpdate < 3600) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
         }
         return false;

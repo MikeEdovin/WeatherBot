@@ -9,6 +9,7 @@ import Users.UsersProvider;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -25,6 +26,12 @@ public class App {
 
         for(User user: users){
             System.out.println(user.getUserID());
+            if(user.getNotificationTime()!=null){
+                System.out.println("not time"+user.getNotificationTime());
+            }
+            else{
+                System.out.println("time not set");
+            }
             for(CityData city:user.getCitiesData()) {
                 if (city != null) {
                     System.out.println("City " + city.getName());
@@ -35,6 +42,7 @@ public class App {
             }
 
         }
+        System.out.println("local time "+ LocalTime.now());
 
 
         MessageReceiver messageReceiver=new MessageReceiver(bot, usersProvider);

@@ -80,7 +80,7 @@ public class WeatherProvider {
             pressure = (long) objCurrent.get("pressure");
             humidity = (long) objCurrent.get("humidity");
             clouds= (long) objCurrent.get("clouds");
-            currentWeatherData.setCurrentMeasurements(date,latitude,longitude,temp,pressure,humidity,feelsLike,clouds,timeOfUpdate);
+            currentWeatherData.setCurrentMeasurements(date,latitude,longitude,temp,pressure,humidity,feelsLike,clouds,timeOfUpdate,timezone);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -122,10 +122,10 @@ public class WeatherProvider {
                 pressure = (long) day.get("pressure");
                 humidity = (long) day.get("humidity");
                 clouds = (long) day.get("clouds");
-                weatherData.setCurrentMeasurements(date, latitude, longitude, temp, pressure, humidity, feelsLike, clouds, timeOfUpdate);
+                weatherData.setCurrentMeasurements(date, latitude, longitude, temp, pressure, humidity, feelsLike, clouds, timeOfUpdate,timezone);
                 forecast[i]=weatherData;
             }
-        } catch (ParseException e) {
+        } catch (ParseException|ClassCastException e) {
         e.printStackTrace();
     }
         return forecast;

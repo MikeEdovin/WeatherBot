@@ -3,6 +3,7 @@ package Users;
 import Ability.CityData;
 
 import java.io.*;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.logging.Logger;
@@ -57,6 +58,12 @@ public class UsersProvider {
         users.remove(refreshable);
         refreshable.setCurrentCityData(data);
         refreshable.addCityDataToList(data);
+        addUserToList(refreshable);
+    }
+    public void refreshNotificationTime(Long userID, LocalTime time){
+        User refreshable=getUserByID(userID);
+        users.remove(refreshable);
+        refreshable.setNotificationTime(time);
         addUserToList(refreshable);
     }
 }

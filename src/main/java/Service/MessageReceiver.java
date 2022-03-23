@@ -1,7 +1,5 @@
 package Service;
 
-import Ability.CityData;
-import Ability.GeoProvider;
 import Handler.*;
 import Users.UsersProvider;
 import org.example.Bot;
@@ -92,7 +90,10 @@ public class MessageReceiver implements Runnable{
                 SystemHandler systemHandler = new SystemHandler(bot,usersProvider);
                 log.info("Handler for command[" + command.toString() + "] is: " + systemHandler);
                 return systemHandler;
-            case NOTIFY:
+            case NOTIFICATION:
+            case SET_NOTIFICATION_TIME:
+            case SEND_TIME_SETTING_MESSAGE:
+            case RESET_NOTIFICATIONS:
                 NotifyHandler notifyHandler = new NotifyHandler(bot, usersProvider);
                 log.info("Handler for command[" + command.toString() + "] is: " + notifyHandler);
                 return notifyHandler;
@@ -106,13 +107,7 @@ public class MessageReceiver implements Runnable{
                 WeatherHandler weatherHandler=new WeatherHandler(bot,usersProvider);
                 log.info("Handler for command[" + command.toString() + "] is: " + weatherHandler);
                 return weatherHandler;
-                /*
-            case GET_LOCATION:
-                GeoHandler geoHandler=new GeoHandler(bot,usersProvider);
-                log.info("Handler for command[" + command.toString() + "] is: " + geoHandler);
-                return geoHandler;
 
-                 */
             default:
                 log.info("Handler for command[" + command.toString() + "] not Set. Return DefaultHandler");
                 return new DefaultHandler(bot, usersProvider);

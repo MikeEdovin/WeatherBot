@@ -17,6 +17,7 @@ public class WeatherData implements Serializable {
     private double feelsLikeTemp;
     private long clouds;
     private LocalDateTime timeOfUpdate;
+    private String timeZone;
 
     public LocalDate getDate(){return this.date;}
     public double getTemp(){
@@ -33,9 +34,10 @@ public class WeatherData implements Serializable {
     public double getLatitude(){return this.latitude;}
     public double getLongitude(){return this.longitude;}
     public LocalDateTime getTimeOfUpdate(){return this.timeOfUpdate;}
+    public String getTimeZone(){return this.timeZone;}
     void setCurrentMeasurements(LocalDate date,double lat, double lon,
                                 double temp, long pressure, long humidity,
-                                double feelsLikeTemp, Long clouds,LocalDateTime timeOfUpdate){
+                                double feelsLikeTemp, Long clouds,LocalDateTime timeOfUpdate, String timeZone){
         this.date=date;
         this.latitude=lat;
         this.longitude=lon;
@@ -45,5 +47,6 @@ public class WeatherData implements Serializable {
         this.feelsLikeTemp=feelsLikeTemp;
         this.clouds=clouds;
         this.timeOfUpdate=timeOfUpdate;
+        this.timeZone=timeZone;
     }
 }
