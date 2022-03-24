@@ -1,11 +1,12 @@
 package telegramBot.commands;
 
 import com.vdurmont.emoji.EmojiParser;
-import java.util.logging.Logger;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Parser {
-    private static final Logger log = Logger.getLogger("Parser");
-    private String botName;
+    private final String botName;
 
     public Parser(String botName) {
         this.botName = botName;
@@ -52,9 +53,19 @@ public class Parser {
             result.setCommand(Command.BACK);
         }else if(trimText.contains("Location")){
             result.setCommand(Command.ADD_CITY_TO_USER);
-        }else if(trimText.matches("\\d{2}(\\:|\\s*|\\.*\\,*)\\d{2}")){
+        }else if(trimText.matches("\\d{1,2}(:|\\s*|\\.*|,*)\\d{2}")){
             result.setCommand(Command.SET_NOTIFICATION_TIME);
-            result.setText(trimText);
+            System.out.println(trimText);
+            StringBuilder builder=new StringBuilder();
+            String[]parts=trimText.split("[ ,.:]");
+            if(parts[0].length()==1){
+                builder.append("0").append(parts[0]);
+            }
+            else{
+                builder.append(parts[0]);
+            }
+            builder.append(":").append(parts[1]);
+            result.setText(builder.toString());
         }
         else if(trimText.equalsIgnoreCase(Command.SET_NOTIFICATION_TIME.description)){
             result.setCommand(Command.SEND_TIME_SETTING_MESSAGE);

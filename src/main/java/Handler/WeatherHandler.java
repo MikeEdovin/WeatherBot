@@ -21,13 +21,17 @@ public class WeatherHandler extends AbstractHandler{
     @Override
     public String operate(String chatId, ParsedCommand parsedCommand, Update update) {
         Long userID=update.getMessage().getFrom().getId();
-        CityData currentCityData=getCurrentCityData(userID);
+        if(usersProvider.getUserByID(userID)==null){
+            usersProvider.addUserToList(new User(userID));
+        }
         User user= usersProvider.getUserByID(userID);
+        CityData currentCityData=getCurrentCityData(userID);
         Command command=parsedCommand.getCommand();
         WeatherData data;
         WeatherData[] forecast;
         String wdata;
         int nrOfDays;
+
         switch (command){
             case WEATHER_NOW:
                 if(currentCityData==null){
@@ -39,7 +43,7 @@ public class WeatherHandler extends AbstractHandler{
                         System.out.println("Saved current "+data.getTimeOfUpdate()+data.getTemp());
                         bot.sendQueue.add(bot.sendCurrentWeather(chatId, data, currentCityData.getName()));
                     } else {
-                        wdata = WeatherProvider.getOneCallAPI(currentCityData.getLalitude(), currentCityData.getLongitude());
+                        wdata = WeatherProvider.getOneCallAPI(currentCityData.getLatitude(), currentCityData.getLongitude());
                         data = WeatherProvider.getCurrentWeather(wdata);
                         forecast=WeatherProvider.getForecast(wdata);
                         currentCityData.setCurrentWeather(data);
@@ -90,7 +94,7 @@ public class WeatherHandler extends AbstractHandler{
                     System.out.println("Saved forecast "+f.getTimeOfUpdate());
                     bot.sendQueue.add(bot.sendForecast(chatId, forecast,nrOfDays, currentCityData.getName()));
                 } else {
-                    wdata = WeatherProvider.getOneCallAPI(currentCityData.getLalitude(), currentCityData.getLongitude());
+                    wdata = WeatherProvider.getOneCallAPI(currentCityData.getLatitude(), currentCityData.getLongitude());
                     data  = WeatherProvider.getCurrentWeather(wdata);
                     forecast=WeatherProvider.getForecast(wdata);
                     currentCityData.setCurrentWeather(data);
@@ -106,7 +110,7 @@ public class WeatherHandler extends AbstractHandler{
                     System.out.println("Saved forecast "+currentCityData.getCurrentWeather().getTimeOfUpdate());
                     bot.sendQueue.add(bot.sendForecast(chatId, forecast,nrOfDays,currentCityData.getName()));
                 } else {
-                    wdata = WeatherProvider.getOneCallAPI(currentCityData.getLalitude(), currentCityData.getLongitude());
+                    wdata = WeatherProvider.getOneCallAPI(currentCityData.getLatitude(), currentCityData.getLongitude());
                     data  = WeatherProvider.getCurrentWeather(wdata);
                     forecast=WeatherProvider.getForecast(wdata);
                     currentCityData.setCurrentWeather(data);

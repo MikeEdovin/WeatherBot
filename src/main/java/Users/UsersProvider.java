@@ -1,7 +1,6 @@
 package Users;
 
 import Ability.CityData;
-
 import java.io.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -15,11 +14,7 @@ public class UsersProvider {
         Logger log = Logger.getLogger("get users");
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("users.txt"))) {
             users = (ArrayList<User>) ois.readObject();
-        } catch (EOFException e) {
-            log.warning(e.getMessage());
-        } catch (IOException e) {
-            log.warning(e.getMessage());
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | IOException e) {
             log.warning(e.getMessage());
         }
     }

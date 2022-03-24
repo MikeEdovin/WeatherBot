@@ -1,10 +1,9 @@
 package telegramBot.commands;
 
 public class ParsedCommand {
-    Command command=Command.NONE;
-    String text="";
-    public ParsedCommand(){
-    }
+    Command command;
+    String text;
+
     public ParsedCommand(Command c, String t){
         command=c;
         text=t;

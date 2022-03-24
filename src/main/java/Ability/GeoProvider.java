@@ -29,9 +29,7 @@ public class GeoProvider {
             double lat=(double)jsonObject.get("lat");
             cityData.setCityData(city, lon,lat);
             return cityData;
-        } catch (ParseException e) {
-            log.warning(e.getMessage());
-        }catch (IndexOutOfBoundsException e){
+        } catch (ParseException | IndexOutOfBoundsException e) {
             log.warning(e.getMessage());
         }
         return null;
@@ -127,7 +125,4 @@ public class GeoProvider {
         }
         return null;
     }
-
-
-
 }

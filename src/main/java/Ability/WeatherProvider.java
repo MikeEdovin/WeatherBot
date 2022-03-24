@@ -4,7 +4,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.URL;
@@ -62,15 +61,11 @@ public class WeatherProvider {
         long pressure;
         long humidity;
         long clouds;
-        double latitude;
-        double longitude;
         WeatherData currentWeatherData=new WeatherData();
         try{
             Object obj = new JSONParser().parse(response);
             JSONObject jsonObject = (JSONObject) obj;
             JSONObject objCurrent = (JSONObject) jsonObject.get("current");
-            latitude= (double) jsonObject.get("lat");
-            longitude= (double) jsonObject.get("lon");
             String timezone= (String) jsonObject.get("timezone");
             unixDate= (long) objCurrent.get("dt");
             date= Instant.ofEpochSecond(unixDate).atZone(ZoneId.of(timezone)).toLocalDate();
@@ -80,7 +75,7 @@ public class WeatherProvider {
             pressure = (long) objCurrent.get("pressure");
             humidity = (long) objCurrent.get("humidity");
             clouds= (long) objCurrent.get("clouds");
-            currentWeatherData.setCurrentMeasurements(date,latitude,longitude,temp,pressure,humidity,feelsLike,clouds,timeOfUpdate,timezone);
+            currentWeatherData.setCurrentMeasurements(date, temp,pressure,humidity,feelsLike,clouds,timeOfUpdate,timezone);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -96,8 +91,6 @@ public class WeatherProvider {
         long pressure;
         long humidity;
         long clouds;
-        double latitude;
-        double longitude;
         String timezone;
         WeatherData[]forecast=new WeatherData[10];
         try {
@@ -107,8 +100,6 @@ public class WeatherProvider {
             unixUpdateTime= (long) objCurrent.get("dt");
             timezone= (String) jsonObject.get("timezone");
             timeOfUpdate = Instant.ofEpochSecond(unixUpdateTime).atZone(ZoneId.of(timezone)).toLocalDateTime();
-            latitude= (double) jsonObject.get("lat");
-            longitude= (double) jsonObject.get("lon");
             JSONArray daily = (JSONArray) jsonObject.get("daily");
             for (int i = 0; i < daily.size(); i++) {
                 WeatherData weatherData = new WeatherData();
@@ -122,7 +113,7 @@ public class WeatherProvider {
                 pressure = (long) day.get("pressure");
                 humidity = (long) day.get("humidity");
                 clouds = (long) day.get("clouds");
-                weatherData.setCurrentMeasurements(date, latitude, longitude, temp, pressure, humidity, feelsLike, clouds, timeOfUpdate,timezone);
+                weatherData.setCurrentMeasurements(date, temp, pressure, humidity, feelsLike, clouds, timeOfUpdate,timezone);
                 forecast[i]=weatherData;
             }
         } catch (ParseException|ClassCastException e) {

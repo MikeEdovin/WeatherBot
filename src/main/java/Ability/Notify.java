@@ -3,8 +3,6 @@ package Ability;
 import Users.UsersProvider;
 import org.example.Bot;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.logging.Logger;
 
 public class Notify extends Thread {
@@ -15,12 +13,12 @@ public class Notify extends Thread {
     UsersProvider usersProvider;
     Long userID;
     String chatID;
-    CityData currentCityData;
+    volatile CityData currentCityData;
     volatile LocalTime notificationTime;
     WeatherData data;
     WeatherData[] forecast;
     String wdata;
-    volatile boolean isStopped;
+    private volatile boolean isStopped;
 
     public Notify(Bot bot, String chatID, LocalTime nTime, CityData city, UsersProvider up, Long userID) {
         this.bot = bot;
@@ -32,64 +30,50 @@ public class Notify extends Thread {
         this.isStopped = false;
     }
 
-    public void setStopped() {
-        this.isStopped = true;
-    }
-
-    public void setTime(LocalTime time) {
-        this.notificationTime = time;
-    }
-
-
-
-
+    public void setStopped() {this.isStopped = true;}
+    public void setTime(LocalTime time) {this.notificationTime = time;}
+    public void setCurrentCityData(CityData data){this.currentCityData=data;}
     @Override
     public void run() {
         log.info("Started " + this.getClass().toString());
+        String timeZone;
+            while (true) {
+                if (!isStopped) {
+                    if (currentCityData!=null&&notificationTime != null) {
+                        try {
+                            Thread.sleep(SLEEPING_TIME);
+                            if (currentCityData.getCurrentWeather() != null) {
+                                timeZone = currentCityData.getCurrentWeather().getTimeZone();
+                            } else {
+                                timeZone = ZoneId.systemDefault().getId();
+                            }
 
-        while(true) {
-            if (!isStopped) {
-                try {
-                    Thread.sleep(SLEEPING_TIME/2 );//сделать зонедтайм и от него брать часы и минуты
-                    String timeZone = currentCityData.getCurrentWeather().getTimeZone();
-                    System.out.println("time " + this.notificationTime);
-                    DateTimeFormatter formatter=DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
-                    notificationTime.format(formatter);
-                    LocalDateTime notTime = LocalDateTime.of(LocalDate.now(), notificationTime);
-                    ZonedDateTime zdtTimeOfUpdate = ZonedDateTime.of(notTime, ZoneId.of(timeZone));
-                    Long notify = zdtTimeOfUpdate.toEpochSecond();
-                    ZonedDateTime zdtNow = ZonedDateTime.now(ZoneId.of(timeZone));
-                    //Long now = zdtNow.toEpochSecond();
-                    LocalTime now=LocalTime.now();
-                    now.format(formatter);
-                    System.out.println(notificationTime.compareTo(now));
-                    if (notificationTime.getHour()==now.getHour()&&notificationTime.getMinute()==now.getMinute()) {
-                        if (currentCityData.isFreshForecast()) {
-                            data = currentCityData.getCurrentWeather();
-                            bot.sendQueue.add(bot.sendCurrentWeather(chatID, data, currentCityData.getName()));
-                            setStopped();
-                        } else {
-                            wdata = WeatherProvider.getOneCallAPI(currentCityData.getLalitude(), currentCityData.getLongitude());
-                            data = WeatherProvider.getCurrentWeather(wdata);
-                            forecast = WeatherProvider.getForecast(wdata);
-                            currentCityData.setCurrentWeather(data);
-                            currentCityData.setForecastForSevenDays(forecast);
-                            usersProvider.refreshUser(userID, currentCityData);
-                            bot.sendQueue.add(bot.sendCurrentWeather(chatID, data, currentCityData.getName()));
-                            setStopped();
+                            ZonedDateTime zdtTimeOfUpdate = ZonedDateTime.of(LocalDateTime.of(LocalDate.now(), notificationTime), ZoneId.of(timeZone));
+                            ZonedDateTime zdtNow = ZonedDateTime.now(ZoneId.of(timeZone));
+                            if (zdtTimeOfUpdate.getHour() == zdtNow.getHour() && zdtTimeOfUpdate.getMinute() == zdtNow.getMinute()) {
+                                if (currentCityData.isFreshForecast()) {
+                                    data = currentCityData.getCurrentWeather();
+                                } else {
+                                    wdata = WeatherProvider.getOneCallAPI(currentCityData.getLatitude(), currentCityData.getLongitude());
+                                    data = WeatherProvider.getCurrentWeather(wdata);
+                                    forecast = WeatherProvider.getForecast(wdata);
+                                    currentCityData.setCurrentWeather(data);
+                                    currentCityData.setForecastForSevenDays(forecast);
+                                    usersProvider.refreshUser(userID, currentCityData);
+                                }
+                                bot.sendQueue.add(bot.sendCurrentWeather(chatID, data, currentCityData.getName()));
+                            }
+                        } catch (InterruptedException e) {
+                            log.warning(e.getMessage());
                         }
                     }
-                } catch (InterruptedException e) {
-                    log.warning(e.getMessage());
+                } else {
+                    return;
                 }
             }
-            else{
-                return;
-            }
         }
-
     }
-}
+
 
 
 

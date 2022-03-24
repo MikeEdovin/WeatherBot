@@ -1,13 +1,9 @@
 package Ability;
 
 import java.io.Serializable;
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoField;
-import java.time.temporal.TemporalAccessor;
-import java.time.temporal.TemporalField;
 
 public class CityData implements Serializable {
     static final long serialVersionUID = 7588980448693010399L;
@@ -32,7 +28,7 @@ public class CityData implements Serializable {
     public void setForecastForSevenDays(WeatherData[] forecast){this.forecastForSevenDays =forecast;}
     public String getName(){return this.name;}
     public double getLongitude(){return this.longitude;}
-    public double getLalitude(){return this.lalitude;}
+    public double getLatitude(){return this.lalitude;}
     public WeatherData getCurrentWeather(){return this.currentWeather;}
     public WeatherData[] getForecastForSevenDays(){return this.forecastForSevenDays;}
     public boolean isFreshForecast(){
@@ -44,11 +40,7 @@ public class CityData implements Serializable {
                 LocalDateTime timeOfUpdate = currentWeather.getTimeOfUpdate();
                 ZonedDateTime zdtTimeOfUpdate = ZonedDateTime.of(timeOfUpdate, ZoneId.of(currentWeather.getTimeZone()));
                 Long tOfUpdate = zdtTimeOfUpdate.toEpochSecond();
-                if (now - tOfUpdate < 3600) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return now - tOfUpdate < 3600;
             }
         }
         return false;

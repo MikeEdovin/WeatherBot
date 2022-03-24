@@ -3,17 +3,13 @@ package Ability;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 public class WeatherData implements Serializable {
     static final long serialVersionUID = 7588980448693010399L;
     private LocalDate date;
-    private double latitude;
-    private double longitude;
     private double temp;
     private long pressure;
     private long humidity;
-    private String city;
     private double feelsLikeTemp;
     private long clouds;
     private LocalDateTime timeOfUpdate;
@@ -31,16 +27,12 @@ public class WeatherData implements Serializable {
     }
     public long getClouds(){return this.clouds;}
     public double getFeelsLikeTemp(){return this.feelsLikeTemp;}
-    public double getLatitude(){return this.latitude;}
-    public double getLongitude(){return this.longitude;}
     public LocalDateTime getTimeOfUpdate(){return this.timeOfUpdate;}
     public String getTimeZone(){return this.timeZone;}
-    void setCurrentMeasurements(LocalDate date,double lat, double lon,
+    void setCurrentMeasurements(LocalDate date,
                                 double temp, long pressure, long humidity,
-                                double feelsLikeTemp, Long clouds,LocalDateTime timeOfUpdate, String timeZone){
+                                double feelsLikeTemp, Long clouds, LocalDateTime timeOfUpdate, String timeZone){
         this.date=date;
-        this.latitude=lat;
-        this.longitude=lon;
         this.temp=temp;
         this.pressure=pressure;
         this.humidity=humidity;

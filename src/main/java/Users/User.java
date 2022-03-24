@@ -1,16 +1,15 @@
 package Users;
 import Ability.CityData;
-
 import java.io.Serializable;
 import java.time.*;
 
 public class User implements Serializable {
     static final long serialVersionUID = 7588980448693010399L;
-    private Long id;
+    private final Long id;
     private LocalTime notificationTime;
     private int nrOfCities;
     private CityData currentCityData;
-    private CityData [] cityDates=new CityData[3];
+    private final CityData [] cityDates=new CityData[3];
 
 
     public User(Long id){
@@ -30,36 +29,32 @@ public class User implements Serializable {
             }
         }else{
             for(int i=0;i< cityDates.length;i++){
-                if(cityDates[i].getName().equals(data.getName())){
+                if(cityDates[i]!=null&&cityDates[i].getName().equals(data.getName())){
                     cityDates[i]=data;
                 }
             }
         }
     }
     public boolean notContainCityInList(String cityName){
-        for(int i=0;i<cityDates.length;i++){
-            if(cityDates[i].getName().equals(cityName)){
+        for (CityData cityDate : cityDates) {
+            if (cityDate != null && cityDate.getName().equals(cityName)) {
                 return false;
             }
         }
         return true;
     }
     public CityData getCityDataByName(String cityName){
-        for(int i=0;i<cityDates.length;i++){
-            if(cityDates[i].getName().equals(cityName)){
-                return cityDates[i];
+        for (CityData cityDate : cityDates) {
+            if (cityDate.getName().equals(cityName)) {
+                return cityDate;
             }
         }
         return null;
     }
 
-    public void setNotificationTime(LocalTime time){
-        this.notificationTime=time;
-    }
+    public void setNotificationTime(LocalTime time){this.notificationTime=time;}
     public Long getUserID(){return this.id;}
     public LocalTime getNotificationTime(){return this.notificationTime;}
     public CityData getCurrentCityData(){return this.currentCityData;}
     public CityData[] getCitiesData(){return this.cityDates;}
-
-
 }

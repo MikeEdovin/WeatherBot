@@ -8,7 +8,6 @@ import org.example.Bot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegramBot.commands.Command;
 import telegramBot.commands.ParsedCommand;
-
 import java.time.LocalTime;
 import java.util.logging.Logger;
 
@@ -21,19 +20,35 @@ public class NotifyHandler extends AbstractHandler{
     @Override
     public String operate(String chatID, ParsedCommand parsedCommand, Update update) {
         Long userID=update.getMessage().getFrom().getId();
+        if(usersProvider.getUserByID(userID)==null){
+            usersProvider.addUserToList(new User(userID));
+        }
         User user= usersProvider.getUserByID(userID);
-        CityData city=user.getCurrentCityData();
+        CityData city=null;
         Command command=parsedCommand.getCommand();
         String timeInput= parsedCommand.getText();
         LocalTime time=null;
         Notify notify=new Notify(bot,chatID,time,city,usersProvider,userID);
-        Thread thread;
+        notify.setName("timer thread");
+        notify.setDaemon(true);
+        notify.start();
+
         switch (command) {
             case NOTIFICATION:
-                bot.sendQueue.add(bot.sendTimeSettingMessage(chatID));
+                city=user.getCurrentCityData();
+                if(city!=null) {
+                    bot.sendQueue.add(bot.sendTimeSettingMessage(chatID));
+                }else{
+                    bot.sendQueue.add(bot.sendTimeSettingsError(chatID));
+                }
                 break;
             case SEND_TIME_SETTING_MESSAGE:
-                bot.sendQueue.add(bot.sendTimeSettingsMessage(chatID));
+                if(user.getCurrentCityData()!=null) {
+                    bot.sendQueue.add(bot.sendTimeSettingsMessage(chatID));
+                }
+                else{
+                    bot.sendQueue.add(bot.sendTimeSettingsError(chatID));
+                }
                 break;
             case SET_NOTIFICATION_TIME:
                 try {
@@ -44,10 +59,8 @@ public class NotifyHandler extends AbstractHandler{
                if(time!=null) {
                    usersProvider.refreshNotificationTime(userID, time);
                    notify.setTime(usersProvider.getUserByID(userID).getNotificationTime());
-                   notify.setName("timer thread");
-                   notify.setDaemon(true);
-                   notify.start();
-                   bot.sendQueue.add(bot.sendNotificationWasSetted(chatID, city, usersProvider.getUserByID(userID).getNotificationTime()));
+                   notify.setCurrentCityData(user.getCurrentCityData());
+                   bot.sendQueue.add(bot.sendNotificationWasSet(chatID, usersProvider.getUserByID(userID).getCurrentCityData(), usersProvider.getUserByID(userID).getNotificationTime()));
                }
                else{
                    bot.sendQueue.add(bot.sendWrongInputMessage(chatID));

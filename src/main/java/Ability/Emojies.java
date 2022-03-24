@@ -1,6 +1,4 @@
 package Ability;
-
-import com.vdurmont.emoji.Emoji;
 import com.vdurmont.emoji.EmojiParser;
 
 public enum Emojies {
@@ -18,8 +16,11 @@ public enum Emojies {
     TEMPERATURE("\uD83C\uDF21️"),
     GET_LOCATION("\uD83D\uDCCD"),
     LAST_THREE("\uD83E\uDDFE"),
-    BACK("↩")
-
+    BACK("↩"),
+    DATE("\uD83D\uDCC6"),
+    CURRENT("\uD83E\uDE9F"),
+    PRESSURE("\uD83C\uDF43"),
+    HUMIDITY("\uD83C\uDF2B️"),
     ;
     String emojiUnicode;
     Emojies(String code){

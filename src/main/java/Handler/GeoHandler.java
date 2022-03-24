@@ -4,7 +4,6 @@ import Ability.CityData;
 import Ability.GeoProvider;
 import Users.UsersProvider;
 import org.example.Bot;
-import org.telegram.telegrambots.meta.api.methods.send.SendLocation;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -43,7 +42,7 @@ public class GeoHandler extends AbstractHandler {
         StringBuilder text = new StringBuilder();
         text.append("City " + cityData.getName()).append(END_LINE);
         text.append("longitude " + cityData.getLongitude()).append(END_LINE);
-        text.append("latitude " + cityData.getLalitude()).append(END_LINE);
+        text.append("latitude " + cityData.getLatitude()).append(END_LINE);
         message.setText(text.toString());
         return message;
 
