@@ -2,6 +2,7 @@ package org.example;
 
 
 import Ability.CityData;
+import Ability.Notify;
 import Service.MessageReceiver;
 import Service.MessageSender;
 import Users.User;
@@ -27,7 +28,7 @@ public class App {
         for(User user: users){
             System.out.println(user.getUserID());
             if(user.getNotificationTime()!=null){
-                System.out.println("not time"+user.getNotificationTime());
+                System.out.println("not time"+user.getNotificationTime()+" City "+user.getCurrentCityData().getName());
             }
             else{
                 System.out.println("time not set");
