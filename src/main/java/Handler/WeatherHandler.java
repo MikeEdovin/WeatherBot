@@ -40,7 +40,6 @@ public class WeatherHandler extends AbstractHandler{
                 else {
                     if (currentCityData.isFreshForecast()) {
                         data = currentCityData.getCurrentWeather();
-                        System.out.println("Saved current "+data.getTimeOfUpdate()+data.getTemp());
                         bot.sendQueue.add(bot.sendCurrentWeather(chatId, data, currentCityData.getName()));
                     } else {
                         wdata = WeatherProvider.getOneCallAPI(currentCityData.getLatitude(), currentCityData.getLongitude());
@@ -91,7 +90,6 @@ public class WeatherHandler extends AbstractHandler{
                 if (currentCityData.isFreshForecast()) {
                     forecast = currentCityData.getForecastForSevenDays();
                     WeatherData f=forecast[1];
-                    System.out.println("Saved forecast "+f.getTimeOfUpdate());
                     bot.sendQueue.add(bot.sendForecast(chatId, forecast,nrOfDays, currentCityData.getName()));
                 } else {
                     wdata = WeatherProvider.getOneCallAPI(currentCityData.getLatitude(), currentCityData.getLongitude());
@@ -107,7 +105,6 @@ public class WeatherHandler extends AbstractHandler{
                 nrOfDays=7;
                 if (currentCityData.isFreshForecast()) {
                     forecast = currentCityData.getForecastForSevenDays();
-                    System.out.println("Saved forecast "+currentCityData.getCurrentWeather().getTimeOfUpdate());
                     bot.sendQueue.add(bot.sendForecast(chatId, forecast,nrOfDays,currentCityData.getName()));
                 } else {
                     wdata = WeatherProvider.getOneCallAPI(currentCityData.getLatitude(), currentCityData.getLongitude());
@@ -119,10 +116,8 @@ public class WeatherHandler extends AbstractHandler{
                     bot.sendQueue.add(bot.sendForecast(chatId, forecast,nrOfDays,currentCityData.getName()));
                 }
                 break;
-
         }
         return "";
-
     }
 
     private CityData getCurrentCityData(Long userID) {

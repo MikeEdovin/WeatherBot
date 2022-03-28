@@ -6,7 +6,6 @@ import Ability.WeatherData;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.send.SendSticker;
 import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -126,10 +125,10 @@ public class Bot extends TelegramLongPollingBot {
         message.setChatId(chatID);
         StringBuilder text = new StringBuilder();
         text.append(Emojies.CURRENT.getEmoji()).append(" Current weather for ").append(cityName).append(END_LINE).append(END_LINE);
-        text.append(Emojies.TEMPERATURE.getEmoji()).append(" Temperature ").append(data.getTemp()).append(END_LINE);
-        text.append(Emojies.TEMPERATURE.getEmoji()+" Feels like temperature "+data.getFeelsLikeTemp()).append(END_LINE);
-        text.append(Emojies.PRESSURE.getEmoji()+" Pressure "+data.getPressure()).append(END_LINE);
-        text.append(Emojies.HUMIDITY.getEmoji()+" Humidity "+data.getHumidity()).append(END_LINE);
+        text.append(Emojies.TEMPERATURE.getEmoji()).append(" Temperature ").append(data.getTemp()).append(" °C").append(END_LINE);
+        text.append(Emojies.TEMPERATURE.getEmoji()+" Feels like temperature "+data.getFeelsLikeTemp()).append(" °C").append(END_LINE);
+        text.append(Emojies.PRESSURE.getEmoji()+" Pressure "+data.getPressure()).append(" hPa").append(END_LINE);
+        text.append(Emojies.HUMIDITY.getEmoji()+" Humidity "+data.getHumidity()).append(" %").append(END_LINE);
         text.append(chooseCloudsIcon(data.getClouds())).append(END_LINE);
         text.append("Update time "+data.getTimeOfUpdate()).append(END_LINE);
         message.setText(text.toString());
@@ -144,10 +143,10 @@ public class Bot extends TelegramLongPollingBot {
             WeatherData data=forecast[i];
             if(data!=null) {
                 text.append(Emojies.DATE.getEmoji()+" Date " + data.getDate()).append(END_LINE);
-                text.append(Emojies.TEMPERATURE.getEmoji()+" Temperature " + data.getTemp()).append(END_LINE);
-                text.append(Emojies.TEMPERATURE.getEmoji()+" Feels like temperature " + data.getFeelsLikeTemp()).append(END_LINE);
-                text.append(Emojies.PRESSURE.getEmoji()+" Pressure " + data.getPressure()).append(END_LINE);
-                text.append(Emojies.HUMIDITY.getEmoji()+" Humidity " + data.getHumidity()).append(END_LINE);
+                text.append(Emojies.TEMPERATURE.getEmoji()+" Temperature " + data.getTemp()).append(" °C").append(END_LINE);
+                text.append(Emojies.TEMPERATURE.getEmoji()+" Feels like temperature " + data.getFeelsLikeTemp()).append(" °C").append(END_LINE);
+                text.append(Emojies.PRESSURE.getEmoji()+" Pressure " + data.getPressure()).append(" hPa").append(END_LINE);
+                text.append(Emojies.HUMIDITY.getEmoji()+" Humidity " + data.getHumidity()).append(" %").append(END_LINE);
                 text.append(chooseCloudsIcon(data.getClouds())).append(END_LINE);
                 text.append("Update time " + data.getTimeOfUpdate()).append(END_LINE).append(END_LINE);
             }

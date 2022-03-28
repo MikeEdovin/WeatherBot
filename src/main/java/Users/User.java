@@ -10,6 +10,7 @@ public class User implements Serializable {
     private int nrOfCities;
     private CityData currentCityData;
     private final CityData [] cityDates=new CityData[3];
+    private String chatID;
 
 
     public User(Long id){
@@ -17,6 +18,7 @@ public class User implements Serializable {
         nrOfCities=0;
     }
     public void setCurrentCityData(CityData data){this.currentCityData=data;}
+    public void setChatID(String chatID){this.chatID=chatID;}
 
     public void addCityDataToList(CityData data){
         if(notContainCityInList(data.getName())) {
@@ -54,6 +56,7 @@ public class User implements Serializable {
 
     public void setNotificationTime(LocalTime time){this.notificationTime=time;}
     public Long getUserID(){return this.id;}
+    public String getChatID(){return this.chatID;}
     public LocalTime getNotificationTime(){return this.notificationTime;}
     public CityData getCurrentCityData(){return this.currentCityData;}
     public CityData[] getCitiesData(){return this.cityDates;}
