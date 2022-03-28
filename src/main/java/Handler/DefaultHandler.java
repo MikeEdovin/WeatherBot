@@ -1,7 +1,7 @@
 package Handler;
 
 import Users.UsersProvider;
-import org.example.Bot;
+import org.weatherBot.Bot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegramBot.commands.ParsedCommand;
 

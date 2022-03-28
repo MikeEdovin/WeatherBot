@@ -55,10 +55,11 @@ public class UsersProvider {
         refreshable.addCityDataToList(data);
         addUserToList(refreshable);
     }
-    public void refreshNotificationTime(Long userID, LocalTime time){
+    public void refreshNotificationTime(Long userID,String chatID, LocalTime time){
         User refreshable=getUserByID(userID);
         users.remove(refreshable);
         refreshable.setNotificationTime(time);
+        refreshable.setChatID(chatID);
         addUserToList(refreshable);
     }
 }

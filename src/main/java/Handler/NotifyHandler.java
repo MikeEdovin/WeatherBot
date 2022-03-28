@@ -1,10 +1,9 @@
 package Handler;
 
 import Ability.CityData;
-import Ability.Notify;
 import Users.User;
 import Users.UsersProvider;
-import org.example.Bot;
+import org.weatherBot.Bot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegramBot.commands.Command;
 import telegramBot.commands.ParsedCommand;
@@ -24,14 +23,10 @@ public class NotifyHandler extends AbstractHandler{
             usersProvider.addUserToList(new User(userID));
         }
         User user= usersProvider.getUserByID(userID);
-        CityData city=null;
+        CityData city;
         Command command=parsedCommand.getCommand();
         String timeInput= parsedCommand.getText();
         LocalTime time=null;
-        Notify notify=new Notify(bot,chatID,time,city,usersProvider,userID);
-        notify.setName("timer thread");
-        notify.setDaemon(true);
-        notify.start();
 
         switch (command) {
             case NOTIFICATION:
@@ -57,9 +52,7 @@ public class NotifyHandler extends AbstractHandler{
                     log.warning(e.getMessage());
                 }
                if(time!=null) {
-                   usersProvider.refreshNotificationTime(userID, time);
-                   notify.setTime(usersProvider.getUserByID(userID).getNotificationTime());
-                   notify.setCurrentCityData(user.getCurrentCityData());
+                   usersProvider.refreshNotificationTime(userID,chatID, time);
                    bot.sendQueue.add(bot.sendNotificationWasSet(chatID, usersProvider.getUserByID(userID).getCurrentCityData(), usersProvider.getUserByID(userID).getNotificationTime()));
                }
                else{
@@ -67,9 +60,7 @@ public class NotifyHandler extends AbstractHandler{
                }
                 break;
             case RESET_NOTIFICATIONS:
-                usersProvider.refreshNotificationTime(userID,null);
-                notify.setTime(usersProvider.getUserByID(userID).getNotificationTime());
-                notify.setStopped();
+                usersProvider.refreshNotificationTime(userID,chatID,null);
                 bot.sendQueue.add(bot.sendResetNotificationsMessage(chatID));
                 break;
         }

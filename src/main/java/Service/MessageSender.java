@@ -1,5 +1,5 @@
 package Service;
-import org.example.Bot;
+import org.weatherBot.Bot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendSticker;
 import org.telegram.telegrambots.meta.api.objects.Message;
