@@ -15,27 +15,23 @@ public class Notify implements Runnable {
     UsersProvider usersProvider;
     Long userID;
     String chatID;
-    volatile CityData currentCityData;
-    volatile LocalTime notificationTime;
+    CityData currentCityData;
+    LocalTime notificationTime;
     WeatherData data;
     WeatherData[] forecast;
     String wdata;
-    private volatile boolean isStopped;
 
     public Notify(Bot bot, UsersProvider up) {
         this.bot = bot;
         this.usersProvider = up;
-        this.isStopped = false;
     }
 
-    public void setStopped() {this.isStopped = true;}
     @Override
     public void run() {
         log.info("Started " + this.getClass().toString());
         ArrayList<User> users=usersProvider.getUsers();
         String timeZone;
             while (true) {
-                if (!isStopped) {
                     try {
                         Thread.sleep(SLEEPING_TIME);
                     for (User user : users) {
@@ -68,9 +64,6 @@ public class Notify implements Runnable {
                     }
                     } catch (InterruptedException e) {
                         log.warning(e.getMessage());
-                    }
-                    } else{
-                        return;
                     }
             }
         }

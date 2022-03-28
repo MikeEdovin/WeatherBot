@@ -52,7 +52,7 @@ public class App {
                     break;
                 case "backup":
                     backup(users);
-                    System.out.println("User saved");
+                    System.out.println("Users was saved");
                     break;
                 case "showUsers":
                     showUsers(users);
@@ -117,7 +117,6 @@ public class App {
         String token;
         try(BufferedReader br=new BufferedReader(new FileReader("botToken.txt"))){
             token=br.readLine();
-            System.out.println(token);
             return token;
         }catch (IOException e){
             e.printStackTrace();
