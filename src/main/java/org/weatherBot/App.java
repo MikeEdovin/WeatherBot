@@ -58,6 +58,7 @@ public class App {
                     showUsers(users);
                     break;
                 case "exit":
+                    backup(users);
                     System.exit(0);
                 default:
                     System.out.println("Wrong input");
