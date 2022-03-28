@@ -1,4 +1,4 @@
-package org.example;
+package org.weatherBot;
 
 import Ability.CityData;
 import Ability.Emojies;

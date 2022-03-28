@@ -1,4 +1,4 @@
-package org.example;
+package org.weatherBot;
 
 
 import Ability.CityData;
@@ -7,13 +7,10 @@ import Service.MessageReceiver;
 import Service.MessageSender;
 import Users.User;
 import Users.UsersProvider;
-
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
 import java.io.*;
-import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 public class App {
@@ -21,14 +18,14 @@ public class App {
     private static final int PRIORITY_FOR_SENDER = 1;
     private static final int PRIORITY_FOR_RECEIVER = 3;
 
-    public static void main( String[] args ) throws TelegramApiException {
+    public static void main( String[] args ) {
         UsersProvider usersProvider = new UsersProvider();
         usersProvider.getUsersFromBase();
         ArrayList<User> users = usersProvider.getUsers();
 
         while (true) {
             String command = getCommand();
-            switch (command) {
+            switch (Objects.requireNonNull(command)) {
                 case "start":
                     String token=getBotToken();
                     Bot bot = new Bot("EdovinWeatherBot", token);
@@ -68,10 +65,7 @@ public class App {
                     break;
             }
         }
-
-
     }
-
 
     private static void sendStartReport(Bot bot, String BOT_ADMIN) {
         SendMessage sendMessage = new SendMessage();

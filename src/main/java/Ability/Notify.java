@@ -2,7 +2,7 @@ package Ability;
 
 import Users.User;
 import Users.UsersProvider;
-import org.example.Bot;
+import org.weatherBot.Bot;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.logging.Logger;
