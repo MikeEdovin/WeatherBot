@@ -4,4 +4,7 @@
 out/
 weatherBot UN-Token.txt
 botToken.txt
+users.txt
+usersBackup.txt
+
 

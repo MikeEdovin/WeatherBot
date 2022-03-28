@@ -1,6 +1,4 @@
 package org.weatherBot;
-
-
 import Ability.CityData;
 import Ability.Notify;
 import Service.MessageReceiver;
@@ -54,6 +52,7 @@ public class App {
                     break;
                 case "backup":
                     backup(users);
+                    System.out.println("User saved");
                     break;
                 case "showUsers":
                     showUsers(users);
