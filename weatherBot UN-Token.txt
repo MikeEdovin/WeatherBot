@@ -1,0 +1,3 @@
+String BOT_ADMIN="5277149986";
+String BOT_TOKEN="5295256851:AAHhA46BhJUzvzIE29rpjE8KlVCsDobF-is"
+String BOT_NAME="EdovinWeatherBot"
