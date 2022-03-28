@@ -87,33 +87,43 @@ public class WeatherHandler extends AbstractHandler{
                 break;
             case FOR_48_HOURS:
                 nrOfDays=2;
-                if (currentCityData.isFreshForecast()) {
-                    forecast = currentCityData.getForecastForSevenDays();
-                    WeatherData f=forecast[1];
-                    bot.sendQueue.add(bot.sendForecast(chatId, forecast,nrOfDays, currentCityData.getName()));
-                } else {
-                    wdata = WeatherProvider.getOneCallAPI(currentCityData.getLatitude(), currentCityData.getLongitude());
-                    data  = WeatherProvider.getCurrentWeather(wdata);
-                    forecast=WeatherProvider.getForecast(wdata);
-                    currentCityData.setCurrentWeather(data);
-                    currentCityData.setForecastForSevenDays(forecast);
-                    usersProvider.refreshUser(userID,currentCityData);
-                    bot.sendQueue.add(bot.sendForecast(chatId, forecast,nrOfDays, currentCityData.getName()));
+                if(currentCityData==null){
+                    bot.sendQueue.add(bot.sendSettingsKeyBoard(chatId));
+                }
+                else {
+                    if (currentCityData.isFreshForecast()) {
+                        forecast = currentCityData.getForecastForSevenDays();
+                        WeatherData f = forecast[1];
+                        bot.sendQueue.add(bot.sendForecast(chatId, forecast, nrOfDays, currentCityData.getName()));
+                    } else {
+                        wdata = WeatherProvider.getOneCallAPI(currentCityData.getLatitude(), currentCityData.getLongitude());
+                        data = WeatherProvider.getCurrentWeather(wdata);
+                        forecast = WeatherProvider.getForecast(wdata);
+                        currentCityData.setCurrentWeather(data);
+                        currentCityData.setForecastForSevenDays(forecast);
+                        usersProvider.refreshUser(userID, currentCityData);
+                        bot.sendQueue.add(bot.sendForecast(chatId, forecast, nrOfDays, currentCityData.getName()));
+                    }
                 }
                 break;
             case FOR_7_DAYS:
                 nrOfDays=7;
-                if (currentCityData.isFreshForecast()) {
-                    forecast = currentCityData.getForecastForSevenDays();
-                    bot.sendQueue.add(bot.sendForecast(chatId, forecast,nrOfDays,currentCityData.getName()));
-                } else {
-                    wdata = WeatherProvider.getOneCallAPI(currentCityData.getLatitude(), currentCityData.getLongitude());
-                    data  = WeatherProvider.getCurrentWeather(wdata);
-                    forecast=WeatherProvider.getForecast(wdata);
-                    currentCityData.setCurrentWeather(data);
-                    currentCityData.setForecastForSevenDays(forecast);
-                    usersProvider.refreshUser(userID,currentCityData);
-                    bot.sendQueue.add(bot.sendForecast(chatId, forecast,nrOfDays,currentCityData.getName()));
+                if(currentCityData==null){
+                    bot.sendQueue.add(bot.sendSettingsKeyBoard(chatId));
+                }
+                else {
+                    if (currentCityData.isFreshForecast()) {
+                        forecast = currentCityData.getForecastForSevenDays();
+                        bot.sendQueue.add(bot.sendForecast(chatId, forecast, nrOfDays, currentCityData.getName()));
+                    } else {
+                        wdata = WeatherProvider.getOneCallAPI(currentCityData.getLatitude(), currentCityData.getLongitude());
+                        data = WeatherProvider.getCurrentWeather(wdata);
+                        forecast = WeatherProvider.getForecast(wdata);
+                        currentCityData.setCurrentWeather(data);
+                        currentCityData.setForecastForSevenDays(forecast);
+                        usersProvider.refreshUser(userID, currentCityData);
+                        bot.sendQueue.add(bot.sendForecast(chatId, forecast, nrOfDays, currentCityData.getName()));
+                    }
                 }
                 break;
         }
