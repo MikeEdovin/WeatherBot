@@ -90,10 +90,23 @@
           <configuration>
             <archive>
               <manifest>
-                <mainClass>App.java</mainClass>
+                <mainClass>App</mainClass>
               </manifest>
             </archive>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>com.heroku.sdk</groupId>
+          <artifactId>heroku-maven-plugin</artifactId>
+          <version>3.0.3</version>
+          <configuration>
+            <appName>weatherBot</appName>
+            <processTypes>
+              <worker>java -Xmx300m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8 -cp ./target/classes:./target/dependency/C:\\Users\\Mike\ E\\IdeaProjects\\weatherTelegrammBot\\telegramBot\\telegramBot Main</worker>
+            </processTypes>
+          </configuration>
+
+
         </plugin>
         <plugin>
           <artifactId>maven-install-plugin</artifactId>
