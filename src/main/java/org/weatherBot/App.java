@@ -70,10 +70,15 @@ public class App {
                     ArrayList<User> usersDB=DBProvider.getUserFromDB();
                     for(User user:usersDB){
                         System.out.println("id "+user.getUserID());
-                        for(CityData city: user.getCitiesData()){
-                            System.out.println("city "+city.getName());
+                        for(CityData city: user.getCitiesData()) {
+                            if (city != null) {
+                                System.out.println("city " + city.getName()+" lat "+city.getLatitude()+" lon "+city.getLongitude());
+                            }
                         }
                     }
+                    break;
+                case "add":
+                    DBProvider.addIsCurrent();
                     break;
                 default:
                     System.out.println("Wrong input");

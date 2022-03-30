@@ -57,10 +57,12 @@ public class WeatherHandler extends AbstractHandler{
                 CityData city = GeoProvider.getCityData(wdata);
                 if(city!=null&&user.notContainCityInList(city.getName())) {
                     usersProvider.refreshUser(userID, city);
+                    DBProvider.addCityToDB(city,user);
                     bot.sendQueue.add(bot.sendMenuKeyboard(chatId));
                 }
                 else if(city!=null&&!user.notContainCityInList(city.getName())){
                     usersProvider.refreshUser(userID, user.getCityDataByName(city.getName()));
+                    DBProvider.addCityToDB(city,user);
                     bot.sendQueue.add(bot.sendMenuKeyboard(chatId));
                 }
                 else{

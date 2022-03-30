@@ -30,7 +30,8 @@ public class DBProvider {
                     ("(ID serial references USERS(USER_ID), " +
                     "NAME TEXT   NOT NULL UNIQUE, " +
                     " LATITUDE    double precision     NOT NULL, " +
-                    " LONGITUDE   double precision     NOT NULL)");
+                    " LONGITUDE   double precision     NOT NULL, "+
+                    " IS_CURRENT boolean NOT NULL)");
             String weather="CREATE TABLE WEATHER "+
                     ("(CITY TEXT references CITIES(NAME), "+
                      "DATE time with time zone NOT NULL, "+
@@ -46,6 +47,23 @@ public class DBProvider {
             statement.close();
             connection.close();
             System.out.println("Table created successfully");
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+    public static void addIsCurrent(){
+        Connection connection;
+        Statement statement;
+        try {
+            connection = getConnection();
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            String update=" ALTER TABLE CITIES  ADD IS_CURRENT boolean NOT NULL DEFAULT 'false'";
+            statement.executeUpdate(update);
+            connection.commit();
+            statement.close();
+            connection.close();
         }
         catch (SQLException e){
             e.printStackTrace();
@@ -80,6 +98,9 @@ public class DBProvider {
             statement = connection.createStatement();
             String sql="INSERT INTO CITIES(ID, NAME, LATITUDE, LONGITUDE)"+"VALUES("+user.getUserID()+
                     ",'"+city.getName()+"',"+city.getLatitude()+","+city.getLongitude()+");";
+            System.out.println(sql);
+            String sql2 = "INSERT INTO CITIES (ID,NAME,LATITUDE,LONGITUDE) "
+                    + "VALUES (1, 'Paul', 32, 'California', 20000.00 );";
             statement.executeUpdate(sql);
             statement.close();
             connection.commit();
@@ -94,27 +115,27 @@ public class DBProvider {
         Connection connection;
         Statement statement;
         User user;
-        CityData cityData=null;
+        CityData cityData;
         try{
             connection=getConnection();
             connection.setAutoCommit(false);
             statement= connection.createStatement();
-            ResultSet resultSet= statement.executeQuery("SELECT * FROM USERS;");
-            while(resultSet.next()){
-                long id=resultSet.getLong("USER_ID");
+            ResultSet userResult= statement.executeQuery("SELECT * FROM USERS;");
+            while(userResult.next()){
+                long id=userResult.getLong("USER_ID");
                 user=new User(id);
                 ResultSet cities=statement.executeQuery("SELECT * FROM CITIES");
                 while(cities.next()){
                     String name=cities.getString("NAME");
-                    long latitude=cities.getLong("LATITUDE");
-                    long longitude=cities.getLong("LONGITUDE");
-                    cityData.setCityData(name,longitude,latitude);
+                    double latitude=cities.getDouble("LATITUDE");
+                    double longitude=cities.getDouble("LONGITUDE");
+                    cityData=new CityData(name,longitude,latitude);
                     user.addCityDataToList(cityData);
                 }
                 users.add(user);
                 cities.close();
             }
-            resultSet.close();
+            userResult.close();
             statement.close();
             connection.close();
         }
