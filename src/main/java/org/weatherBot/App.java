@@ -25,13 +25,15 @@ public class App {
             String command = getCommand();
             switch (Objects.requireNonNull(command)) {
                 case "start":
-                    String token=getBotToken();
-                    Bot bot = new Bot("EdovinWeatherBot", token);
+                    String botName=System.getenv("BOT_NAME");
+                    String token=System.getenv("BOT_TOKEN");
+                    String botAdmin=System.getenv("BOT_ADMIN");
+                    Bot bot = new Bot(botName, token);
                     MessageReceiver messageReceiver = new MessageReceiver(bot, usersProvider);
                     MessageSender messageSender = new MessageSender(bot);
                     Notify notify = new Notify(bot, usersProvider);
                     bot.botConnect();
-                    sendStartReport(bot, "5277149986");
+                    sendStartReport(bot, botAdmin);
 
                     Thread receiver = new Thread(messageReceiver);
                     receiver.setDaemon(true);
@@ -112,15 +114,5 @@ public class App {
         } catch (IOException e) {
             log.warning(e.getMessage());
         }
-    }
-    public static String getBotToken(){
-        String token;
-        try(BufferedReader br=new BufferedReader(new FileReader("botToken.txt"))){
-            token=br.readLine();
-            return token;
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-        return null;
     }
 }
