@@ -17,8 +17,8 @@ import java.util.logging.Logger;
 public class WeatherProvider {
     public static String getOneCallAPI(Double latitude, Double longitude){//получение данных о погоде с сервера
         Logger log= Logger.getLogger("One call API");
+        String APP_ID=System.getenv("WEATHER_MAP_APP_ID");
         final String URL_API = "https://api.openweathermap.org/data/2.5/onecall?";
-        final String APP_ID = "5a1a2ebae8f3c31263be33c36cdc727c";
         HttpsURLConnection connection = null;
         try {
             URL u = new URL(URL_API + "lat=" + latitude+"&lon="+longitude

@@ -1,5 +1,6 @@
 package org.weatherBot;
 import Ability.CityData;
+import Ability.DBProvider;
 import Ability.Notify;
 import Service.MessageReceiver;
 import Service.MessageSender;
@@ -62,6 +63,18 @@ public class App {
                 case "exit":
                     backup(users);
                     System.exit(0);
+                case "create":
+                    DBProvider.createTables();
+                    break;
+                case "base":
+                    ArrayList<User> usersDB=DBProvider.getUserFromDB();
+                    for(User user:usersDB){
+                        System.out.println("id "+user.getUserID());
+                        for(CityData city: user.getCitiesData()){
+                            System.out.println("city "+city.getName());
+                        }
+                    }
+                    break;
                 default:
                     System.out.println("Wrong input");
                     break;

@@ -1,4 +1,5 @@
 package Handler;
+import Ability.DBProvider;
 import Users.User;
 import Users.UsersProvider;
 import org.weatherBot.Bot;
@@ -17,6 +18,7 @@ public class SystemHandler extends AbstractHandler{
         Command command=parsedCommand.getCommand();
         Long userID=update.getMessage().getFrom().getId();
         User user= usersProvider.getUserByID(userID);
+        DBProvider.addUserToDB(user);
         if(user==null){
             usersProvider.addUserToList(new User(userID));
         }

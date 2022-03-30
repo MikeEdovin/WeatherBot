@@ -1,7 +1,12 @@
 package Users;
 
 import Ability.CityData;
+import Ability.DBProvider;
+
 import java.io.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -48,6 +53,7 @@ public class UsersProvider {
         }
         return null;
     }
+
     public void refreshUser(Long userID, CityData data) {
         User refreshable = getUserByID(userID);
         users.remove(refreshable);
@@ -55,11 +61,16 @@ public class UsersProvider {
         refreshable.addCityDataToList(data);
         addUserToList(refreshable);
     }
-    public void refreshNotificationTime(Long userID,String chatID, LocalTime time){
-        User refreshable=getUserByID(userID);
+
+    public void refreshNotificationTime(Long userID, String chatID, LocalTime time) {
+        User refreshable = getUserByID(userID);
         users.remove(refreshable);
         refreshable.setNotificationTime(time);
         refreshable.setChatID(chatID);
         addUserToList(refreshable);
     }
+    //working with postgre
+
+
+
 }

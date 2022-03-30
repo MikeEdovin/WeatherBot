@@ -78,6 +78,7 @@ public class WeatherHandler extends AbstractHandler{
                 CityData addingCity = GeoProvider.getCityDataFromLocation(update.getMessage().getLocation());
                 if(addingCity!=null&&user.notContainCityInList(addingCity.getName())) {
                     usersProvider.refreshUser(userID, addingCity);
+                    DBProvider.addCityToDB(addingCity,user);
                     bot.sendQueue.add(bot.sendMenuKeyboard(chatId));
                 }
                 else if(addingCity!=null&&!user.notContainCityInList(addingCity.getName())){
