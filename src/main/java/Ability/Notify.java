@@ -48,7 +48,7 @@ public class Notify implements Runnable {
                                 ZonedDateTime zdtTimeOfUpdate = ZonedDateTime.of(LocalDateTime.of(LocalDate.now(), notificationTime), ZoneId.of(timeZone));
                                 ZonedDateTime zdtNow = ZonedDateTime.now(ZoneId.of(timeZone));
                                 if (zdtTimeOfUpdate.getHour() == zdtNow.getHour() && zdtTimeOfUpdate.getMinute() == zdtNow.getMinute()) {
-                                    if (currentCityData.isFreshForecast()) {
+                                    if (currentCityData.hasFreshForecast()) {
                                         data = currentCityData.getCurrentWeather();
                                     } else {
                                         wdata = WeatherProvider.getOneCallAPI(currentCityData.getLatitude(), currentCityData.getLongitude());

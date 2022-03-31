@@ -2,6 +2,7 @@ package org.weatherBot;
 import Ability.CityData;
 import Ability.DBProvider;
 import Ability.Notify;
+import Ability.WeatherData;
 import Service.MessageReceiver;
 import Service.MessageSender;
 import Users.User;
@@ -34,7 +35,7 @@ public class App {
                     MessageSender messageSender = new MessageSender(bot);
                     Notify notify = new Notify(bot, usersProvider);
                     bot.botConnect();
-                    sendStartReport(bot, botAdmin);
+                    //sendStartReport(bot, botAdmin);
 
                     Thread receiver = new Thread(messageReceiver);
                     receiver.setDaemon(true);
@@ -68,17 +69,16 @@ public class App {
                     break;
                 case "base":
                     ArrayList<User> usersDB=DBProvider.getUserFromDB();
-                    for(User user:usersDB){
-                        System.out.println("id "+user.getUserID());
-                        for(CityData city: user.getCitiesData()) {
-                            if (city != null) {
-                                System.out.println("city " + city.getName()+" lat "+city.getLatitude()+" lon "+city.getLongitude());
-                            }
-                        }
+                    for(User user:usersDB) {
+                        System.out.println("id " + user.getUserID());
+                        CityData current = DBProvider.getCurrentCityDataFromDB(user.getUserID());
+                        System.out.println("city " + current.getName() + " lat " + current.getLatitude() + " lon " + current.getLongitude());
+                        WeatherData currWeather=DBProvider.getCurrentWeatherFromDB(current);
+                        System.out.println("temp "+currWeather.getTemp());
                     }
                     break;
                 case "add":
-                    DBProvider.addIsCurrent();
+                    DBProvider.updateCurrentUnique();
                     break;
                 default:
                     System.out.println("Wrong input");

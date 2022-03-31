@@ -24,14 +24,17 @@ public class CityData implements Serializable {
         this.longitude=lon;
         this.lalitude=lat;
     }
-    public void setCurrentWeather(WeatherData data){this.currentWeather=data;}
+    public void setCurrentWeather(WeatherData data){
+        this.currentWeather=data;
+
+    }
     public void setForecastForSevenDays(WeatherData[] forecast){this.forecastForSevenDays =forecast;}
     public String getName(){return this.name;}
     public double getLongitude(){return this.longitude;}
     public double getLatitude(){return this.lalitude;}
     public WeatherData getCurrentWeather(){return this.currentWeather;}
     public WeatherData[] getForecastForSevenDays(){return this.forecastForSevenDays;}
-    public boolean isFreshForecast(){
+    public boolean hasFreshForecast(){
         if(currentWeather!=null) {
             String zone= currentWeather.getTimeZone();
             if(zone!=null) {
