@@ -1,7 +1,6 @@
 package Service;
 
 import Handler.*;
-import Users.UsersProvider;
 import org.weatherBot.Bot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Location;

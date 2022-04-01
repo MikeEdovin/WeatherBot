@@ -2,8 +2,6 @@ package Handler;
 
 import Ability.CityData;
 import Ability.DBProvider;
-import Users.User;
-import Users.UsersProvider;
 import org.weatherBot.Bot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegramBot.commands.Command;
@@ -51,7 +49,7 @@ public class NotifyHandler extends AbstractHandler{
                     log.warning(e.getMessage());
                 }
                if(time!=null) {
-                   DBProvider.setNotificationTime(userID,time);
+                   DBProvider.setNotification(userID,chatID,city.getName(),time);
                    bot.sendQueue.add(bot.sendNotificationWasSet(chatID,
                            DBProvider.getCurrentCityDataFromDB(userID),
                            DBProvider.getNotificationTime(userID)));
@@ -61,7 +59,7 @@ public class NotifyHandler extends AbstractHandler{
                }
                 break;
             case RESET_NOTIFICATIONS:
-                DBProvider.setNotificationTime(userID,null);
+                DBProvider.setNotification(userID,chatID,null,null);
                 bot.sendQueue.add(bot.sendResetNotificationsMessage(chatID));
                 break;
         }

@@ -13,7 +13,8 @@ public class Notify implements Runnable {
 
     Bot bot;
     String chatID;
-    CityData currentCityData;
+    CityData notifyCity;
+    String timeZone;
     LocalTime notificationTime;
     WeatherData[] forecast;
     String wdata;
@@ -31,27 +32,27 @@ public class Notify implements Runnable {
                     try {
                         Thread.sleep(SLEEPING_TIME);
                     for (Long userID : usersID) {
-                        currentCityData=DBProvider.getCurrentCityDataFromDB(userID);
+                        notifyCity=DBProvider.getNotificationCity(userID);
                         notificationTime=DBProvider.getNotificationTime(userID);
-                        if (currentCityData != null && notificationTime != null) {
-                            WeatherData data=DBProvider.getCurrentWeatherFromDB(currentCityData);
-                                if (data!=null) {
-                                    timeZone = currentCityData.getCurrentWeather().getTimeZone();
-                                } else {
+                        chatID=DBProvider.getChatID(userID);
+
+                        if (notifyCity != null && notificationTime != null) {
+                            timeZone=DBProvider.getTimeZone(notifyCity.getName());
+                            WeatherData data=DBProvider.getCurrentWeatherFromDB(notifyCity);
+                                if (data!=null&&timeZone==null) {
                                     timeZone = ZoneId.systemDefault().getId();
                                 }
-
                                 ZonedDateTime zdtTimeOfUpdate = ZonedDateTime.of(LocalDateTime.of(LocalDate.now(), notificationTime), ZoneId.of(timeZone));
                                 ZonedDateTime zdtNow = ZonedDateTime.now(ZoneId.of(timeZone));
                                 if (zdtTimeOfUpdate.getHour() == zdtNow.getHour() && zdtTimeOfUpdate.getMinute() == zdtNow.getMinute()) {
                                     if (!DBProvider.isFresh(data)) {
-                                        wdata = WeatherProvider.getOneCallAPI(currentCityData.getLatitude(), currentCityData.getLongitude());
+                                        wdata = WeatherProvider.getOneCallAPI(notifyCity.getLatitude(), notifyCity.getLongitude());
                                         data = WeatherProvider.getCurrentWeather(wdata);
                                         forecast = WeatherProvider.getForecast(wdata);
-                                        DBProvider.addCurrentWeatherToDB(data,currentCityData);
-                                        DBProvider.addForecastToDB(forecast,currentCityData);
+                                        DBProvider.addCurrentWeatherToDB(data,notifyCity);
+                                        DBProvider.addForecastToDB(forecast,notifyCity);
                                     }
-                                    bot.sendQueue.add(bot.sendCurrentWeather(chatID, data, currentCityData.getName()));
+                                    bot.sendQueue.add(bot.sendCurrentWeather(chatID, data, notifyCity.getName()));
                                 }
                         }
                     }
