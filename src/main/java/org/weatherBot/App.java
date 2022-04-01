@@ -19,9 +19,9 @@ public class App {
     private static final int PRIORITY_FOR_RECEIVER = 3;
 
     public static void main( String[] args ) {
-        UsersProvider usersProvider = new UsersProvider();
-        usersProvider.getUsersFromBase();
-        ArrayList<User> users = usersProvider.getUsers();
+        //UsersProvider usersProvider = new UsersProvider();
+       // usersProvider.getUsersFromBase();
+        //ArrayList<User> users = usersProvider.getUsers();
 
         while (true) {
             String command = getCommand();
@@ -31,9 +31,9 @@ public class App {
                     String token=System.getenv("BOT_TOKEN");
                     String botAdmin=System.getenv("BOT_ADMIN");
                     Bot bot = new Bot(botName, token);
-                    MessageReceiver messageReceiver = new MessageReceiver(bot, usersProvider);
+                    MessageReceiver messageReceiver = new MessageReceiver(bot);
                     MessageSender messageSender = new MessageSender(bot);
-                    Notify notify = new Notify(bot, usersProvider);
+                    Notify notify = new Notify(bot);
                     bot.botConnect();
                     //sendStartReport(bot, botAdmin);
 
@@ -54,31 +54,16 @@ public class App {
                     notifyThread.setName("NotifyThread");
                     notifyThread.start();
                     break;
-                case "backup":
-                    backup(users);
-                    System.out.println("Users was saved");
-                    break;
-                case "showUsers":
-                    showUsers(users);
-                    break;
                 case "exit":
-                    backup(users);
                     System.exit(0);
                 case "create":
                     DBProvider.createTables();
                     break;
-                case "base":
-                    ArrayList<User> usersDB=DBProvider.getUserFromDB();
-                    for(User user:usersDB) {
-                        System.out.println("id " + user.getUserID());
-                        CityData current = DBProvider.getCurrentCityDataFromDB(user.getUserID());
-                        System.out.println("city " + current.getName() + " lat " + current.getLatitude() + " lon " + current.getLongitude());
-                        WeatherData currWeather=DBProvider.getCurrentWeatherFromDB(current);
-                        System.out.println("temp "+currWeather.getTemp());
-                    }
+                case "upd":
+                    DBProvider.updateNotifications();
                     break;
-                case "add":
-                    DBProvider.updateCurrentUnique();
+                case "clean":
+                    DBProvider.cleanForecast();
                     break;
                 default:
                     System.out.println("Wrong input");

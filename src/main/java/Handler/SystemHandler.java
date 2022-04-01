@@ -10,17 +10,18 @@ import telegramBot.commands.ParsedCommand;
 
 public class SystemHandler extends AbstractHandler{
 
-    public SystemHandler(Bot b, UsersProvider up){
-        super(b,up);
+    public SystemHandler(Bot b){
+        super(b);
     }
     @Override
     public String operate(String chatId, ParsedCommand parsedCommand, Update update) {
         Command command=parsedCommand.getCommand();
         Long userID=update.getMessage().getFrom().getId();
-        User user= usersProvider.getUserByID(userID);
-        DBProvider.addUserToDB(user);
-        if(user==null){
-            usersProvider.addUserToList(new User(userID));
+        //User user= usersProvider.getUserByID(userID);
+        DBProvider.addUserToDB(userID);
+        if(DBProvider.userIsInDB(userID)==false){
+            //usersProvider.addUserToList(new User(userID));
+            DBProvider.userIsInDB(userID);
         }
         switch (command) {
             case START:

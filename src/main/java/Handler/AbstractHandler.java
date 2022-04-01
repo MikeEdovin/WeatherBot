@@ -7,11 +7,10 @@ import telegramBot.commands.ParsedCommand;
 
 public abstract class AbstractHandler {
     Bot bot;
-    UsersProvider usersProvider;
 
-    public AbstractHandler(Bot b, UsersProvider up){
+    public AbstractHandler(Bot b){
         bot=b;
-        usersProvider=up;
+
     }
     public abstract String operate(String chatId, ParsedCommand parsedCommand, Update update);
 }

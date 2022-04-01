@@ -12,34 +12,30 @@ public class Notify implements Runnable {
     private static final long SLEEPING_TIME = 60000;
 
     Bot bot;
-    UsersProvider usersProvider;
-    Long userID;
     String chatID;
     CityData currentCityData;
     LocalTime notificationTime;
-    WeatherData data;
     WeatherData[] forecast;
     String wdata;
 
-    public Notify(Bot bot, UsersProvider up) {
+    public Notify(Bot bot) {
         this.bot = bot;
-        this.usersProvider = up;
     }
 
     @Override
     public void run() {
         log.info("Started " + this.getClass().toString());
-        ArrayList<User> users=usersProvider.getUsers();
+        ArrayList<Long> usersID=DBProvider.getUsersIDFromDB();
         String timeZone;
             while (true) {
                     try {
                         Thread.sleep(SLEEPING_TIME);
-                    for (User user : users) {
-                        currentCityData=user.getCurrentCityData();
-                        notificationTime=user.getNotificationTime();
-                        chatID=user.getChatID();
+                    for (Long userID : usersID) {
+                        currentCityData=DBProvider.getCurrentCityDataFromDB(userID);
+                        notificationTime=DBProvider.getNotificationTime(userID);
                         if (currentCityData != null && notificationTime != null) {
-                                if (currentCityData.getCurrentWeather() != null) {
+                            WeatherData data=DBProvider.getCurrentWeatherFromDB(currentCityData);
+                                if (data!=null) {
                                     timeZone = currentCityData.getCurrentWeather().getTimeZone();
                                 } else {
                                     timeZone = ZoneId.systemDefault().getId();
@@ -48,15 +44,12 @@ public class Notify implements Runnable {
                                 ZonedDateTime zdtTimeOfUpdate = ZonedDateTime.of(LocalDateTime.of(LocalDate.now(), notificationTime), ZoneId.of(timeZone));
                                 ZonedDateTime zdtNow = ZonedDateTime.now(ZoneId.of(timeZone));
                                 if (zdtTimeOfUpdate.getHour() == zdtNow.getHour() && zdtTimeOfUpdate.getMinute() == zdtNow.getMinute()) {
-                                    if (currentCityData.hasFreshForecast()) {
-                                        data = currentCityData.getCurrentWeather();
-                                    } else {
+                                    if (!DBProvider.isFresh(data)) {
                                         wdata = WeatherProvider.getOneCallAPI(currentCityData.getLatitude(), currentCityData.getLongitude());
                                         data = WeatherProvider.getCurrentWeather(wdata);
                                         forecast = WeatherProvider.getForecast(wdata);
-                                        currentCityData.setCurrentWeather(data);
-                                        currentCityData.setForecastForSevenDays(forecast);
-                                        usersProvider.refreshUser(userID, currentCityData);
+                                        DBProvider.addCurrentWeatherToDB(data,currentCityData);
+                                        DBProvider.addForecastToDB(forecast,currentCityData);
                                     }
                                     bot.sendQueue.add(bot.sendCurrentWeather(chatID, data, currentCityData.getName()));
                                 }

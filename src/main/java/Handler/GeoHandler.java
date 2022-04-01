@@ -15,8 +15,8 @@ public class GeoHandler extends AbstractHandler {
     private final String END_LINE = "\n";
     Logger log = Logger.getLogger("Geo handler");
 
-    public GeoHandler(Bot b, UsersProvider up) {
-        super(b, up);
+    public GeoHandler(Bot b) {
+        super(b);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package Handler;
 
 import Ability.CityData;
+import Ability.DBProvider;
 import Users.User;
 import Users.UsersProvider;
 import org.weatherBot.Bot;
@@ -13,24 +14,22 @@ import java.util.logging.Logger;
 public class NotifyHandler extends AbstractHandler{
     private static final Logger log = Logger.getLogger("NotifyHandler");
 
-    public NotifyHandler(Bot b, UsersProvider up){
-        super(b, up);
+    public NotifyHandler(Bot b){
+        super(b);
     }
     @Override
     public String operate(String chatID, ParsedCommand parsedCommand, Update update) {
         Long userID=update.getMessage().getFrom().getId();
-        if(usersProvider.getUserByID(userID)==null){
-            usersProvider.addUserToList(new User(userID));
+        if(DBProvider.userIsInDB(userID)==false){
+            DBProvider.addUserToDB(userID);
         }
-        User user= usersProvider.getUserByID(userID);
-        CityData city;
+        CityData city=DBProvider.getCurrentCityDataFromDB(userID);;
         Command command=parsedCommand.getCommand();
         String timeInput= parsedCommand.getText();
         LocalTime time=null;
 
         switch (command) {
             case NOTIFICATION:
-                city=user.getCurrentCityData();
                 if(city!=null) {
                     bot.sendQueue.add(bot.sendTimeSettingMessage(chatID));
                 }else{
@@ -38,7 +37,7 @@ public class NotifyHandler extends AbstractHandler{
                 }
                 break;
             case SEND_TIME_SETTING_MESSAGE:
-                if(user.getCurrentCityData()!=null) {
+                if(city!=null) {
                     bot.sendQueue.add(bot.sendTimeSettingsMessage(chatID));
                 }
                 else{
@@ -52,15 +51,17 @@ public class NotifyHandler extends AbstractHandler{
                     log.warning(e.getMessage());
                 }
                if(time!=null) {
-                   usersProvider.refreshNotificationTime(userID,chatID, time);
-                   bot.sendQueue.add(bot.sendNotificationWasSet(chatID, usersProvider.getUserByID(userID).getCurrentCityData(), usersProvider.getUserByID(userID).getNotificationTime()));
+                   DBProvider.setNotificationTime(userID,time);
+                   bot.sendQueue.add(bot.sendNotificationWasSet(chatID,
+                           DBProvider.getCurrentCityDataFromDB(userID),
+                           DBProvider.getNotificationTime(userID)));
                }
                else{
                    bot.sendQueue.add(bot.sendWrongInputMessage(chatID));
                }
                 break;
             case RESET_NOTIFICATIONS:
-                usersProvider.refreshNotificationTime(userID,chatID,null);
+                DBProvider.setNotificationTime(userID,null);
                 bot.sendQueue.add(bot.sendResetNotificationsMessage(chatID));
                 break;
         }
