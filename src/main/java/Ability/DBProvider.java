@@ -10,7 +10,7 @@ public class DBProvider {
         String psw=System.getenv("POSTGRE_PSW");
         String JDBC_DATABASE_URL=System.getenv("JDBC_DATABASE_URL");
         try {
-            return DriverManager.getConnection(JDBC_DATABASE_URL, userName, psw);
+            return DriverManager.getConnection(JDBC_DATABASE_URL);
         }
         catch (SQLException e){
             e.printStackTrace();
