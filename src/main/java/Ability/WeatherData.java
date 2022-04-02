@@ -31,7 +31,8 @@ public class WeatherData implements Serializable {
     public String getTimeZone(){return this.timeZone;}
     void setMeasurements(LocalDate date,
                          double temp, long pressure, long humidity,
-                         double feelsLikeTemp, Long clouds, LocalDateTime timeOfUpdate, String timeZone){
+                         double feelsLikeTemp, Long clouds, LocalDateTime timeOfUpdate,
+                         String timeZone){
         this.date=date;
         this.temp=temp;
         this.pressure=pressure;

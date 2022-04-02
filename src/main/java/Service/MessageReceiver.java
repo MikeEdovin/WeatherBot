@@ -46,12 +46,12 @@ public class MessageReceiver implements Runnable{
         if (object instanceof Update) {
             Update update = (Update) object;
             log.info("Update received: " + update);
-            analyzeForUpdateType(update);
             if (update.getMessage().hasLocation()) {
                 Location location = update.getMessage().getLocation();
                 log.info("Location received " + location.getLatitude() + " " + location.getLongitude());
-            } else log.warning("Cant operate type of object: " + object);
-        }
+            }
+            analyzeForUpdateType(update);
+        } else log.warning("Cant operate type of object: " + object);
     }
 
     private void analyzeForUpdateType(Update update) {
@@ -75,7 +75,7 @@ public class MessageReceiver implements Runnable{
     }
     private AbstractHandler getHandlerForCommand(Command command) {
         if (command == null) {
-            log.warning("Null command accepted. This is not good scenario.");
+            log.warning("Null command accepted.");
             return new DefaultHandler(bot);
         }
         switch (command) {

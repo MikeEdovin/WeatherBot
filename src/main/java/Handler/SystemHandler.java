@@ -14,9 +14,9 @@ public class SystemHandler extends AbstractHandler{
     @Override
     public String operate(String chatId, ParsedCommand parsedCommand, Update update) {
         Command command=parsedCommand.getCommand();
-        Long userID=update.getMessage().getFrom().getId();
+        long userID=update.getMessage().getFrom().getId();
         DBProvider.addUserToDB(userID);
-        if(DBProvider.userIsInDB(userID)==false){
+        if(!DBProvider.userIsInDB(userID)){
             DBProvider.userIsInDB(userID);
         }
         switch (command) {
