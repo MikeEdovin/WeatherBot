@@ -8,8 +8,10 @@ public class DBProvider {
     public static Connection getConnection() {
         String userName=System.getenv("POSTGRE_USER_NAME");
         String psw=System.getenv("POSTGRE_PSW");
+        String localBase="jdbc:postgresql://localhost:5432/weatherbotdb";
+        String herokuBase="postgres://uegyvtmbfxtvej:5bd282177b524679e7ebda3f6f8ea41fe31002c4e298f1de0365ea1e56bb5dd8@ec2-99-80-170-190.eu-west-1.compute.amazonaws.com:5432/d72mfjj6mnt8d1";
         try {
-            return DriverManager.getConnection("jdbc:postgresql://localhost:5432/weatherbotdb", userName, psw);
+            return DriverManager.getConnection(herokuBase, userName, psw);
         }
         catch (SQLException e){
             e.printStackTrace();
