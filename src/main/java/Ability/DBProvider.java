@@ -31,17 +31,16 @@ public class DBProvider {
                             "NOTIFICATION_CITY TEXT," +
                             "CHAT_ID TEXT)");
             String cities = "CREATE TABLE CITIES " +
-                    ("(ID bigserial  NOT NULL, " +
+                    ("(ID bigserial REFERENCES USERS(USER_ID) NOT NULL, " +
                     "NAME TEXT  NOT NULL , " +
                     " LATITUDE    double precision     NOT NULL, " +
                     " LONGITUDE   double precision     NOT NULL, "+
                     " IS_CURRENT boolean NOT NULL,"+
                     "PRIMARY KEY(NAME), "+
-                    "FOREIGN KEY(ID) REFERENCES USERS(USER_ID), "
-                    +"UNIQUE(ID,NAME))");
+                    "UNIQUE(ID,NAME))");
             System.out.println(cities);
             String forecast="CREATE TABLE FORECAST "+
-                    ("(CITY TEXT references CITIES(NAME) NOT NULL, "+
+                    ("(CITY TEXT  NOT NULL, "+
                      "DATE date NOT NULL, "+
                      "TEMPERATURE double precision NOT NULL, "+
                      "FEELS_LIKE double precision NOT NULL, "+
@@ -50,6 +49,7 @@ public class DBProvider {
                      "CLOUDS smallserial NOT NULL, "+
                      "TIME_OF_UPDATE timestamp without time zone NOT NULL, "+
                      "TIME_ZONE TEXT NOT NULL," +
+                            "FOREIGN KEY (CITY) REFERENCES CITIES, "+
                             "UNIQUE(CITY,DATE))");
             System.out.println(forecast);
             String currentWeather="CREATE TABLE CURRENT_WEATHER "+
