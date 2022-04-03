@@ -24,18 +24,21 @@ public class DBProvider {
             connection=getConnection();
             assert connection != null;
             statement= connection.createStatement();
+            String drop="DROP TABLE IF EXISTS users,cities,current_weather,forecast;";
             String users="CREATE TABLE USERS "+
                     ("(USER_ID bigserial PRIMARY KEY NOT NULL," +
                             "NOTIFICATION_TIME time with time zone," +
                             "NOTIFICATION_CITY TEXT," +
                             "CHAT_ID TEXT)");
             String cities = "CREATE TABLE CITIES " +
-                    ("(ID bigserial references USERS(USER_ID), " +
-                    "NAME TEXT   NOT NULL UNIQUE, " +
+                    ("(ID bigserial  NOT NULL, " +
+                    "NAME TEXT  NOT NULL , " +
                     " LATITUDE    double precision     NOT NULL, " +
                     " LONGITUDE   double precision     NOT NULL, "+
-                    " IS_CURRENT boolean NOT NULL ," +
-                            "UNIQUE(ID,NAME))");
+                    " IS_CURRENT boolean NOT NULL,"+
+                    "PRIMARY KEY(NAME), "+
+                    "FOREIGN KEY(ID) REFERENCES USERS(USER_ID), "
+                    +"UNIQUE(ID,NAME))");
             System.out.println(cities);
             String forecast="CREATE TABLE FORECAST "+
                     ("(CITY TEXT references CITIES(NAME) NOT NULL, "+
@@ -59,12 +62,12 @@ public class DBProvider {
                             "CLOUDS smallserial NOT NULL, "+
                             "TIME_OF_UPDATE timestamp without time zone NOT NULL, "+
                             "TIME_ZONE TEXT NOT NULL)");
+            statement.executeUpdate(drop);
             statement.executeUpdate(users);
             statement.executeUpdate(cities);
             statement.executeUpdate(forecast);
             statement.executeUpdate(currentWeather);
             statement.close();
-            connection.commit();
             connection.close();
             System.out.println("Tables created successfully");
         }
@@ -374,14 +377,16 @@ public class DBProvider {
         return forecast;
     }
     public static boolean isFresh(WeatherData data){
-        String zone= data.getTimeZone();
-        if(zone!=null) {
-            ZonedDateTime zdtNow = ZonedDateTime.now(ZoneId.of(data.getTimeZone()));
-            Long now = zdtNow.toEpochSecond();
-            LocalDateTime timeOfUpdate = data.getTimeOfUpdate();
-            ZonedDateTime zdtTimeOfUpdate = ZonedDateTime.of(timeOfUpdate, ZoneId.of(data.getTimeZone()));
-            Long tOfUpdate = zdtTimeOfUpdate.toEpochSecond();
-            return now - tOfUpdate < 3600;
+        if(data!=null) {
+            String zone = data.getTimeZone();
+            if (zone != null) {
+                ZonedDateTime zdtNow = ZonedDateTime.now(ZoneId.of(data.getTimeZone()));
+                Long now = zdtNow.toEpochSecond();
+                LocalDateTime timeOfUpdate = data.getTimeOfUpdate();
+                ZonedDateTime zdtTimeOfUpdate = ZonedDateTime.of(timeOfUpdate, ZoneId.of(data.getTimeZone()));
+                Long tOfUpdate = zdtTimeOfUpdate.toEpochSecond();
+                return now - tOfUpdate < 3600;
+            }
         }
         return false;
     }
