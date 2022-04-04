@@ -56,13 +56,14 @@ public class WeatherProvider {
         long unixDate;
         LocalDate date;
         LocalDateTime timeOfUpdate;
-        double temp;
-        double feelsLike;
+        double temp=0d;
+        double feelsLike=0d;
         long pressure;
         long humidity;
         long clouds;
         WeatherData currentWeatherData=new WeatherData();
         try{
+            System.out.println(response);
             Object obj = new JSONParser().parse(response);
             JSONObject jsonObject = (JSONObject) obj;
             JSONObject objCurrent = (JSONObject) jsonObject.get("current");
@@ -70,8 +71,19 @@ public class WeatherProvider {
             unixDate= (long) objCurrent.get("dt");
             date= Instant.ofEpochSecond(unixDate).atZone(ZoneId.of(timezone)).toLocalDate();
             timeOfUpdate=Instant.ofEpochSecond(unixDate).atZone(ZoneId.of(timezone)).toLocalDateTime();
-            temp= (double) objCurrent.get("temp");
-            feelsLike= (double) objCurrent.get("feels_like");
+            Object t=objCurrent.get("temp");
+            if(t instanceof Double) {
+                temp = (double) t;
+            }else if(t instanceof Long) {
+                temp= ((Long) t).doubleValue();
+            }
+            Object fl=objCurrent.get("feels_like");
+            if(fl instanceof Double){
+                feelsLike= (double) fl;
+            }
+            else if(fl instanceof Long){
+                feelsLike=((Long) fl).doubleValue();
+            }
             pressure = (long) objCurrent.get("pressure");
             humidity = (long) objCurrent.get("humidity");
             clouds= (long) objCurrent.get("clouds");
@@ -87,8 +99,8 @@ public class WeatherProvider {
         long unixDate;
         LocalDate date;
         LocalDateTime timeOfUpdate;
-        double temp;
-        double feelsLike;
+        double temp=0d;
+        double feelsLike=0d;
         long pressure;
         long humidity;
         long clouds;
@@ -108,9 +120,21 @@ public class WeatherProvider {
                 unixDate = (long) day.get("dt");
                 date = Instant.ofEpochSecond(unixDate).atZone(ZoneId.of(timezone)).toLocalDate();
                 JSONObject tempObject = (JSONObject) day.get("temp");
-                temp = (double) tempObject.get("day");
+                Object t=tempObject.get("day");
+                if(t instanceof Double){
+                    temp=(double) t;
+                }
+                else if(t instanceof Long){
+                    temp=((Long) t).doubleValue();
+                }
                 JSONObject feelsLikeObject = (JSONObject) day.get("feels_like");
-                feelsLike = (double) feelsLikeObject.get("day");
+                Object fl=feelsLikeObject.get("day");
+                if(fl instanceof Double){
+                    feelsLike = (double) fl;
+                }
+                else if(fl instanceof Long){
+                    feelsLike=((Long) fl).doubleValue();
+                }
                 pressure = (long) day.get("pressure");
                 humidity = (long) day.get("humidity");
                 clouds = (long) day.get("clouds");
