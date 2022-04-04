@@ -38,8 +38,8 @@ public class GeoProviderTest {
         cityData.setCityData("Saint Petersburg",longitude,latitude);
         CityData result=GeoProvider.getCityData(GeoProvider.getLocationFromCityName(name));
         assertEquals(cityData.getName(),result.getName());
-        assertEquals(cityData.getLatitude(),result.getLatitude(),1);
-        assertEquals(cityData.getLongitude(),cityData.getLongitude(),1);
+        assertEquals(cityData.getLatitude(),result.getLatitude(),0.01);
+        assertEquals(cityData.getLongitude(),cityData.getLongitude(),0.01);
 
 
     }
@@ -52,8 +52,8 @@ public class GeoProviderTest {
         cityData.setCityData("Saint Petersburg",longitude,latitude);
         CityData result=GeoProvider.getCityData(GeoProvider.getCityNameFromLocation(latitude,longitude));
         assertEquals(cityData.getName(),result.getName());
-        assertEquals(cityData.getLatitude(),result.getLatitude(),1);
-        assertEquals(cityData.getLongitude(),cityData.getLongitude(),1);
+        assertEquals(cityData.getLatitude(),result.getLatitude(),0.01);
+        assertEquals(cityData.getLongitude(),cityData.getLongitude(),0.01);
 
     }
 

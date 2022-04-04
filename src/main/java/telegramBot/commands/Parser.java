@@ -2,8 +2,6 @@ package telegramBot.commands;
 
 import com.vdurmont.emoji.EmojiParser;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Parser {
     private final String botName;
