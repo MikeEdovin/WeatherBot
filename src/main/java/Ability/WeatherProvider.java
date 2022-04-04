@@ -63,7 +63,6 @@ public class WeatherProvider {
         long clouds;
         WeatherData currentWeatherData=new WeatherData();
         try{
-            System.out.println(response);
             Object obj = new JSONParser().parse(response);
             JSONObject jsonObject = (JSONObject) obj;
             JSONObject objCurrent = (JSONObject) jsonObject.get("current");

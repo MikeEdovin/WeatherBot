@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class DBProvider {
+
     public static Connection getConnection() {
         String userName=System.getenv("POSTGRE_USER_NAME");
         String psw=System.getenv("POSTGRE_PSW");
@@ -77,7 +78,7 @@ public class DBProvider {
             e.printStackTrace();
         }
     }
-    public static CityData[] getLastThree(long userID){//ok
+    public static CityData[] getLastThree(long userID){
         CityData[] last=new CityData[3];
         int nrOfCities=0;
         Connection connection;
@@ -91,7 +92,6 @@ public class DBProvider {
                     "JOIN LAST_CITIES ON LAST_CITIES.NAME=CITIES.NAME"+
                     " WHERE ID="+userID+
                     " ORDER BY TIME_OF_UPDATE DESC;";
-            //System.out.println(query);
             ResultSet result= statement.executeQuery(query);
             while(result.next()&&nrOfCities<3) {
                 String name = result.getString("NAME");
@@ -265,7 +265,7 @@ public class DBProvider {
         }
         return null;
     }
-    public static void setCurrentCity(CityData city,long userID){//ok
+    public static void setCurrentCity(CityData city,long userID){
         Logger logger = Logger.getGlobal();
         Connection connection;
         Statement statement;
@@ -311,7 +311,7 @@ public class DBProvider {
         }
         return cityData;
     }
-    public static WeatherData getCurrentWeatherFromDB(CityData current){//ok
+    public static WeatherData getCurrentWeatherFromDB(CityData current){
         WeatherData weatherData=null;
         Connection connection;
         Statement statement;
@@ -345,7 +345,7 @@ public class DBProvider {
 
         return weatherData;
     }
-    public static WeatherData[] getForecastFromDB(CityData current){//ok
+    public static WeatherData[] getForecastFromDB(CityData current){
         WeatherData[] forecast=new WeatherData[8];
         int nrOfItems=0;
         Connection connection;
@@ -380,7 +380,7 @@ public class DBProvider {
         }
         return forecast;
     }
-    public static boolean isFresh(WeatherData data){//ok
+    public static boolean isFresh(WeatherData data){
         if(data!=null) {
             String zone = data.getTimeZone();
             if (zone != null) {
@@ -394,7 +394,7 @@ public class DBProvider {
         }
         return false;
     }
-    public static void addCityToDB(CityData city, long userID){//ok
+    public static void addCityToDB(CityData city, long userID){
         Logger logger = Logger.getGlobal();
         Connection connection;
         Statement statement;
@@ -406,18 +406,16 @@ public class DBProvider {
                     ") ON CONFLICT(NAME) DO NOTHING"+";";
             String insertIntoLastCities="INSERT INTO LAST_CITIES(ID,NAME,IS_CURRENT)"+"VALUES("+userID+
                     ",'"+city.getName()+"',"+"'FALSE'"+") ON CONFLICT(ID,NAME) DO NOTHING ;";
-            //System.out.println(insertCityToCities);
             System.out.println(insertIntoLastCities);
             statement.executeUpdate(insertCityToCities);
             statement.executeUpdate(insertIntoLastCities);
             statement.close();
             connection.close();
         } catch (SQLException e) {
-            //logger.warning(e.getMessage());
-            e.printStackTrace();
+            logger.warning(e.getMessage());
         }
     }
-    public static void addCurrentWeatherToDB(WeatherData data, CityData city){//ok
+    public static void addCurrentWeatherToDB(WeatherData data, CityData city){
         Logger logger = Logger.getGlobal();
         Connection connection;
         Statement statement;
