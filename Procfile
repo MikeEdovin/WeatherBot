@@ -1,1 +1,1 @@
-worker: java -jar C:\Users\"Mike E\IdeaProjects\weatherTelegrammBot\telegramBot\telegramBot\out\artifacts\telegramBot_jar\telegramBot.jar
+worker: java -jar C:\Users\"Mike E"\IdeaProjects\weatherTelegrammBot\telegramBot\telegramBot\out\artifacts\telegramBot_jar\telegramBot.jar
