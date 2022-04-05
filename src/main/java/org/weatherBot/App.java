@@ -45,6 +45,7 @@ public class App {
                     notifyThread.setDaemon(true);
                     notifyThread.setName("NotifyThread");
                     notifyThread.start();
+
                     break;
                 case "exit":
                     System.exit(0);
