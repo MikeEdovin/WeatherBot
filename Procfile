@@ -1,1 +1,1 @@
-worker: java -jar "C:\Users\Mike E\IdeaProjects\weatherTelegrammBot\telegramBot\telegramBot\target\telegramBot-1.0-SNAPSHOT.jar"
+worker: java -jar \target\telegramBot-1.0-SNAPSHOT.jar
