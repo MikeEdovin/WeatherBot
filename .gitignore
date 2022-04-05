@@ -2,6 +2,7 @@
 *.iml
 .idea/
 out/
+target/
 weatherBot UN-Token.txt
 botToken.txt
 users.txt
