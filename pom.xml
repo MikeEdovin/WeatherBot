@@ -89,7 +89,7 @@
                   <fileset>
                     <directory>target</directory>
                     <excludes>
-                      <exclude>*.jar</exclude>
+                      <exclude>target/*.jar</exclude>
                     </excludes>
                   </fileset>
                 </filesets>

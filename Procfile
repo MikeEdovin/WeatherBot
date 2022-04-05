@@ -1,1 +1,1 @@
-worker: java -cp target/classes/:target/dependency/* org\\weatherBot\\App.java
+worker: java -jar target\\telegramBot-1.0-SNAPSHOT.jar
