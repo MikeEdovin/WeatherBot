@@ -9,11 +9,11 @@ public class DBProvider {
     public static Connection getConnection() {
         String userName=System.getenv("POSTGRE_USER_NAME");
         String psw=System.getenv("POSTGRE_PSW");
-
+        String JDBC_DATABASE_URL=System.getenv("JDBC_DATABASE_URL");
         try {
             //org.postgresql.Driver driver=new org.postgresql.Driver();
             //DriverManager.registerDriver(driver);
-            return DriverManager.getConnection("jdbc:postgresql://localhost:5432/weatherbotdb", userName, psw);
+            return DriverManager.getConnection(JDBC_DATABASE_URL);
         }
         catch (SQLException  e){
             e.printStackTrace();
