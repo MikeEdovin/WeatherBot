@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: Ability.GeoProviderTest
 -------------------------------------------------------------------------------
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.351 s - in Ability.GeoProviderTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.842 s - in Ability.GeoProviderTest
