@@ -76,7 +76,28 @@
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.1.0</version>
+          <executions>
+            <execution>
+              <id>clean-jar-artifacts</id>
+              <phase>install</phase>
+              <goals>
+                <goal>clean</goal>
+              </goals>
+              <configuration>
+                <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                <filesets>
+                  <fileset>
+                    <directory>target</directory>
+                    <excludes>
+                      <exclude>*.jar</exclude>
+                    </excludes>
+                  </fileset>
+                </filesets>
+              </configuration>
+            </execution>
+          </executions>
         </plugin>
+
         <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
