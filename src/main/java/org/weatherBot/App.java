@@ -14,37 +14,37 @@ public class App {
     private static final int PRIORITY_FOR_RECEIVER = 3;
 
     public static void main( String[] args ) {
-        String botName=System.getenv("BOT_NAME");
-        String token=System.getenv("BOT_TOKEN");
-        String botAdmin=System.getenv("BOT_ADMIN");
-        Bot bot = new Bot(botName, token);
-        MessageReceiver messageReceiver = new MessageReceiver(bot);
-        MessageSender messageSender = new MessageSender(bot);
-        Notify notify = new Notify(bot);
-        bot.botConnect();
-        sendStartReport(bot, botAdmin);
-
-        Thread receiver = new Thread(messageReceiver);
-        receiver.setDaemon(true);
-        receiver.setName("MsgReceiver");
-        receiver.setPriority(PRIORITY_FOR_RECEIVER);
-        receiver.start();
-
-        Thread sender = new Thread(messageSender);
-        sender.setDaemon(true);
-        sender.setName("MsgSender");
-        sender.setPriority(PRIORITY_FOR_SENDER);
-        sender.start();
-
-        Thread notifyThread = new Thread(notify);
-        notifyThread.setDaemon(true);
-        notifyThread.setName("NotifyThread");
-        notifyThread.start();
 
         while (true) {
             String command = getCommand();
             switch (Objects.requireNonNull(command)) {
                 case "start":
+                    String botName=System.getenv("BOT_NAME");
+                    String token=System.getenv("BOT_TOKEN");
+                    String botAdmin=System.getenv("BOT_ADMIN");
+                    Bot bot = new Bot(botName, token);
+                    MessageReceiver messageReceiver = new MessageReceiver(bot);
+                    MessageSender messageSender = new MessageSender(bot);
+                    Notify notify = new Notify(bot);
+                    bot.botConnect();
+                    sendStartReport(bot, botAdmin);
+
+                    Thread receiver = new Thread(messageReceiver);
+                    receiver.setDaemon(true);
+                    receiver.setName("MsgReceiver");
+                    receiver.setPriority(PRIORITY_FOR_RECEIVER);
+                    receiver.start();
+
+                    Thread sender = new Thread(messageSender);
+                    sender.setDaemon(true);
+                    sender.setName("MsgSender");
+                    sender.setPriority(PRIORITY_FOR_SENDER);
+                    sender.start();
+
+                    Thread notifyThread = new Thread(notify);
+                    notifyThread.setDaemon(true);
+                    notifyThread.setName("NotifyThread");
+                    notifyThread.start();
 
 
                     break;
