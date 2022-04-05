@@ -2,8 +2,6 @@ package telegramBot.commands;
 
 import com.vdurmont.emoji.EmojiParser;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Parser {
     private final String botName;
@@ -55,7 +53,6 @@ public class Parser {
             result.setCommand(Command.ADD_CITY_TO_USER);
         }else if(trimText.matches("\\d{1,2}(:|\\s*|\\.*|,*)\\d{2}")){
             result.setCommand(Command.SET_NOTIFICATION_TIME);
-            System.out.println(trimText);
             StringBuilder builder=new StringBuilder();
             String[]parts=trimText.split("[ ,.:]");
             if(parts[0].length()==1){

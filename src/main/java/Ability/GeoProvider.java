@@ -37,7 +37,7 @@ public class GeoProvider {
     public static String getLocationFromCityName(String city) {
         Logger log= Logger.getLogger("Geo provider");
         final String URL_API = "http://api.openweathermap.org/geo/1.0/direct?q=";
-        final String APP_ID = "5a1a2ebae8f3c31263be33c36cdc727c";
+        String APP_ID=System.getenv("WEATHER_MAP_APP_ID");
         HttpURLConnection connection = null;
         try {
             URL u = new URL(URL_API+city+",ru_RU"+"&limit=1&appid="+APP_ID);

@@ -1,13 +1,10 @@
 package org.weatherBot;
-import Ability.CityData;
+import Ability.DBProvider;
 import Ability.Notify;
 import Service.MessageReceiver;
 import Service.MessageSender;
-import Users.User;
-import Users.UsersProvider;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -17,9 +14,6 @@ public class App {
     private static final int PRIORITY_FOR_RECEIVER = 3;
 
     public static void main( String[] args ) {
-        UsersProvider usersProvider = new UsersProvider();
-        usersProvider.getUsersFromBase();
-        ArrayList<User> users = usersProvider.getUsers();
 
         while (true) {
             String command = getCommand();
@@ -29,11 +23,11 @@ public class App {
                     String token=System.getenv("BOT_TOKEN");
                     String botAdmin=System.getenv("BOT_ADMIN");
                     Bot bot = new Bot(botName, token);
-                    MessageReceiver messageReceiver = new MessageReceiver(bot, usersProvider);
+                    MessageReceiver messageReceiver = new MessageReceiver(bot);
                     MessageSender messageSender = new MessageSender(bot);
-                    Notify notify = new Notify(bot, usersProvider);
+                    Notify notify = new Notify(bot);
                     bot.botConnect();
-                    sendStartReport(bot, botAdmin);
+                    //sendStartReport(bot, botAdmin);
 
                     Thread receiver = new Thread(messageReceiver);
                     receiver.setDaemon(true);
@@ -52,16 +46,11 @@ public class App {
                     notifyThread.setName("NotifyThread");
                     notifyThread.start();
                     break;
-                case "backup":
-                    backup(users);
-                    System.out.println("Users was saved");
-                    break;
-                case "showUsers":
-                    showUsers(users);
-                    break;
                 case "exit":
-                    backup(users);
                     System.exit(0);
+                case "create":
+                    DBProvider.createTables();
+                    break;
                 default:
                     System.out.println("Wrong input");
                     break;
@@ -88,31 +77,5 @@ public class App {
             e.printStackTrace();
         }
         return null;
-    }
-    public static void showUsers(ArrayList<User>users){
-        for (User user : users) {
-            System.out.println(user.getUserID());
-            if (user.getNotificationTime() != null) {
-                System.out.println("not time " + user.getNotificationTime());
-            } else {
-                System.out.println("time not set");
-            }
-            for (CityData city : user.getCitiesData()) {
-                if (city != null) {
-                    System.out.println("City " + city.getName());
-                    if (city.getCurrentWeather() != null) {
-                        System.out.println(city.getCurrentWeather().getTimeOfUpdate());
-                    }
-                }
-            }
-
-        }
-    }
-    public static void backup(ArrayList<User>users){
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("usersBackup.txt", false))) {
-            oos.writeObject(users);
-        } catch (IOException e) {
-            log.warning(e.getMessage());
-        }
     }
 }

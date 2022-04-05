@@ -1,7 +1,6 @@
 package Service;
 
 import Handler.*;
-import Users.UsersProvider;
 import org.weatherBot.Bot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Location;
@@ -16,12 +15,12 @@ public class MessageReceiver implements Runnable{
     private static final Logger log = Logger.getLogger("MessageReceiver");
     Bot bot;
     Parser parser;
-    UsersProvider usersProvider;
 
-    public MessageReceiver(Bot b, UsersProvider up){
+
+    public MessageReceiver(Bot b){
         this.bot=b;
         parser=new Parser(bot.getBotUsername());
-        usersProvider=up;
+
     }
     @Override
     public void run() {
@@ -47,12 +46,12 @@ public class MessageReceiver implements Runnable{
         if (object instanceof Update) {
             Update update = (Update) object;
             log.info("Update received: " + update);
-            analyzeForUpdateType(update);
             if (update.getMessage().hasLocation()) {
                 Location location = update.getMessage().getLocation();
                 log.info("Location received " + location.getLatitude() + " " + location.getLongitude());
-            } else log.warning("Cant operate type of object: " + object);
-        }
+            }
+            analyzeForUpdateType(update);
+        } else log.warning("Cant operate type of object: " + object);
     }
 
     private void analyzeForUpdateType(Update update) {
@@ -76,22 +75,22 @@ public class MessageReceiver implements Runnable{
     }
     private AbstractHandler getHandlerForCommand(Command command) {
         if (command == null) {
-            log.warning("Null command accepted. This is not good scenario.");
-            return new DefaultHandler(bot, usersProvider);
+            log.warning("Null command accepted.");
+            return new DefaultHandler(bot);
         }
         switch (command) {
             case START:
             case HELP:
             case SETTINGS:
             case BACK:
-                SystemHandler systemHandler = new SystemHandler(bot,usersProvider);
+                SystemHandler systemHandler = new SystemHandler(bot);
                 log.info("Handler for command[" + command + "] is: " + systemHandler);
                 return systemHandler;
             case NOTIFICATION:
             case SET_NOTIFICATION_TIME:
             case SEND_TIME_SETTING_MESSAGE:
             case RESET_NOTIFICATIONS:
-                NotifyHandler notifyHandler = new NotifyHandler(bot, usersProvider);
+                NotifyHandler notifyHandler = new NotifyHandler(bot);
                 log.info("Handler for command[" + command + "] is: " + notifyHandler);
                 return notifyHandler;
             case WEATHER_NOW:
@@ -101,13 +100,13 @@ public class MessageReceiver implements Runnable{
             case SET_CITY:
             case FOR_48_HOURS:
             case FOR_7_DAYS:
-                WeatherHandler weatherHandler=new WeatherHandler(bot,usersProvider);
+                WeatherHandler weatherHandler=new WeatherHandler(bot);
                 log.info("Handler for command[" + command + "] is: " + weatherHandler);
                 return weatherHandler;
 
             default:
                 log.info("Handler for command[" + command + "] not Set. Return DefaultHandler");
-                return new DefaultHandler(bot, usersProvider);
+                return new DefaultHandler(bot);
         }
     }
 }

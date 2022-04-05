@@ -1,7 +1,4 @@
 package Ability;
-
-import Users.User;
-import Users.UsersProvider;
 import org.weatherBot.Bot;
 import java.time.*;
 import java.util.ArrayList;
@@ -12,55 +9,48 @@ public class Notify implements Runnable {
     private static final long SLEEPING_TIME = 60000;
 
     Bot bot;
-    UsersProvider usersProvider;
-    Long userID;
     String chatID;
-    CityData currentCityData;
+    CityData notifyCity;
     LocalTime notificationTime;
-    WeatherData data;
     WeatherData[] forecast;
     String wdata;
 
-    public Notify(Bot bot, UsersProvider up) {
+    public Notify(Bot bot) {
         this.bot = bot;
-        this.usersProvider = up;
     }
 
     @Override
     public void run() {
         log.info("Started " + this.getClass().toString());
-        ArrayList<User> users=usersProvider.getUsers();
+        ArrayList<Long> usersID=DBProvider.getUsersIDFromDB();
         String timeZone;
             while (true) {
                     try {
                         Thread.sleep(SLEEPING_TIME);
-                    for (User user : users) {
-                        currentCityData=user.getCurrentCityData();
-                        notificationTime=user.getNotificationTime();
-                        chatID=user.getChatID();
-                        if (currentCityData != null && notificationTime != null) {
-                                if (currentCityData.getCurrentWeather() != null) {
-                                    timeZone = currentCityData.getCurrentWeather().getTimeZone();
-                                } else {
+                    for (Long userID : usersID) {
+                        notifyCity=DBProvider.getNotificationCity(userID);
+                        notificationTime=DBProvider.getNotificationTime(userID);
+                        chatID=DBProvider.getChatID(userID);
+                        if (notifyCity != null && notificationTime != null) {
+                            timeZone=DBProvider.getTimeZone(notifyCity.getName());
+                            WeatherData data=DBProvider.getCurrentWeatherFromDB(notifyCity);
+                                if (timeZone==null) {
                                     timeZone = ZoneId.systemDefault().getId();
                                 }
-
-                                ZonedDateTime zdtTimeOfUpdate = ZonedDateTime.of(LocalDateTime.of(LocalDate.now(), notificationTime), ZoneId.of(timeZone));
-                                ZonedDateTime zdtNow = ZonedDateTime.now(ZoneId.of(timeZone));
-                                if (zdtTimeOfUpdate.getHour() == zdtNow.getHour() && zdtTimeOfUpdate.getMinute() == zdtNow.getMinute()) {
-                                    if (currentCityData.isFreshForecast()) {
-                                        data = currentCityData.getCurrentWeather();
-                                    } else {
-                                        wdata = WeatherProvider.getOneCallAPI(currentCityData.getLatitude(), currentCityData.getLongitude());
-                                        data = WeatherProvider.getCurrentWeather(wdata);
-                                        forecast = WeatherProvider.getForecast(wdata);
-                                        currentCityData.setCurrentWeather(data);
-                                        currentCityData.setForecastForSevenDays(forecast);
-                                        usersProvider.refreshUser(userID, currentCityData);
-                                    }
-                                    bot.sendQueue.add(bot.sendCurrentWeather(chatID, data, currentCityData.getName()));
+                                    ZonedDateTime zdtNotificationTime = ZonedDateTime.of(LocalDateTime.of(LocalDate.now(), notificationTime), ZoneId.of(timeZone));
+                                    ZonedDateTime zdtNow = ZonedDateTime.now(ZoneId.of(timeZone));
+                                    if (zdtNotificationTime.getHour() == zdtNow.getHour() &&
+                                            zdtNotificationTime.getMinute() == zdtNow.getMinute()) {
+                                        if (!DBProvider.isFresh(data)) {
+                                            wdata = WeatherProvider.getOneCallAPI(notifyCity.getLatitude(), notifyCity.getLongitude());
+                                            data = WeatherProvider.getCurrentWeather(wdata);
+                                            forecast = WeatherProvider.getForecast(wdata);
+                                            DBProvider.addCurrentWeatherToDB(data, notifyCity);
+                                            DBProvider.addForecastToDB(forecast, notifyCity);
+                                            }
+                                        bot.sendQueue.add(bot.sendCurrentWeather(chatID, data, notifyCity.getName()));
+                                        }
                                 }
-                        }
                     }
                     } catch (InterruptedException e) {
                         log.warning(e.getMessage());
