@@ -28,7 +28,7 @@ public class GeoProviderTest {
         assertEquals(cityData.getLatitude(),result.getLatitude(),1);
         assertEquals(cityData.getLongitude(),cityData.getLongitude(),1);
     }
-
+/*
     @Test
     public void getLocationFromCityName() {
         String name="Санкт-Петербург";
@@ -44,6 +44,8 @@ public class GeoProviderTest {
 
     }
 
+
+ */
     @Test
     public void getCityNameFromLocation() {
         double latitude=59.9387;
