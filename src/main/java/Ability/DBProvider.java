@@ -9,11 +9,9 @@ public class DBProvider {
     public static Connection getConnection() {
         String userName=System.getenv("POSTGRE_USER_NAME");
         String psw=System.getenv("POSTGRE_PSW");
-        String JDBC_DATABASE_URL=System.getenv("JDBC_DATABASE_URL");
+        String JDBC_DATABASE_URL="jdbc:postgresql://"+System.getenv("JDBC_DATABASE_URI");
         try {
-            //org.postgresql.Driver driver=new org.postgresql.Driver();
-            //DriverManager.registerDriver(driver);
-            return DriverManager.getConnection(JDBC_DATABASE_URL);
+            return DriverManager.getConnection(JDBC_DATABASE_URL,userName,psw);
         }
         catch (SQLException  e){
             e.printStackTrace();

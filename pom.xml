@@ -4,9 +4,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.example</groupId>
+  <groupId>org.weatherBot</groupId>
   <artifactId>telegramBot</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
 
   <name>telegramBot</name>
   <!-- FIXME change it to the project's website -->
@@ -14,8 +14,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
   </properties>
 
   <dependencies>
@@ -76,26 +76,6 @@
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.1.0</version>
-          <executions>
-            <execution>
-              <id>clean-jar-artifacts</id>
-              <phase>install</phase>
-              <goals>
-                <goal>clean</goal>
-              </goals>
-              <configuration>
-                <excludeDefaultDirectories>true</excludeDefaultDirectories>
-                <filesets>
-                  <fileset>
-                    <directory>target</directory>
-                    <excludes>
-                      <exclude>target/*.jar</exclude>
-                    </excludes>
-                  </fileset>
-                </filesets>
-              </configuration>
-            </execution>
-          </executions>
         </plugin>
 
         <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
