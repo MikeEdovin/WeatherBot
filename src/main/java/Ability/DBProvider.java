@@ -363,7 +363,7 @@ public class DBProvider {
         return weatherData;
     }
     public static WeatherData[] getForecastFromDB(CityData current){
-        WeatherData[] forecast=new WeatherData[8];
+        WeatherData[] forecast=new WeatherData[10];
         int nrOfItems=0;
         Connection connection;
         Statement statement;
