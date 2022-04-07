@@ -18,11 +18,13 @@ public class App {
         String token=System.getenv("BOT_TOKEN");
         String botAdmin=System.getenv("BOT_ADMIN");
         Bot bot = new Bot(botName, token);
-        MessageReceiver messageReceiver = new MessageReceiver(bot);
+        DBProvider dbProvider=new DBProvider();
+        dbProvider.getConnection();
+        MessageReceiver messageReceiver = new MessageReceiver(bot, dbProvider);
         MessageSender messageSender = new MessageSender(bot);
-        Notify notify = new Notify(bot);
+        Notify notify = new Notify(bot,dbProvider);
         bot.botConnect();
-        sendStartReport(bot, botAdmin);
+        //sendStartReport(bot, botAdmin);
 
         Thread receiver = new Thread(messageReceiver);
         receiver.setDaemon(true);
@@ -45,14 +47,14 @@ public class App {
         while (true) {
             String command = getCommand();
             switch (Objects.requireNonNull(command)) {
-                case "start":
-
-
+                case "close":
+                    dbProvider.closeConnection();
+                    log.info("connection was closed");
                     break;
                 case "exit":
                     System.exit(0);
                 case "create":
-                    DBProvider.createTables();
+                    dbProvider.createTables();
                     break;
                 default:
                     System.out.println("Wrong input");
@@ -70,7 +72,7 @@ public class App {
 
     public static String getCommand(){
         String command;
-        System.out.print("enter command start, showUsers, backup or exit: ");
+        System.out.print("enter command create,close or exit: ");
         try{
             BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
             command=br.readLine();

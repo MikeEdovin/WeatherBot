@@ -1,5 +1,6 @@
 package Service;
 
+import Ability.DBProvider;
 import Handler.*;
 import org.weatherBot.Bot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -14,11 +15,13 @@ import java.util.logging.Logger;
 public class MessageReceiver implements Runnable{
     private static final Logger log = Logger.getLogger("MessageReceiver");
     Bot bot;
+    DBProvider provider;
     Parser parser;
 
 
-    public MessageReceiver(Bot b){
+    public MessageReceiver(Bot b, DBProvider dbProvider){
         this.bot=b;
+        this.provider=dbProvider;
         parser=new Parser(bot.getBotUsername());
 
     }
@@ -76,21 +79,21 @@ public class MessageReceiver implements Runnable{
     private AbstractHandler getHandlerForCommand(Command command) {
         if (command == null) {
             log.warning("Null command accepted.");
-            return new DefaultHandler(bot);
+            return new DefaultHandler(bot,provider);
         }
         switch (command) {
             case START:
             case HELP:
             case SETTINGS:
             case BACK:
-                SystemHandler systemHandler = new SystemHandler(bot);
+                SystemHandler systemHandler = new SystemHandler(bot,provider);
                 log.info("Handler for command[" + command + "] is: " + systemHandler);
                 return systemHandler;
             case NOTIFICATION:
             case SET_NOTIFICATION_TIME:
             case SEND_TIME_SETTING_MESSAGE:
             case RESET_NOTIFICATIONS:
-                NotifyHandler notifyHandler = new NotifyHandler(bot);
+                NotifyHandler notifyHandler = new NotifyHandler(bot,provider);
                 log.info("Handler for command[" + command + "] is: " + notifyHandler);
                 return notifyHandler;
             case WEATHER_NOW:
@@ -100,13 +103,13 @@ public class MessageReceiver implements Runnable{
             case SET_CITY:
             case FOR_48_HOURS:
             case FOR_7_DAYS:
-                WeatherHandler weatherHandler=new WeatherHandler(bot);
+                WeatherHandler weatherHandler=new WeatherHandler(bot,provider);
                 log.info("Handler for command[" + command + "] is: " + weatherHandler);
                 return weatherHandler;
 
             default:
                 log.info("Handler for command[" + command + "] not Set. Return DefaultHandler");
-                return new DefaultHandler(bot);
+                return new DefaultHandler(bot,provider);
         }
     }
 }

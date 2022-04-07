@@ -8,17 +8,17 @@ import telegramBot.commands.ParsedCommand;
 
 public class WeatherHandler extends AbstractHandler{
 
-    public WeatherHandler(Bot b) {
-        super(b);
+    public WeatherHandler(Bot b, DBProvider provider) {
+        super(b, provider);
     }
 
     @Override
     public String operate(String chatId, ParsedCommand parsedCommand, Update update) {
         Long userID=update.getMessage().getFrom().getId();
-        if(!DBProvider.userIsInDB(userID)){
-            DBProvider.addUserToDB(userID);
+        if(!provider.userIsInDB(userID)){
+            provider.addUserToDB(userID);
         }
-        CityData currentCityData=DBProvider.getCurrentCityDataFromDB(userID);
+        CityData currentCityData=provider.getCurrentCityDataFromDB(userID);
         WeatherData currentWeather;
         Command command=parsedCommand.getCommand();
         WeatherData data;
@@ -32,15 +32,15 @@ public class WeatherHandler extends AbstractHandler{
                     bot.sendQueue.add(bot.sendSettingsKeyBoard(chatId));
                 }
                 else {
-                    currentWeather=DBProvider.getCurrentWeatherFromDB(currentCityData);
-                    if (DBProvider.isFresh(currentWeather)&&currentWeather!=null) {
+                    currentWeather=provider.getCurrentWeatherFromDB(currentCityData);
+                    if (provider.isFresh(currentWeather)&&currentWeather!=null) {
                         bot.sendQueue.add(bot.sendCurrentWeather(chatId, currentWeather, currentCityData.getName()));
                     } else {
                         wdata = WeatherProvider.getOneCallAPI(currentCityData.getLatitude(), currentCityData.getLongitude());
                         data = WeatherProvider.getCurrentWeather(wdata);
                         forecast=WeatherProvider.getForecast(wdata);
-                        DBProvider.addCurrentWeatherToDB(data,currentCityData);
-                        DBProvider.addForecastToDB(forecast,currentCityData);
+                        provider.addCurrentWeatherToDB(data,currentCityData);
+                        provider.addForecastToDB(forecast,currentCityData);
                         bot.sendQueue.add(bot.sendCurrentWeather(chatId, data, currentCityData.getName()));
                     }
                 }
@@ -49,8 +49,8 @@ public class WeatherHandler extends AbstractHandler{
                 wdata=GeoProvider.getLocationFromCityName(update.getMessage().getText());
                 CityData city = GeoProvider.getCityData(wdata);
                 if(city!=null) {
-                    DBProvider.addCityToDB(city, userID);
-                    DBProvider.setCurrentCity(city, userID);
+                    provider.addCityToDB(city, userID);
+                    provider.setCurrentCity(city, userID);
                     bot.sendQueue.add(bot.sendMenuKeyboard(chatId));
                 }
                 else{
@@ -61,14 +61,14 @@ public class WeatherHandler extends AbstractHandler{
                 bot.sendQueue.add(bot.getCity(chatId));
                 break;
             case GET_FROM_LAST_THREE:
-                CityData[] cities= DBProvider.getLastThree(userID);
+                CityData[] cities= provider.getLastThree(userID);
                 bot.sendQueue.add(bot.sendLastThree(chatId,cities));
                 break;
             case ADD_CITY_TO_USER:
                 CityData addingCity = GeoProvider.getCityDataFromLocation(update.getMessage().getLocation());
                 if(addingCity!=null) {
-                    DBProvider.addCityToDB(addingCity,userID);
-                    DBProvider.setCurrentCity(addingCity,userID);
+                    provider.addCityToDB(addingCity,userID);
+                    provider.setCurrentCity(addingCity,userID);
                     bot.sendQueue.add(bot.sendMenuKeyboard(chatId));
                 }
                 break;
@@ -78,13 +78,13 @@ public class WeatherHandler extends AbstractHandler{
                     bot.sendQueue.add(bot.sendSettingsKeyBoard(chatId));
                 }
                 else {
-                    forecast=DBProvider.getForecastFromDB(currentCityData);
-                    if (forecast[0] == null || !DBProvider.isFresh(forecast[0])) {
+                    forecast=provider.getForecastFromDB(currentCityData);
+                    if (forecast[0] == null || !provider.isFresh(forecast[0])) {
                         wdata = WeatherProvider.getOneCallAPI(currentCityData.getLatitude(), currentCityData.getLongitude());
                         data = WeatherProvider.getCurrentWeather(wdata);
                         forecast = WeatherProvider.getForecast(wdata);
-                        DBProvider.addCurrentWeatherToDB(data, currentCityData);
-                        DBProvider.addForecastToDB(forecast, currentCityData);
+                        provider.addCurrentWeatherToDB(data, currentCityData);
+                        provider.addForecastToDB(forecast, currentCityData);
                     }
                     bot.sendQueue.add(bot.sendForecast(chatId, forecast, nrOfDays, currentCityData.getName()));
                 }
@@ -95,13 +95,13 @@ public class WeatherHandler extends AbstractHandler{
                     bot.sendQueue.add(bot.sendSettingsKeyBoard(chatId));
                 }
                 else {
-                    forecast=DBProvider.getForecastFromDB(currentCityData);
-                    if (forecast[0] == null || !DBProvider.isFresh(forecast[0])) {
+                    forecast=provider.getForecastFromDB(currentCityData);
+                    if (forecast[0] == null || !provider.isFresh(forecast[0])) {
                         wdata = WeatherProvider.getOneCallAPI(currentCityData.getLatitude(), currentCityData.getLongitude());
                         data = WeatherProvider.getCurrentWeather(wdata);
                         forecast = WeatherProvider.getForecast(wdata);
-                        DBProvider.addCurrentWeatherToDB(data, currentCityData);
-                        DBProvider.addForecastToDB(forecast, currentCityData);
+                        provider.addCurrentWeatherToDB(data, currentCityData);
+                        provider.addForecastToDB(forecast, currentCityData);
                     }
                     bot.sendQueue.add(bot.sendForecast(chatId, forecast, nrOfDays, currentCityData.getName()));
                 }

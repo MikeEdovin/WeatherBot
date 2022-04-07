@@ -12,16 +12,16 @@ import java.util.logging.Logger;
 public class NotifyHandler extends AbstractHandler{
     private static final Logger log = Logger.getLogger("NotifyHandler");
 
-    public NotifyHandler(Bot b){
-        super(b);
+    public NotifyHandler(Bot b, DBProvider provider){
+        super(b,provider);
     }
     @Override
     public String operate(String chatID, ParsedCommand parsedCommand, Update update) {
         Long userID=update.getMessage().getFrom().getId();
-        if(DBProvider.userIsInDB(userID)==false){
-            DBProvider.addUserToDB(userID);
+        if(provider.userIsInDB(userID)==false){
+            provider.addUserToDB(userID);
         }
-        CityData city=DBProvider.getCurrentCityDataFromDB(userID);;
+        CityData city=provider.getCurrentCityDataFromDB(userID);;
         Command command=parsedCommand.getCommand();
         String timeInput= parsedCommand.getText();
         LocalTime time=null;
@@ -49,17 +49,17 @@ public class NotifyHandler extends AbstractHandler{
                     log.warning(e.getMessage());
                 }
                if(time!=null) {
-                   DBProvider.setNotification(userID,chatID,city.getName(),time);
+                   provider.setNotification(userID,chatID,city.getName(),time);
                    bot.sendQueue.add(bot.sendNotificationWasSet(chatID,
-                           DBProvider.getCurrentCityDataFromDB(userID),
-                           DBProvider.getNotificationTime(userID)));
+                           provider.getCurrentCityDataFromDB(userID),
+                           provider.getNotificationTime(userID)));
                }
                else{
                    bot.sendQueue.add(bot.sendWrongInputMessage(chatID));
                }
                 break;
             case RESET_NOTIFICATIONS:
-                DBProvider.setNotification(userID,chatID,null,null);
+                provider.setNotification(userID,chatID,null,null);
                 bot.sendQueue.add(bot.sendResetNotificationsMessage(chatID));
                 break;
         }

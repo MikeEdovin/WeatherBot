@@ -1,32 +1,33 @@
 package Ability;
 
+
+
 import java.sql.*;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class DBProvider {
+    private Connection connection;
 
-    public static Connection getConnection() {
+    public  void getConnection() {
         String userName=System.getenv("POSTGRE_USER_NAME");
         String psw=System.getenv("POSTGRE_PSW");
         String JDBC_DATABASE_URL="jdbc:postgresql://"+System.getenv("JDBC_DATABASE_URI");
         try {
-            return DriverManager.getConnection(JDBC_DATABASE_URL,userName,psw);
+            connection=DriverManager.getConnection(JDBC_DATABASE_URL,userName,psw);
         }
         catch (SQLException  e){
             e.printStackTrace();
         }
-        return null;
     }
 
-    public static void createTables(){
+    public  void createTables(){
         Logger logger=Logger.getLogger("create tables");
-        Connection connection;
         Statement statement;
         try{
-            connection=getConnection();
             if(connection!=null) {
+                connection.setAutoCommit(false);
                 statement = connection.createStatement();
                 String drop = "DROP TABLE IF EXISTS users,cities,last_cities,current_weather,forecast;";
                 String users = "CREATE TABLE USERS " +
@@ -72,7 +73,7 @@ public class DBProvider {
                 statement.executeUpdate(forecast);
                 statement.executeUpdate(currentWeather);
                 statement.close();
-                connection.close();
+                connection.commit();
             }
             logger.info("Tables created successfully");
         }
@@ -80,14 +81,14 @@ public class DBProvider {
             e.printStackTrace();
         }
     }
-    public static CityData[] getLastThree(long userID){
+    public CityData[] getLastThree(long userID){
         CityData[] last=new CityData[3];
         int nrOfCities=0;
-        Connection connection;
+
         Statement statement;
         try{
-            connection=getConnection();
             if(connection!=null) {
+                connection.setAutoCommit(false);
                 statement = connection.createStatement();
                 String query = "SELECT CITIES.NAME, LATITUDE,LONGITUDE,TIME_OF_UPDATE FROM CITIES " +
                         " JOIN CURRENT_WEATHER ON CITIES.NAME=CURRENT_WEATHER.CITY " +
@@ -104,7 +105,8 @@ public class DBProvider {
                 }
                 result.close();
                 statement.close();
-                connection.close();
+                connection.commit();
+
             }
         }
         catch (SQLException e){
@@ -112,13 +114,12 @@ public class DBProvider {
         }
         return last;
     }
-    public static boolean userIsInDB(long userID){
+    public  boolean userIsInDB(long userID){
         Logger logger = Logger.getGlobal();
-        Connection connection;
         Statement statement;
         try {
-            connection = DBProvider.getConnection();
             if(connection!=null) {
+                connection.setAutoCommit(false);
                 statement = connection.createStatement();
                 String query = "SELECT USER_ID FROM USERS WHERE USER_ID=" + userID + ";";
                 ResultSet resultSet = statement.executeQuery(query);
@@ -129,39 +130,37 @@ public class DBProvider {
                     }
                 }
                 statement.close();
-                connection.close();
+                connection.commit();
             }
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
         return false;
     }
-    public static void addUserToDB(long userID) {
+    public void addUserToDB(long userID) {
         Logger logger = Logger.getGlobal();
-        Connection connection;
         Statement statement;
         try {
-            connection = DBProvider.getConnection();
             if(connection!=null) {
+                connection.setAutoCommit(false);
                 statement = connection.createStatement();
                 String update = "INSERT INTO USERS(USER_ID)" + "VALUES(" + userID + ")" +
                         "ON CONFLICT(USER_ID) DO NOTHING;";
                 statement.executeUpdate(update);
                 statement.close();
-                connection.close();
+                connection.commit();
             }
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
     }
-    public static void setNotification(Long userID,String chatID, String city, LocalTime time){
+    public  void setNotification(Long userID,String chatID, String city, LocalTime time){
         Logger logger = Logger.getGlobal();
-        Connection connection;
         Statement statement;
         String update;
         try {
-            connection = DBProvider.getConnection();
             if(connection!=null) {
+                connection.setAutoCommit(false);
                 statement = connection.createStatement();
                 if (time == null) {
                     update = "UPDATE USERS SET NOTIFICATION_TIME=" + time + ",NOTIFICATION_CITY='" +
@@ -172,20 +171,19 @@ public class DBProvider {
                 }
                 statement.executeUpdate(update);
                 statement.close();
-                connection.close();
+                connection.commit();
             }
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
     }
-    public static LocalTime getNotificationTime(long userID){
+    public  LocalTime getNotificationTime(long userID){
         Logger logger = Logger.getGlobal();
-        Connection connection;
         Statement statement;
         LocalTime result;
         try {
-            connection = DBProvider.getConnection();
             if(connection!=null) {
+                connection.setAutoCommit(false);
                 statement = connection.createStatement();
                 String query = "SELECT NOTIFICATION_TIME FROM USERS WHERE USER_ID=" + userID + ";";
                 ResultSet resultSet = statement.executeQuery(query);
@@ -197,20 +195,19 @@ public class DBProvider {
                     }
                 }
                 statement.close();
-                connection.close();
+                connection.commit();
             }
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
         return null;
     }
-    public static CityData getNotificationCity(long userID){
+    public  CityData getNotificationCity(long userID){
         Logger logger = Logger.getGlobal();
-        Connection connection;
         Statement statement;
         try {
-            connection = DBProvider.getConnection();
             if(connection!=null) {
+                connection.setAutoCommit(false);
                 statement = connection.createStatement();
                 String query = "SELECT NOTIFICATION_CITY,LATITUDE,LONGITUDE FROM USERS " +
                         "JOIN CITIES ON USERS.NOTIFICATION_CITY=CITIES.NAME " +
@@ -224,21 +221,20 @@ public class DBProvider {
                     return city;
                 }
                 statement.close();
-                connection.close();
+                connection.commit();
             }
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
         return null;
     }
-    public static String getTimeZone(String city){
+    public String getTimeZone(String city){
         Logger logger = Logger.getGlobal();
-        Connection connection;
         Statement statement;
         String timeZone;
         try {
-            connection = DBProvider.getConnection();
             if(connection!=null) {
+                connection.setAutoCommit(false);
                 statement = connection.createStatement();
                 String query = "SELECT TIME_ZONE FROM CURRENT_WEATHER WHERE CITY='" + city + "';";
                 ResultSet resultSet = statement.executeQuery(query);
@@ -247,21 +243,20 @@ public class DBProvider {
                     return timeZone;
                 }
                 statement.close();
-                connection.close();
+                connection.commit();
             }
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
         return null;
     }
-    public static String getChatID(long userID){
+    public  String getChatID(long userID){
         Logger logger = Logger.getGlobal();
-        Connection connection;
         Statement statement;
         String chatID;
         try {
-            connection = DBProvider.getConnection();
             if(connection!=null) {
+                connection.setAutoCommit(false);
                 statement = connection.createStatement();
                 String query = "SELECT CHAT_ID FROM USERS WHERE USER_ID=" + userID + ";";
                 ResultSet resultSet = statement.executeQuery(query);
@@ -270,20 +265,19 @@ public class DBProvider {
                     return chatID;
                 }
                 statement.close();
-                connection.close();
+                connection.commit();
             }
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
         return null;
     }
-    public static void setCurrentCity(CityData city,long userID){
+    public void setCurrentCity(CityData city,long userID){
         Logger logger = Logger.getGlobal();
-        Connection connection;
         Statement statement;
         try {
-            connection = getConnection();
             if(connection!=null) {
+                connection.setAutoCommit(false);
                 statement = connection.createStatement();
                 String defaultCurrent = "UPDATE LAST_CITIES SET IS_CURRENT = 'false' WHERE ID=" + userID;
                 String setCurrent = "UPDATE LAST_CITIES SET IS_CURRENT = 'true' WHERE ID=" + userID +
@@ -291,7 +285,7 @@ public class DBProvider {
                 statement.executeUpdate(defaultCurrent);
                 statement.executeUpdate(setCurrent);
                 statement.close();
-                connection.close();
+                connection.commit();
             }
         }
         catch (SQLException e){
@@ -299,13 +293,12 @@ public class DBProvider {
             e.printStackTrace();
         }
     }
-    public static CityData getCurrentCityDataFromDB(long userID){
+    public  CityData getCurrentCityDataFromDB(long userID){
         CityData cityData=null;
-        Connection connection;
         Statement statement;
         try{
-            connection=getConnection();
             if(connection!=null) {
+                connection.setAutoCommit(false);
                 statement = connection.createStatement();
                 String query = "SELECT CITIES.NAME, LATITUDE,LONGITUDE FROM CITIES JOIN LAST_CITIES  ON LAST_CITIES.NAME=CITIES.NAME  WHERE ID=" + userID +
                         " AND IS_CURRENT='true' ";
@@ -318,7 +311,7 @@ public class DBProvider {
                 }
                 result.close();
                 statement.close();
-                connection.close();
+                connection.commit();
             }
         }
         catch (SQLException e){
@@ -326,13 +319,12 @@ public class DBProvider {
         }
         return cityData;
     }
-    public static WeatherData getCurrentWeatherFromDB(CityData current){
+    public  WeatherData getCurrentWeatherFromDB(CityData current){
         WeatherData weatherData=null;
-        Connection connection;
         Statement statement;
         try{
-            connection=getConnection();
             if(connection!=null) {
+                connection.setAutoCommit(false);
                 statement = connection.createStatement();
                 String query = "SELECT DATE, TEMPERATURE,FEELS_LIKE,PRESSURE,HUMIDITY,CLOUDS,TIME_OF_UPDATE,TIME_ZONE FROM CURRENT_WEATHER WHERE CITY='" + current.getName() +
                         "'";
@@ -353,7 +345,7 @@ public class DBProvider {
                 }
                 result.close();
                 statement.close();
-                connection.close();
+                connection.commit();
             }
         }
         catch (SQLException e){
@@ -362,14 +354,13 @@ public class DBProvider {
 
         return weatherData;
     }
-    public static WeatherData[] getForecastFromDB(CityData current){
+    public  WeatherData[] getForecastFromDB(CityData current){
         WeatherData[] forecast=new WeatherData[10];
         int nrOfItems=0;
-        Connection connection;
         Statement statement;
         try{
-            connection=getConnection();
             if(connection!=null) {
+                connection.setAutoCommit(false);
                 statement = connection.createStatement();
                 String query = "SELECT DATE, TEMPERATURE,FEELS_LIKE,PRESSURE,HUMIDITY,CLOUDS,TIME_OF_UPDATE,TIME_ZONE FROM FORECAST WHERE CITY='" + current.getName() +
                         "'";
@@ -391,7 +382,7 @@ public class DBProvider {
                 }
                 result.close();
                 statement.close();
-                connection.close();
+                connection.commit();
             }
         }
         catch (SQLException e){
@@ -399,7 +390,7 @@ public class DBProvider {
         }
         return forecast;
     }
-    public static boolean isFresh(WeatherData data){
+    public  boolean isFresh(WeatherData data){
         if(data!=null) {
             String zone = data.getTimeZone();
             if (zone != null) {
@@ -413,13 +404,12 @@ public class DBProvider {
         }
         return false;
     }
-    public static void addCityToDB(CityData city, long userID){
+    public void addCityToDB(CityData city, long userID){
         Logger logger = Logger.getGlobal();
-        Connection connection;
         Statement statement;
         try {
-            connection = DBProvider.getConnection();
             if(connection!=null) {
+                connection.setAutoCommit(false);
                 statement = connection.createStatement();
                 String insertCityToCities = "INSERT INTO CITIES(NAME, LATITUDE, LONGITUDE)" +
                         "VALUES('" + city.getName() + "'," + city.getLatitude() + "," + city.getLongitude() +
@@ -429,15 +419,14 @@ public class DBProvider {
                 statement.executeUpdate(insertCityToCities);
                 statement.executeUpdate(insertIntoLastCities);
                 statement.close();
-                connection.close();
+                connection.commit();
             }
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
     }
-    public static void addCurrentWeatherToDB(WeatherData data, CityData city){
+    public  void addCurrentWeatherToDB(WeatherData data, CityData city){
         Logger logger = Logger.getGlobal();
-        Connection connection;
         Statement statement;
         String cName= city.getName();
         LocalDate date=data.getDate();
@@ -449,8 +438,8 @@ public class DBProvider {
         String tZone= data.getTimeZone();
         LocalDateTime tOfUpd=data.getTimeOfUpdate();
         try {
-            connection = DBProvider.getConnection();
             if(connection!=null) {
+                connection.setAutoCommit(false);
                 statement = connection.createStatement();
                 String current = "INSERT INTO CURRENT_WEATHER(CITY,DATE,TEMPERATURE,FEELS_LIKE,PRESSURE,HUMIDITY,CLOUDS,TIME_OF_UPDATE,TIME_ZONE)"
                         + "VALUES(" + "'" + cName + "','" + date + "'," + temp + "," + feels_like + "," + pres + "," + hum + "," + clouds + ",'"
@@ -459,20 +448,19 @@ public class DBProvider {
                         clouds + ",TIME_OF_UPDATE='" + tOfUpd + "',TIME_ZONE='" + tZone + "';";
                 statement.executeUpdate(current);
                 statement.close();
-                connection.close();
+                connection.commit();
             }
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
     }
-    public static void addForecastToDB(WeatherData[]forecast, CityData city){//ok
+    public  void addForecastToDB(WeatherData[]forecast, CityData city){//ok
         Logger logger = Logger.getGlobal();
-        Connection connection;
         Statement statement;
         String cName= city.getName();
         try {
-            connection = DBProvider.getConnection();
             if(connection!=null) {
+                connection.setAutoCommit(false);
                 statement = connection.createStatement();
                 for (WeatherData data : forecast) {
                     if (data != null) {
@@ -493,20 +481,20 @@ public class DBProvider {
                     }
                 }
                 statement.close();
-                connection.close();
+                connection.commit();
             }
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
     }
-    public static ArrayList<Long> getUsersIDFromDB(){
+    public  ArrayList<Long> getUsersIDFromDB(){
         Logger logger=Logger.getGlobal();
         ArrayList<Long> users=new ArrayList<>();
-        Connection connection;
+
         Statement statement;
         try{
-            connection=getConnection();
             if(connection!=null) {
+                connection.setAutoCommit(false);
                 statement = connection.createStatement();
                 ResultSet result = statement.executeQuery("SELECT * FROM USERS;");
                 while (result.next()) {
@@ -515,7 +503,7 @@ public class DBProvider {
                 }
                 result.close();
                 statement.close();
-                connection.close();
+                connection.commit();
             }
         }
         catch (SQLException e){
@@ -523,7 +511,14 @@ public class DBProvider {
         }
         return users;
     }
-
+public void closeConnection(){
+        Logger logger = Logger.getLogger("Close connection");
+        try{
+            connection.close();
+        } catch (SQLException e) {
+            logger.warning(e.getMessage());
+        }
+}
 
 
 

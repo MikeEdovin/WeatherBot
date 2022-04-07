@@ -8,16 +8,16 @@ import telegramBot.commands.ParsedCommand;
 
 public class SystemHandler extends AbstractHandler{
 
-    public SystemHandler(Bot b){
-        super(b);
+    public SystemHandler(Bot b, DBProvider provider){
+        super(b, provider);
     }
     @Override
     public String operate(String chatId, ParsedCommand parsedCommand, Update update) {
         Command command=parsedCommand.getCommand();
         long userID=update.getMessage().getFrom().getId();
-        DBProvider.addUserToDB(userID);
-        if(!DBProvider.userIsInDB(userID)){
-            DBProvider.userIsInDB(userID);
+        provider.addUserToDB(userID);
+        if(!provider.userIsInDB(userID)){
+            provider.userIsInDB(userID);
         }
         switch (command) {
             case START:
