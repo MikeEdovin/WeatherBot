@@ -1,4 +1,5 @@
 package Ability;
+
 import java.sql.*;
 import java.time.*;
 import java.util.ArrayList;
@@ -25,53 +26,54 @@ public class DBProvider {
         Statement statement;
         try{
             connection=getConnection();
-            assert connection != null;
-            statement= connection.createStatement();
-            String drop="DROP TABLE IF EXISTS users,cities,last_cities,current_weather,forecast;";
-            String users="CREATE TABLE USERS "+
-                    ("(USER_ID bigserial PRIMARY KEY NOT NULL," +
-                            "NOTIFICATION_TIME time with time zone," +
-                            "NOTIFICATION_CITY TEXT," +
-                            "CHAT_ID TEXT)");
-            String cities = "CREATE TABLE CITIES " +
-                    ("(NAME TEXT PRIMARY KEY NOT NULL UNIQUE , " +
-                    " LATITUDE    double precision     NOT NULL, " +
-                    " LONGITUDE   double precision     NOT NULL)");
-            String lastCities="CREATE TABLE LAST_CITIES"+
-                    ("(ID bigserial REFERENCES USERS(USER_ID) NOT NULL,"+
-                            "NAME TEXT REFERENCES CITIES(NAME),"+
-                            "IS_CURRENT boolean NOT NULL,"+
-                            "UNIQUE(ID,NAME))");
-            String forecast="CREATE TABLE FORECAST "+
-                    ("(CITY TEXT  NOT NULL, "+
-                     "DATE date NOT NULL, "+
-                     "TEMPERATURE double precision NOT NULL, "+
-                     "FEELS_LIKE double precision NOT NULL, "+
-                     "PRESSURE smallserial NOT NULL, "+
-                     "HUMIDITY smallserial NOT NULL, "+
-                     "CLOUDS smallserial NOT NULL, "+
-                     "TIME_OF_UPDATE timestamp without time zone NOT NULL, "+
-                     "TIME_ZONE TEXT NOT NULL," +
-                            "FOREIGN KEY (CITY) REFERENCES CITIES, "+
-                            "UNIQUE(CITY,DATE))");
-            String currentWeather="CREATE TABLE CURRENT_WEATHER "+
-                    ("(CITY TEXT references CITIES(NAME) UNIQUE NOT NULL, "+
-                            "DATE date NOT NULL, "+
-                            "TEMPERATURE double precision NOT NULL, "+
-                            "FEELS_LIKE double precision NOT NULL, "+
-                            "PRESSURE smallserial NOT NULL, "+
-                            "HUMIDITY smallserial NOT NULL, "+
-                            "CLOUDS smallserial NOT NULL, "+
-                            "TIME_OF_UPDATE timestamp without time zone NOT NULL, "+
-                            "TIME_ZONE TEXT NOT NULL)");
-            statement.executeUpdate(drop);
-            statement.executeUpdate(users);
-            statement.executeUpdate(cities);
-            statement.executeUpdate(lastCities);
-            statement.executeUpdate(forecast);
-            statement.executeUpdate(currentWeather);
-            statement.close();
-            connection.close();
+            if(connection!=null) {
+                statement = connection.createStatement();
+                String drop = "DROP TABLE IF EXISTS users,cities,last_cities,current_weather,forecast;";
+                String users = "CREATE TABLE USERS " +
+                        ("(USER_ID bigserial PRIMARY KEY NOT NULL," +
+                                "NOTIFICATION_TIME time with time zone," +
+                                "NOTIFICATION_CITY TEXT," +
+                                "CHAT_ID TEXT)");
+                String cities = "CREATE TABLE CITIES " +
+                        ("(NAME TEXT PRIMARY KEY NOT NULL UNIQUE , " +
+                                " LATITUDE    double precision     NOT NULL, " +
+                                " LONGITUDE   double precision     NOT NULL)");
+                String lastCities = "CREATE TABLE LAST_CITIES" +
+                        ("(ID bigserial REFERENCES USERS(USER_ID) NOT NULL," +
+                                "NAME TEXT REFERENCES CITIES(NAME)," +
+                                "IS_CURRENT boolean NOT NULL," +
+                                "UNIQUE(ID,NAME))");
+                String forecast = "CREATE TABLE FORECAST " +
+                        ("(CITY TEXT  NOT NULL, " +
+                                "DATE date NOT NULL, " +
+                                "TEMPERATURE double precision NOT NULL, " +
+                                "FEELS_LIKE double precision NOT NULL, " +
+                                "PRESSURE smallserial NOT NULL, " +
+                                "HUMIDITY smallserial NOT NULL, " +
+                                "CLOUDS smallserial NOT NULL, " +
+                                "TIME_OF_UPDATE timestamp without time zone NOT NULL, " +
+                                "TIME_ZONE TEXT NOT NULL," +
+                                "FOREIGN KEY (CITY) REFERENCES CITIES, " +
+                                "UNIQUE(CITY,DATE))");
+                String currentWeather = "CREATE TABLE CURRENT_WEATHER " +
+                        ("(CITY TEXT references CITIES(NAME) UNIQUE NOT NULL, " +
+                                "DATE date NOT NULL, " +
+                                "TEMPERATURE double precision NOT NULL, " +
+                                "FEELS_LIKE double precision NOT NULL, " +
+                                "PRESSURE smallserial NOT NULL, " +
+                                "HUMIDITY smallserial NOT NULL, " +
+                                "CLOUDS smallserial NOT NULL, " +
+                                "TIME_OF_UPDATE timestamp without time zone NOT NULL, " +
+                                "TIME_ZONE TEXT NOT NULL)");
+                statement.executeUpdate(drop);
+                statement.executeUpdate(users);
+                statement.executeUpdate(cities);
+                statement.executeUpdate(lastCities);
+                statement.executeUpdate(forecast);
+                statement.executeUpdate(currentWeather);
+                statement.close();
+                connection.close();
+            }
             logger.info("Tables created successfully");
         }
         catch (SQLException e){
@@ -85,24 +87,25 @@ public class DBProvider {
         Statement statement;
         try{
             connection=getConnection();
-            assert connection != null;
-            statement= connection.createStatement();
-            String query="SELECT CITIES.NAME, LATITUDE,LONGITUDE,TIME_OF_UPDATE FROM CITIES " +
-                    " JOIN CURRENT_WEATHER ON CITIES.NAME=CURRENT_WEATHER.CITY " +
-                    "JOIN LAST_CITIES ON LAST_CITIES.NAME=CITIES.NAME"+
-                    " WHERE ID="+userID+
-                    " ORDER BY TIME_OF_UPDATE DESC;";
-            ResultSet result= statement.executeQuery(query);
-            while(result.next()&&nrOfCities<3) {
-                String name = result.getString("NAME");
-                double lat = result.getDouble("LATITUDE");
-                double lon = result.getDouble("LONGITUDE");
-                CityData cityData = new CityData(name, lon, lat);
-                last[nrOfCities++]=cityData;
+            if(connection!=null) {
+                statement = connection.createStatement();
+                String query = "SELECT CITIES.NAME, LATITUDE,LONGITUDE,TIME_OF_UPDATE FROM CITIES " +
+                        " JOIN CURRENT_WEATHER ON CITIES.NAME=CURRENT_WEATHER.CITY " +
+                        "JOIN LAST_CITIES ON LAST_CITIES.NAME=CITIES.NAME" +
+                        " WHERE ID=" + userID +
+                        " ORDER BY TIME_OF_UPDATE DESC;";
+                ResultSet result = statement.executeQuery(query);
+                while (result.next() && nrOfCities < 3) {
+                    String name = result.getString("NAME");
+                    double lat = result.getDouble("LATITUDE");
+                    double lon = result.getDouble("LONGITUDE");
+                    CityData cityData = new CityData(name, lon, lat);
+                    last[nrOfCities++] = cityData;
+                }
+                result.close();
+                statement.close();
+                connection.close();
             }
-            result.close();
-            statement.close();
-            connection.close();
         }
         catch (SQLException e){
             e.printStackTrace();
@@ -115,17 +118,19 @@ public class DBProvider {
         Statement statement;
         try {
             connection = DBProvider.getConnection();
-            statement = connection.createStatement();
-            String query="SELECT USER_ID FROM USERS WHERE USER_ID="+userID+";";
-            ResultSet resultSet= statement.executeQuery(query);
-            while(resultSet.next()){
-                long id=resultSet.getLong("USER_ID");
-                if(userID==id){
-                    return true;
+            if(connection!=null) {
+                statement = connection.createStatement();
+                String query = "SELECT USER_ID FROM USERS WHERE USER_ID=" + userID + ";";
+                ResultSet resultSet = statement.executeQuery(query);
+                while (resultSet.next()) {
+                    long id = resultSet.getLong("USER_ID");
+                    if (userID == id) {
+                        return true;
+                    }
                 }
+                statement.close();
+                connection.close();
             }
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
@@ -137,12 +142,14 @@ public class DBProvider {
         Statement statement;
         try {
             connection = DBProvider.getConnection();
-            statement = connection.createStatement();
-            String update="INSERT INTO USERS(USER_ID)"+"VALUES("+userID+")" +
-                   "ON CONFLICT(USER_ID) DO NOTHING;";
-            statement.executeUpdate(update);
-            statement.close();
-            connection.close();
+            if(connection!=null) {
+                statement = connection.createStatement();
+                String update = "INSERT INTO USERS(USER_ID)" + "VALUES(" + userID + ")" +
+                        "ON CONFLICT(USER_ID) DO NOTHING;";
+                statement.executeUpdate(update);
+                statement.close();
+                connection.close();
+            }
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
@@ -154,18 +161,19 @@ public class DBProvider {
         String update;
         try {
             connection = DBProvider.getConnection();
-            statement = connection.createStatement();
-            if(time==null){
-                update="UPDATE USERS SET NOTIFICATION_TIME="+time+",NOTIFICATION_CITY='"+
-                        city+"'"+",CHAT_ID='"+chatID+"' WHERE USER_ID=" +userID+";";
+            if(connection!=null) {
+                statement = connection.createStatement();
+                if (time == null) {
+                    update = "UPDATE USERS SET NOTIFICATION_TIME=" + time + ",NOTIFICATION_CITY='" +
+                            city + "'" + ",CHAT_ID='" + chatID + "' WHERE USER_ID=" + userID + ";";
+                } else {
+                    update = "UPDATE USERS SET NOTIFICATION_TIME='" + time + "',NOTIFICATION_CITY='" +
+                            city + "'" + ",CHAT_ID='" + chatID + "' WHERE USER_ID=" + userID + ";";
+                }
+                statement.executeUpdate(update);
+                statement.close();
+                connection.close();
             }
-            else {
-                update = "UPDATE USERS SET NOTIFICATION_TIME='" + time + "',NOTIFICATION_CITY='" +
-                        city + "'" + ",CHAT_ID='" + chatID + "' WHERE USER_ID=" + userID + ";";
-            }
-            statement.executeUpdate(update);
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
@@ -177,19 +185,20 @@ public class DBProvider {
         LocalTime result;
         try {
             connection = DBProvider.getConnection();
-            statement = connection.createStatement();
-            String query="SELECT NOTIFICATION_TIME FROM USERS WHERE USER_ID="+userID+";";
-            ResultSet resultSet= statement.executeQuery(query);
-            while(resultSet.next()){
-                Time time=resultSet.getTime("NOTIFICATION_TIME");
-                if(time!=null) {
-                    result = time.toLocalTime();
-                    return result;
+            if(connection!=null) {
+                statement = connection.createStatement();
+                String query = "SELECT NOTIFICATION_TIME FROM USERS WHERE USER_ID=" + userID + ";";
+                ResultSet resultSet = statement.executeQuery(query);
+                while (resultSet.next()) {
+                    Time time = resultSet.getTime("NOTIFICATION_TIME");
+                    if (time != null) {
+                        result = time.toLocalTime();
+                        return result;
+                    }
                 }
+                statement.close();
+                connection.close();
             }
-            statement.close();
-            connection.close();
-
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
@@ -201,21 +210,22 @@ public class DBProvider {
         Statement statement;
         try {
             connection = DBProvider.getConnection();
-            statement = connection.createStatement();
-            String query="SELECT NOTIFICATION_CITY,LATITUDE,LONGITUDE FROM USERS " +
-                    "JOIN CITIES ON USERS.NOTIFICATION_CITY=CITIES.NAME " +
-                    "WHERE USER_ID="+userID+";";
-            ResultSet resultSet= statement.executeQuery(query);
-            while(resultSet.next()){
-                String name=resultSet.getString("NOTIFICATION_CITY");
-                double lat= resultSet.getDouble("LATITUDE");
-                double lon=resultSet.getDouble("LONGITUDE");
-                CityData city=new CityData(name,lon,lat);
-                return city;
+            if(connection!=null) {
+                statement = connection.createStatement();
+                String query = "SELECT NOTIFICATION_CITY,LATITUDE,LONGITUDE FROM USERS " +
+                        "JOIN CITIES ON USERS.NOTIFICATION_CITY=CITIES.NAME " +
+                        "WHERE USER_ID=" + userID + ";";
+                ResultSet resultSet = statement.executeQuery(query);
+                while (resultSet.next()) {
+                    String name = resultSet.getString("NOTIFICATION_CITY");
+                    double lat = resultSet.getDouble("LATITUDE");
+                    double lon = resultSet.getDouble("LONGITUDE");
+                    CityData city = new CityData(name, lon, lat);
+                    return city;
+                }
+                statement.close();
+                connection.close();
             }
-            statement.close();
-            connection.close();
-
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
@@ -228,16 +238,17 @@ public class DBProvider {
         String timeZone;
         try {
             connection = DBProvider.getConnection();
-            statement = connection.createStatement();
-            String query="SELECT TIME_ZONE FROM CURRENT_WEATHER WHERE CITY='"+city+"';";
-            ResultSet resultSet= statement.executeQuery(query);
-            while(resultSet.next()){
-                timeZone= resultSet.getString("TIME_ZONE");
-                return timeZone;
+            if(connection!=null) {
+                statement = connection.createStatement();
+                String query = "SELECT TIME_ZONE FROM CURRENT_WEATHER WHERE CITY='" + city + "';";
+                ResultSet resultSet = statement.executeQuery(query);
+                while (resultSet.next()) {
+                    timeZone = resultSet.getString("TIME_ZONE");
+                    return timeZone;
+                }
+                statement.close();
+                connection.close();
             }
-            statement.close();
-            connection.close();
-
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
@@ -250,16 +261,17 @@ public class DBProvider {
         String chatID;
         try {
             connection = DBProvider.getConnection();
-            statement = connection.createStatement();
-            String query="SELECT CHAT_ID FROM USERS WHERE USER_ID="+userID+";";
-            ResultSet resultSet= statement.executeQuery(query);
-            while(resultSet.next()){
-                chatID= resultSet.getString("CHAT_ID");
-                return chatID;
+            if(connection!=null) {
+                statement = connection.createStatement();
+                String query = "SELECT CHAT_ID FROM USERS WHERE USER_ID=" + userID + ";";
+                ResultSet resultSet = statement.executeQuery(query);
+                while (resultSet.next()) {
+                    chatID = resultSet.getString("CHAT_ID");
+                    return chatID;
+                }
+                statement.close();
+                connection.close();
             }
-            statement.close();
-            connection.close();
-
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
@@ -271,14 +283,16 @@ public class DBProvider {
         Statement statement;
         try {
             connection = getConnection();
-            statement = connection.createStatement();
-            String defaultCurrent="UPDATE LAST_CITIES SET IS_CURRENT = 'false' WHERE ID="+userID;
-            String setCurrent="UPDATE LAST_CITIES SET IS_CURRENT = 'true' WHERE ID="+userID+
-                    " AND NAME='"+city.getName()+"'";
-            statement.executeUpdate(defaultCurrent);
-            statement.executeUpdate(setCurrent);
-            statement.close();
-            connection.close();
+            if(connection!=null) {
+                statement = connection.createStatement();
+                String defaultCurrent = "UPDATE LAST_CITIES SET IS_CURRENT = 'false' WHERE ID=" + userID;
+                String setCurrent = "UPDATE LAST_CITIES SET IS_CURRENT = 'true' WHERE ID=" + userID +
+                        " AND NAME='" + city.getName() + "'";
+                statement.executeUpdate(defaultCurrent);
+                statement.executeUpdate(setCurrent);
+                statement.close();
+                connection.close();
+            }
         }
         catch (SQLException e){
             logger.warning(e.getMessage());
@@ -291,20 +305,21 @@ public class DBProvider {
         Statement statement;
         try{
             connection=getConnection();
-            statement= connection.createStatement();
-            String query="SELECT CITIES.NAME, LATITUDE,LONGITUDE FROM CITIES JOIN LAST_CITIES  ON LAST_CITIES.NAME=CITIES.NAME  WHERE ID="+userID+
-                    " AND IS_CURRENT='true' ";
-            System.out.println(query);
-            ResultSet result= statement.executeQuery(query);
-            while(result.next()) {
-                String name = result.getString("NAME");
-                double lat = result.getDouble("LATITUDE");
-                double lon = result.getDouble("LONGITUDE");
-                cityData = new CityData(name, lon, lat);
+            if(connection!=null) {
+                statement = connection.createStatement();
+                String query = "SELECT CITIES.NAME, LATITUDE,LONGITUDE FROM CITIES JOIN LAST_CITIES  ON LAST_CITIES.NAME=CITIES.NAME  WHERE ID=" + userID +
+                        " AND IS_CURRENT='true' ";
+                ResultSet result = statement.executeQuery(query);
+                while (result.next()) {
+                    String name = result.getString("NAME");
+                    double lat = result.getDouble("LATITUDE");
+                    double lon = result.getDouble("LONGITUDE");
+                    cityData = new CityData(name, lon, lat);
+                }
+                result.close();
+                statement.close();
+                connection.close();
             }
-            result.close();
-            statement.close();
-            connection.close();
         }
         catch (SQLException e){
             e.printStackTrace();
@@ -317,27 +332,29 @@ public class DBProvider {
         Statement statement;
         try{
             connection=getConnection();
-            statement= connection.createStatement();
-            String query="SELECT DATE, TEMPERATURE,FEELS_LIKE,PRESSURE,HUMIDITY,CLOUDS,TIME_OF_UPDATE,TIME_ZONE FROM CURRENT_WEATHER WHERE CITY='"+current.getName()+
-                    "'";
-            ResultSet result= statement.executeQuery(query);
-            while(result.next()) {
-                String tZone=result.getString("TIME_ZONE");
-                Date date=result.getDate("DATE");
-                LocalDate lDate =  date.toLocalDate();
-                double temp = result.getDouble("TEMPERATURE");
-                double feels = result.getDouble("FEELS_LIKE");
-                long pres= result.getLong("PRESSURE");
-                long hum=result.getLong("HUMIDITY");
-                long clouds=result.getLong("CLOUDS");
-                Timestamp timestamp=result.getTimestamp("TIME_OF_UPDATE");
-                LocalDateTime tOfUpd= timestamp.toLocalDateTime();
-                weatherData=new WeatherData();
-                weatherData.setMeasurements(lDate,temp,pres,hum,feels,clouds,tOfUpd,tZone);
+            if(connection!=null) {
+                statement = connection.createStatement();
+                String query = "SELECT DATE, TEMPERATURE,FEELS_LIKE,PRESSURE,HUMIDITY,CLOUDS,TIME_OF_UPDATE,TIME_ZONE FROM CURRENT_WEATHER WHERE CITY='" + current.getName() +
+                        "'";
+                ResultSet result = statement.executeQuery(query);
+                while (result.next()) {
+                    String tZone = result.getString("TIME_ZONE");
+                    Date date = result.getDate("DATE");
+                    LocalDate lDate = date.toLocalDate();
+                    double temp = result.getDouble("TEMPERATURE");
+                    double feels = result.getDouble("FEELS_LIKE");
+                    long pres = result.getLong("PRESSURE");
+                    long hum = result.getLong("HUMIDITY");
+                    long clouds = result.getLong("CLOUDS");
+                    Timestamp timestamp = result.getTimestamp("TIME_OF_UPDATE");
+                    LocalDateTime tOfUpd = timestamp.toLocalDateTime();
+                    weatherData = new WeatherData();
+                    weatherData.setMeasurements(lDate, temp, pres, hum, feels, clouds, tOfUpd, tZone);
+                }
+                result.close();
+                statement.close();
+                connection.close();
             }
-            result.close();
-            statement.close();
-            connection.close();
         }
         catch (SQLException e){
             e.printStackTrace();
@@ -352,28 +369,30 @@ public class DBProvider {
         Statement statement;
         try{
             connection=getConnection();
-            statement= connection.createStatement();
-            String query="SELECT DATE, TEMPERATURE,FEELS_LIKE,PRESSURE,HUMIDITY,CLOUDS,TIME_OF_UPDATE,TIME_ZONE FROM FORECAST WHERE CITY='"+current.getName()+
-                    "'";
-            ResultSet result= statement.executeQuery(query);
-            while(result.next()) {
-                String tZone=result.getString("TIME_ZONE");
-                Date date=result.getDate("DATE");
-                LocalDate lDate =  date.toLocalDate();
-                double temp = result.getDouble("TEMPERATURE");
-                double feels = result.getDouble("FEELS_LIKE");
-                long pres= result.getLong("PRESSURE");
-                long hum=result.getLong("HUMIDITY");
-                long clouds=result.getLong("CLOUDS");
-                Timestamp timestamp=result.getTimestamp("TIME_OF_UPDATE");
-                LocalDateTime tOfUpd= timestamp.toLocalDateTime();
-                WeatherData weatherData=new WeatherData();
-                weatherData.setMeasurements(lDate,temp,pres,hum,feels,clouds,tOfUpd,tZone);
-                forecast[nrOfItems++]=weatherData;
+            if(connection!=null) {
+                statement = connection.createStatement();
+                String query = "SELECT DATE, TEMPERATURE,FEELS_LIKE,PRESSURE,HUMIDITY,CLOUDS,TIME_OF_UPDATE,TIME_ZONE FROM FORECAST WHERE CITY='" + current.getName() +
+                        "'";
+                ResultSet result = statement.executeQuery(query);
+                while (result.next()) {
+                    String tZone = result.getString("TIME_ZONE");
+                    Date date = result.getDate("DATE");
+                    LocalDate lDate = date.toLocalDate();
+                    double temp = result.getDouble("TEMPERATURE");
+                    double feels = result.getDouble("FEELS_LIKE");
+                    long pres = result.getLong("PRESSURE");
+                    long hum = result.getLong("HUMIDITY");
+                    long clouds = result.getLong("CLOUDS");
+                    Timestamp timestamp = result.getTimestamp("TIME_OF_UPDATE");
+                    LocalDateTime tOfUpd = timestamp.toLocalDateTime();
+                    WeatherData weatherData = new WeatherData();
+                    weatherData.setMeasurements(lDate, temp, pres, hum, feels, clouds, tOfUpd, tZone);
+                    forecast[nrOfItems++] = weatherData;
+                }
+                result.close();
+                statement.close();
+                connection.close();
             }
-            result.close();
-            statement.close();
-            connection.close();
         }
         catch (SQLException e){
             e.printStackTrace();
@@ -400,17 +419,18 @@ public class DBProvider {
         Statement statement;
         try {
             connection = DBProvider.getConnection();
-            statement = connection.createStatement();
-            String insertCityToCities="INSERT INTO CITIES(NAME, LATITUDE, LONGITUDE)"+
-                    "VALUES('"+city.getName()+"',"+city.getLatitude()+","+city.getLongitude() +
-                    ") ON CONFLICT(NAME) DO NOTHING"+";";
-            String insertIntoLastCities="INSERT INTO LAST_CITIES(ID,NAME,IS_CURRENT)"+"VALUES("+userID+
-                    ",'"+city.getName()+"',"+"'FALSE'"+") ON CONFLICT(ID,NAME) DO NOTHING ;";
-            System.out.println(insertIntoLastCities);
-            statement.executeUpdate(insertCityToCities);
-            statement.executeUpdate(insertIntoLastCities);
-            statement.close();
-            connection.close();
+            if(connection!=null) {
+                statement = connection.createStatement();
+                String insertCityToCities = "INSERT INTO CITIES(NAME, LATITUDE, LONGITUDE)" +
+                        "VALUES('" + city.getName() + "'," + city.getLatitude() + "," + city.getLongitude() +
+                        ") ON CONFLICT(NAME) DO NOTHING" + ";";
+                String insertIntoLastCities = "INSERT INTO LAST_CITIES(ID,NAME,IS_CURRENT)" + "VALUES(" + userID +
+                        ",'" + city.getName() + "'," + "'FALSE'" + ") ON CONFLICT(ID,NAME) DO NOTHING ;";
+                statement.executeUpdate(insertCityToCities);
+                statement.executeUpdate(insertIntoLastCities);
+                statement.close();
+                connection.close();
+            }
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
@@ -430,15 +450,17 @@ public class DBProvider {
         LocalDateTime tOfUpd=data.getTimeOfUpdate();
         try {
             connection = DBProvider.getConnection();
-            statement = connection.createStatement();
-            String current="INSERT INTO CURRENT_WEATHER(CITY,DATE,TEMPERATURE,FEELS_LIKE,PRESSURE,HUMIDITY,CLOUDS,TIME_OF_UPDATE,TIME_ZONE)"
-                    +"VALUES("+"'"+cName+"','"+date+"',"+temp+","+feels_like+","+pres+","+hum+","+clouds+",'"
-                    +tOfUpd+"','"+tZone+"')" +" ON CONFLICT(CITY) DO UPDATE SET DATE='"+date+"',"+"TEMPERATURE="+
-            temp+",FEELS_LIKE="+feels_like+",PRESSURE="+pres+",HUMIDITY="+hum+",CLOUDS="+
-            clouds+",TIME_OF_UPDATE='"+tOfUpd+"',TIME_ZONE='"+tZone+"';";
-            statement.executeUpdate(current);
-            statement.close();
-            connection.close();
+            if(connection!=null) {
+                statement = connection.createStatement();
+                String current = "INSERT INTO CURRENT_WEATHER(CITY,DATE,TEMPERATURE,FEELS_LIKE,PRESSURE,HUMIDITY,CLOUDS,TIME_OF_UPDATE,TIME_ZONE)"
+                        + "VALUES(" + "'" + cName + "','" + date + "'," + temp + "," + feels_like + "," + pres + "," + hum + "," + clouds + ",'"
+                        + tOfUpd + "','" + tZone + "')" + " ON CONFLICT(CITY) DO UPDATE SET DATE='" + date + "'," + "TEMPERATURE=" +
+                        temp + ",FEELS_LIKE=" + feels_like + ",PRESSURE=" + pres + ",HUMIDITY=" + hum + ",CLOUDS=" +
+                        clouds + ",TIME_OF_UPDATE='" + tOfUpd + "',TIME_ZONE='" + tZone + "';";
+                statement.executeUpdate(current);
+                statement.close();
+                connection.close();
+            }
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
@@ -450,27 +472,29 @@ public class DBProvider {
         String cName= city.getName();
         try {
             connection = DBProvider.getConnection();
-            statement = connection.createStatement();
-            for(WeatherData data:forecast) {
-                if(data!=null) {
-                    LocalDate date = data.getDate();
-                    double temp = data.getTemp();
-                    double feels_like = data.getFeelsLikeTemp();
-                    long pres = data.getPressure();
-                    long hum = data.getHumidity();
-                    long clouds = data.getClouds();
-                    String tZone = data.getTimeZone();
-                    LocalDateTime tOfUpd = data.getTimeOfUpdate();
-                    String weather = "INSERT INTO FORECAST(CITY,DATE,TEMPERATURE,FEELS_LIKE,PRESSURE,HUMIDITY,CLOUDS,TIME_OF_UPDATE,TIME_ZONE)"
-                            +"VALUES("+"'"+cName+"','"+date+"',"+temp+","+feels_like+","+pres+","+hum+","+clouds+",'"
-                            +tOfUpd+"','"+tZone+"')" +" ON CONFLICT(CITY,DATE) DO UPDATE SET DATE='"+date+"',"+"TEMPERATURE="+
-                            temp+",FEELS_LIKE="+feels_like+",PRESSURE="+pres+",HUMIDITY="+hum+",CLOUDS="+
-                            clouds+",TIME_OF_UPDATE='"+tOfUpd+"',TIME_ZONE='"+tZone+"';";
-                    statement.executeUpdate(weather);
+            if(connection!=null) {
+                statement = connection.createStatement();
+                for (WeatherData data : forecast) {
+                    if (data != null) {
+                        LocalDate date = data.getDate();
+                        double temp = data.getTemp();
+                        double feels_like = data.getFeelsLikeTemp();
+                        long pres = data.getPressure();
+                        long hum = data.getHumidity();
+                        long clouds = data.getClouds();
+                        String tZone = data.getTimeZone();
+                        LocalDateTime tOfUpd = data.getTimeOfUpdate();
+                        String weather = "INSERT INTO FORECAST(CITY,DATE,TEMPERATURE,FEELS_LIKE,PRESSURE,HUMIDITY,CLOUDS,TIME_OF_UPDATE,TIME_ZONE)"
+                                + "VALUES(" + "'" + cName + "','" + date + "'," + temp + "," + feels_like + "," + pres + "," + hum + "," + clouds + ",'"
+                                + tOfUpd + "','" + tZone + "')" + " ON CONFLICT(CITY,DATE) DO UPDATE SET DATE='" + date + "'," + "TEMPERATURE=" +
+                                temp + ",FEELS_LIKE=" + feels_like + ",PRESSURE=" + pres + ",HUMIDITY=" + hum + ",CLOUDS=" +
+                                clouds + ",TIME_OF_UPDATE='" + tOfUpd + "',TIME_ZONE='" + tZone + "';";
+                        statement.executeUpdate(weather);
+                    }
                 }
+                statement.close();
+                connection.close();
             }
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
@@ -482,15 +506,17 @@ public class DBProvider {
         Statement statement;
         try{
             connection=getConnection();
-            statement= connection.createStatement();
-            ResultSet result= statement.executeQuery("SELECT * FROM USERS;");
-            while(result.next()){
-                long userID=result.getLong("USER_ID");
-                users.add(userID);
+            if(connection!=null) {
+                statement = connection.createStatement();
+                ResultSet result = statement.executeQuery("SELECT * FROM USERS;");
+                while (result.next()) {
+                    long userID = result.getLong("USER_ID");
+                    users.add(userID);
                 }
-            result.close();
-            statement.close();
-            connection.close();
+                result.close();
+                statement.close();
+                connection.close();
+            }
         }
         catch (SQLException e){
             logger.warning(e.getMessage());

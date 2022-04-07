@@ -1,5 +1,7 @@
 package Ability;
 import org.weatherBot.Bot;
+
+import java.sql.SQLException;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -22,11 +24,12 @@ public class Notify implements Runnable {
     @Override
     public void run() {
         log.info("Started " + this.getClass().toString());
-        ArrayList<Long> usersID=DBProvider.getUsersIDFromDB();
+        ArrayList<Long> usersID;
         String timeZone;
             while (true) {
                     try {
                         Thread.sleep(SLEEPING_TIME);
+                        usersID=DBProvider.getUsersIDFromDB();
                     for (Long userID : usersID) {
                         notifyCity=DBProvider.getNotificationCity(userID);
                         notificationTime=DBProvider.getNotificationTime(userID);
