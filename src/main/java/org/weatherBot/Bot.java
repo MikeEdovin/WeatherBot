@@ -254,12 +254,12 @@ public class Bot extends TelegramLongPollingBot {
         StringBuilder text = new StringBuilder();
         text.append("*This is help message*").append(END_LINE).append(END_LINE);
         text.append("[/start](/start) - show main menu").append(END_LINE);
-        text.append("[/help](/help) - show help message").append(END_LINE);
-        text.append("[/weather now](/weather now) - show current weather ").append(END_LINE);
-        text.append("[/for 48 hours](/for 48 hours) - show weather forecast for 48 hours ").append(END_LINE);
-        text.append("[/for 7 days](/for 7 days) - show weather forecast for 7 days ").append(END_LINE);
-        text.append("[/notifications](/notifications) - set weather notifications ").append(END_LINE);
-        text.append("[/settings](/settings) - show settings ").append(END_LINE);
+        text.append("Help "+Emojies.HELP.getEmoji()+" - show help message").append(END_LINE);
+        text.append("Weather now " +Emojies.PARTLY_SUNNY.getEmoji()+" - show current weather ").append(END_LINE);
+        text.append("For "+Emojies.FOR_48_HOURS.getEmoji()+" hours - show weather forecast for 48 hours ").append(END_LINE);
+        text.append("For "+Emojies.FOR_7_DAYS.getEmoji()+" days - show weather forecast for 7 days ").append(END_LINE);
+        text.append("Notifications "+Emojies.NOTIFICATIONS.getEmoji()+" - set weather notifications ").append(END_LINE);
+        text.append("Settings "+Emojies.SETTINGS.getEmoji()+" - show settings ").append(END_LINE);
         sendMessage.setText(text.toString());
         return sendMessage;
     }
