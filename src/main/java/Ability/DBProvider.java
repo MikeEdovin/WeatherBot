@@ -32,7 +32,8 @@ public class DBProvider {
                         ("(USER_ID bigserial PRIMARY KEY NOT NULL," +
                                 "NOTIFICATION_TIME time with time zone," +
                                 "NOTIFICATION_CITY TEXT," +
-                                "CHAT_ID TEXT)");
+                                "CHAT_ID TEXT," +
+                                "NOTIFICATION_DAYS INT [] DEFAULT '{1,2,3,4,5}')");
                 String cities = "CREATE TABLE CITIES " +
                         ("(NAME TEXT PRIMARY KEY NOT NULL UNIQUE , " +
                                 " LATITUDE    double precision     NOT NULL, " +
@@ -77,6 +78,37 @@ public class DBProvider {
         }
         catch (SQLException e){
             e.printStackTrace();
+        }
+    }
+    public void addNotificationsDays() {
+        Statement statement;
+        try {
+            if (connection != null) {
+                connection.setAutoCommit(false);
+                statement = connection.createStatement();
+                String drop = "ALTER TABLE USERS " +
+                        "ADD NOTIFICATION_DAYS INT [] DEFAULT '{1,2,3,4,5}';";
+                statement.executeUpdate(drop);
+                System.out.println("Succes!");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void addNotificationsDay(long userID,int day){
+        Logger logger = Logger.getGlobal();
+        Statement statement;
+        try {
+            if(connection!=null) {
+                statement = connection.createStatement();
+                String update = "UPDATE USERS SET NOTIFICATION_DAYS='{" + day +  "}' WHERE USER_ID=" + userID + ";";
+                System.out.println(update);
+                statement.executeUpdate(update);
+                statement.close();
+            }
+        } catch (SQLException e) {
+            logger.warning(e.getMessage());
         }
     }
     public CityData[] getLastThree(long userID){

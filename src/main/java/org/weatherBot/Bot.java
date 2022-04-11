@@ -1,14 +1,22 @@
 package org.weatherBot;
 
 import Ability.CityData;
+import Ability.Days;
 import Ability.Emojies;
 import Ability.WeatherData;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Location;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -16,6 +24,7 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
@@ -44,13 +53,88 @@ public class Bot extends TelegramLongPollingBot {
     }
     @Override
     public void onUpdateReceived(Update update) {
+        if(update.hasMessage()) {
             logger.info("update " + update.getMessage().getText());
             receiveQueue.add(update);
-        if(update.getMessage().hasLocation()){
-            Location location=update.getMessage().getLocation();
-            logger.info("location "+location.getLongitude()+" "+location.getLatitude());
-            receiveQueue.add(location);
+            if (update.getMessage().hasLocation()) {
+                Location location = update.getMessage().getLocation();
+                logger.info("location " + location.getLongitude() + " " + location.getLatitude());
+                receiveQueue.add(location);
+            }
+        }else if(update.hasCallbackQuery()){
+            Message message=update.getCallbackQuery().getMessage();
+            String chatID=String.valueOf(update.getCallbackQuery().getMessage().getChatId());
+            AnswerCallbackQuery answerCallbackQuery=new AnswerCallbackQuery();
+            answerCallbackQuery.setCallbackQueryId(update.getCallbackQuery().getId());
+            answerCallbackQuery.setText("Was set");
+           int messageID=message.getMessageId();
+            CallbackQuery query=update.getCallbackQuery();
+            EditMessageReplyMarkup editMessageReplyMarkup=new EditMessageReplyMarkup();
+            InlineKeyboardMarkup keyboardMarkup=updateKeyBoard(query);
+            editMessageReplyMarkup.setReplyMarkup(keyboardMarkup);
+            editMessageReplyMarkup.setMessageId(messageID);
+            editMessageReplyMarkup.setChatId(chatID);
+            try{
+                execute(answerCallbackQuery);
+                execute(editMessageReplyMarkup);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
         }
+    }
+    private InlineKeyboardMarkup updateKeyBoard(CallbackQuery query){
+        InlineKeyboardMarkup newKeyboardMarkup=new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>>newKeyboard=new ArrayList<>();
+        List<InlineKeyboardButton>newRow1=new ArrayList<>();
+        List<InlineKeyboardButton>newRow2=new ArrayList<>();
+        List<InlineKeyboardButton>newRow3=new ArrayList<>();
+        InlineKeyboardMarkup keyboardMarkup=query.getMessage().getReplyMarkup();
+        List<List<InlineKeyboardButton>>keyboard=keyboardMarkup.getKeyboard();
+        List<InlineKeyboardButton>row1=keyboard.get(0);
+        List<InlineKeyboardButton>row2=keyboard.get(1);
+        List<InlineKeyboardButton>row3=keyboard.get(2);
+        for(InlineKeyboardButton button:row1){
+            InlineKeyboardButton newButton = new InlineKeyboardButton();
+                if(Objects.equals(button.getCallbackData(), query.getData())) {
+                    newButton.setText(button.getText() + " " + Emojies.DONE.getEmoji());
+                    newButton.setCallbackData(button.getCallbackData());
+                }
+                else{
+                    newButton.setText(button.getText());
+                    newButton.setCallbackData(button.getCallbackData());
+                }
+                newRow1.add(newButton);
+        }
+
+        for(InlineKeyboardButton button:row2){
+            InlineKeyboardButton newButton = new InlineKeyboardButton();
+            if(Objects.equals(button.getCallbackData(), query.getData())) {
+                newButton.setText(button.getText() + " " + Emojies.DONE.getEmoji());
+                newButton.setCallbackData(button.getCallbackData());
+            }
+            else{
+                newButton.setText(button.getText());
+                newButton.setCallbackData(button.getCallbackData());
+            }
+            newRow2.add(newButton);
+        }
+        for(InlineKeyboardButton button:row3){
+            InlineKeyboardButton newButton = new InlineKeyboardButton();
+            if(Objects.equals(button.getCallbackData(), query.getData())) {
+                newButton.setText(button.getText() + " " + Emojies.DONE.getEmoji());
+                newButton.setCallbackData(button.getCallbackData());
+            }
+            else{
+                newButton.setText(button.getText());
+                newButton.setCallbackData(button.getCallbackData());
+            }
+            newRow3.add(newButton);
+        }
+        newKeyboard.add(newRow1);
+        newKeyboard.add(newRow2);
+        newKeyboard.add(newRow3);
+        newKeyboardMarkup.setKeyboard(newKeyboard);
+        return newKeyboardMarkup;
     }
     public void botConnect() {
         logger.setLevel(Level.ALL);
@@ -220,10 +304,37 @@ public class Bot extends TelegramLongPollingBot {
         message.setText("Notifications was set for "+currentCity.getName()+" "+"at "+time);
         return message;
     }
-    public SendMessage sendTimeSettingsMessage(String chatID){
+    public SendMessage sendSetTime(String chatID){
         SendMessage message=new SendMessage();
         message.setChatId(chatID);
         message.setText("Enter notifications time in hh : mm");
+        InlineKeyboardMarkup keyboardMarkup=new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboard= new ArrayList<>();
+        List<InlineKeyboardButton>row=new ArrayList<>();
+        List<InlineKeyboardButton>row2=new ArrayList<>();
+        List<InlineKeyboardButton>row3=new ArrayList<>();
+        Days[] days=Days.values();
+        for(int i=0;i<4;i++) {
+            InlineKeyboardButton button=new InlineKeyboardButton();
+            button.setText(days[i].name());
+            button.setCallbackData(String.valueOf(days[i].getDay()));
+            row.add(button);
+        }
+        for(int i=4;i<7;i++){
+            InlineKeyboardButton button=new InlineKeyboardButton();
+            button.setText(days[i].name());
+            button.setCallbackData(String.valueOf(days[i].getDay()));
+            row2.add(button);
+        }
+        InlineKeyboardButton button=new InlineKeyboardButton();
+        button.setText("Working days");
+        button.setCallbackData("{1,2,3,4,5}");
+        row3.add(button);
+        keyboard.add(row);
+        keyboard.add(row2);
+        keyboard.add(row3);
+        keyboardMarkup.setKeyboard(keyboard);
+        message.setReplyMarkup(keyboardMarkup);
         return message;
     }
 

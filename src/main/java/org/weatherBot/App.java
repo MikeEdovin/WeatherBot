@@ -20,36 +20,41 @@ public class App {
         Bot bot = new Bot(botName, token);
         DBProvider dbProvider=new DBProvider();
         dbProvider.getConnection();
-        MessageReceiver messageReceiver = new MessageReceiver(bot, dbProvider);
-        MessageSender messageSender = new MessageSender(bot);
-        Notify notify = new Notify(bot,dbProvider);
-        bot.botConnect();
-        //sendStartReport(bot, botAdmin);
-
-        Thread receiver = new Thread(messageReceiver);
-        receiver.setDaemon(true);
-        receiver.setName("MsgReceiver");
-        receiver.setPriority(PRIORITY_FOR_RECEIVER);
-        receiver.start();
-
-        Thread sender = new Thread(messageSender);
-        sender.setDaemon(true);
-        sender.setName("MsgSender");
-        sender.setPriority(PRIORITY_FOR_SENDER);
-        sender.start();
-
-        Thread notifyThread = new Thread(notify);
-        notifyThread.setDaemon(true);
-        notifyThread.setName("NotifyThread");
-        notifyThread.start();
 
 
         while (true) {
             String command = getCommand();
             switch (Objects.requireNonNull(command)) {
+                case "start":
+                    MessageReceiver messageReceiver = new MessageReceiver(bot, dbProvider);
+                    MessageSender messageSender = new MessageSender(bot);
+                    Notify notify = new Notify(bot,dbProvider);
+                    bot.botConnect();
+                    //sendStartReport(bot, botAdmin);
+
+                    Thread receiver = new Thread(messageReceiver);
+                    receiver.setDaemon(true);
+                    receiver.setName("MsgReceiver");
+                    receiver.setPriority(PRIORITY_FOR_RECEIVER);
+                    receiver.start();
+
+                    Thread sender = new Thread(messageSender);
+                    sender.setDaemon(true);
+                    sender.setName("MsgSender");
+                    sender.setPriority(PRIORITY_FOR_SENDER);
+                    sender.start();
+
+                    Thread notifyThread = new Thread(notify);
+                    notifyThread.setDaemon(true);
+                    notifyThread.setName("NotifyThread");
+                    notifyThread.start();
+                    break;
                 case "close":
                     dbProvider.closeConnection();
                     log.info("connection was closed");
+                    break;
+                case "add":
+                    dbProvider.addNotificationsDay(Long.valueOf(botAdmin),1);
                     break;
                 case "exit":
                     System.exit(0);

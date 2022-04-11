@@ -21,6 +21,7 @@ public enum Emojies {
     CURRENT("\uD83E\uDE9F"),
     PRESSURE("\uD83C\uDF43"),
     HUMIDITY("\uD83C\uDF2B️"),
+    DONE("✅"),
     ;
     String emojiUnicode;
     Emojies(String code){

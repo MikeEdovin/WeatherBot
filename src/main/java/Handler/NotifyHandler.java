@@ -36,7 +36,7 @@ public class NotifyHandler extends AbstractHandler{
                 break;
             case SEND_TIME_SETTING_MESSAGE:
                 if(city!=null) {
-                    bot.sendQueue.add(bot.sendTimeSettingsMessage(chatID));
+                    bot.sendQueue.add(bot.sendSetTime(chatID));
                 }
                 else{
                     bot.sendQueue.add(bot.sendTimeSettingsError(chatID));
