@@ -104,7 +104,7 @@ public class WeatherProvider {
         long humidity;
         long clouds;
         String timezone;
-        WeatherData[]forecast=new WeatherData[10];
+        WeatherData[]forecast=new WeatherData[8];
         try {
             Object obj = new JSONParser().parse(response);
             JSONObject jsonObject = (JSONObject) obj;
