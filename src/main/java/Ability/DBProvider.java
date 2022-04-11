@@ -440,11 +440,13 @@ public class DBProvider {
                         long clouds = data.getClouds();
                         String tZone = data.getTimeZone();
                         LocalDateTime tOfUpd = data.getTimeOfUpdate();
+                        String clear="DELETE FROM FORECAST WHERE CITY= "+city.getName()+";";
                         String weather = "INSERT INTO FORECAST(CITY,DATE,TEMPERATURE,FEELS_LIKE,PRESSURE,HUMIDITY,CLOUDS,TIME_OF_UPDATE,TIME_ZONE)"
                                 + "VALUES(" + "'" + cName + "','" + date + "'," + temp + "," + feels_like + "," + pres + "," + hum + "," + clouds + ",'"
                                 + tOfUpd + "','" + tZone + "')" + " ON CONFLICT(CITY,DATE) DO UPDATE SET DATE='" + date + "'," + "TEMPERATURE=" +
                                 temp + ",FEELS_LIKE=" + feels_like + ",PRESSURE=" + pres + ",HUMIDITY=" + hum + ",CLOUDS=" +
                                 clouds + ",TIME_OF_UPDATE='" + tOfUpd + "',TIME_ZONE='" + tZone + "';";
+                        statement.executeUpdate(clear);
                         statement.executeUpdate(weather);
                     }
                 }
