@@ -99,18 +99,38 @@ public class DBProvider {
     public void addNotificationsDay(long userID,int day){
         Logger logger = Logger.getGlobal();
         Statement statement;
+        int position=day-1;
         try {
             if(connection!=null) {
                 statement = connection.createStatement();
-                String update = "UPDATE USERS SET NOTIFICATION_DAYS='{" + day +  "}' WHERE USER_ID=" + userID + ";";
+                String update = "UPDATE USERS SET NOTIFICATION_DAYS["+position+"]='"+day+"' WHERE USER_ID=" + userID + ";";
                 System.out.println(update);
                 statement.executeUpdate(update);
                 statement.close();
+
             }
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
     }
+    public void deleteNotificationsDay(long userID,int day) {
+        Logger logger = Logger.getGlobal();
+        Statement statement;
+        int position = day - 1;
+        try {
+            if (connection != null) {
+                statement = connection.createStatement();
+                String update = "UPDATE USERS SET NOTIFICATION_DAYS[" + position + "]='" + 0 + "' WHERE USER_ID=" + userID + ";";
+                System.out.println(update);
+                statement.executeUpdate(update);
+                statement.close();
+
+            }
+        } catch (SQLException e) {
+            logger.warning(e.getMessage());
+        }
+    }
+
     public CityData[] getLastThree(long userID){
         CityData[] last=new CityData[3];
         int nrOfCities=0;

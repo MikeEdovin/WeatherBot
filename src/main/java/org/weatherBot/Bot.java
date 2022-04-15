@@ -1,15 +1,12 @@
 package org.weatherBot;
 
-import Ability.CityData;
-import Ability.Days;
-import Ability.Emojies;
-import Ability.WeatherData;
+import Ability.*;
+import com.vdurmont.emoji.EmojiParser;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -39,9 +36,13 @@ public class Bot extends TelegramLongPollingBot {
     public final Queue<Object> receiveQueue = new ConcurrentLinkedQueue<>();
     private final String botName;
     private final String botToken;
+    private DBProvider provider;
     public Bot(String name, String token){
         this.botName=name;
         this.botToken=token;
+    }
+    public void setProvider(DBProvider p){
+        this.provider=p;
     }
     @Override
     public String getBotUsername() {
@@ -66,8 +67,7 @@ public class Bot extends TelegramLongPollingBot {
             String chatID=String.valueOf(update.getCallbackQuery().getMessage().getChatId());
             AnswerCallbackQuery answerCallbackQuery=new AnswerCallbackQuery();
             answerCallbackQuery.setCallbackQueryId(update.getCallbackQuery().getId());
-            answerCallbackQuery.setText("Was set");
-           int messageID=message.getMessageId();
+            int messageID=message.getMessageId();
             CallbackQuery query=update.getCallbackQuery();
             EditMessageReplyMarkup editMessageReplyMarkup=new EditMessageReplyMarkup();
             InlineKeyboardMarkup keyboardMarkup=updateKeyBoard(query);
@@ -83,58 +83,46 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
     private InlineKeyboardMarkup updateKeyBoard(CallbackQuery query){
-        InlineKeyboardMarkup newKeyboardMarkup=new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>>newKeyboard=new ArrayList<>();
-        List<InlineKeyboardButton>newRow1=new ArrayList<>();
-        List<InlineKeyboardButton>newRow2=new ArrayList<>();
-        List<InlineKeyboardButton>newRow3=new ArrayList<>();
+        long userID=query.getMessage().getChatId();
         InlineKeyboardMarkup keyboardMarkup=query.getMessage().getReplyMarkup();
         List<List<InlineKeyboardButton>>keyboard=keyboardMarkup.getKeyboard();
-        List<InlineKeyboardButton>row1=keyboard.get(0);
-        List<InlineKeyboardButton>row2=keyboard.get(1);
-        List<InlineKeyboardButton>row3=keyboard.get(2);
-        for(InlineKeyboardButton button:row1){
-            InlineKeyboardButton newButton = new InlineKeyboardButton();
-                if(Objects.equals(button.getCallbackData(), query.getData())) {
-                    newButton.setText(button.getText() + " " + Emojies.DONE.getEmoji());
-                    newButton.setCallbackData(button.getCallbackData());
+        for(List<InlineKeyboardButton>row:keyboard) {
+            for (InlineKeyboardButton button : row) {
+                if (!query.getData().contains("{")) {
+                    if (Objects.equals(button.getCallbackData(), query.getData()) &&
+                            !button.getText().contains(Emojies.DONE.getEmoji())) {
+                        button.setText(button.getText() + " " + Emojies.DONE.getEmoji());
+                        provider.addNotificationsDay(userID, Integer.valueOf(query.getData()));
+                    } else if (Objects.equals(button.getCallbackData(), query.getData()) &&
+                            button.getText().contains(Emojies.DONE.getEmoji())) {
+                        button.setText(EmojiParser.removeAllEmojis(button.getText()));
+                        provider.deleteNotificationsDay(userID, Integer.valueOf(query.getData()));
+                    }
                 }
                 else{
-                    newButton.setText(button.getText());
-                    newButton.setCallbackData(button.getCallbackData());
-                }
-                newRow1.add(newButton);
-        }
+                    int[]days= {1,2,3,4,5};
+                    if (Objects.equals(button.getCallbackData(), query.getData()) &&
+                            !button.getText().contains(Emojies.DONE.getEmoji())) {
+                        button.setText(button.getText() + " " + Emojies.DONE.getEmoji());
+                        for(int item:days) {
+                            provider.addNotificationsDay(userID, item);
+                                }
+                        provider.deleteNotificationsDay(userID,6);
+                        provider.deleteNotificationsDay(userID,7);
 
-        for(InlineKeyboardButton button:row2){
-            InlineKeyboardButton newButton = new InlineKeyboardButton();
-            if(Objects.equals(button.getCallbackData(), query.getData())) {
-                newButton.setText(button.getText() + " " + Emojies.DONE.getEmoji());
-                newButton.setCallbackData(button.getCallbackData());
+                    } else if (Objects.equals(button.getCallbackData(), query.getData()) &&
+                            button.getText().contains(Emojies.DONE.getEmoji())) {
+                        button.setText(EmojiParser.removeAllEmojis(button.getText()));
+                        for(int item:days) {
+                            provider.deleteNotificationsDay(userID, item);
+                        }
+                    }
+
+
+                }
             }
-            else{
-                newButton.setText(button.getText());
-                newButton.setCallbackData(button.getCallbackData());
-            }
-            newRow2.add(newButton);
         }
-        for(InlineKeyboardButton button:row3){
-            InlineKeyboardButton newButton = new InlineKeyboardButton();
-            if(Objects.equals(button.getCallbackData(), query.getData())) {
-                newButton.setText(button.getText() + " " + Emojies.DONE.getEmoji());
-                newButton.setCallbackData(button.getCallbackData());
-            }
-            else{
-                newButton.setText(button.getText());
-                newButton.setCallbackData(button.getCallbackData());
-            }
-            newRow3.add(newButton);
-        }
-        newKeyboard.add(newRow1);
-        newKeyboard.add(newRow2);
-        newKeyboard.add(newRow3);
-        newKeyboardMarkup.setKeyboard(newKeyboard);
-        return newKeyboardMarkup;
+        return keyboardMarkup;
     }
     public void botConnect() {
         logger.setLevel(Level.ALL);

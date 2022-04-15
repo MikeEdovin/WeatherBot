@@ -29,6 +29,7 @@ public class App {
                     MessageReceiver messageReceiver = new MessageReceiver(bot, dbProvider);
                     MessageSender messageSender = new MessageSender(bot);
                     Notify notify = new Notify(bot,dbProvider);
+                    bot.setProvider(dbProvider);
                     bot.botConnect();
                     //sendStartReport(bot, botAdmin);
 
