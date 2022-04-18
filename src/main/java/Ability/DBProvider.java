@@ -33,7 +33,7 @@ public class DBProvider {
                                 "NOTIFICATION_TIME time with time zone," +
                                 "NOTIFICATION_CITY TEXT," +
                                 "CHAT_ID TEXT," +
-                                "NOTIFICATION_DAYS INT [7] DEFAULT '{1,2,3,4,5,0,0}')");
+                                "NOTIFICATION_DAYS INT [6] DEFAULT '{1,2,3,4,5,0,0}')");
                 String cities = "CREATE TABLE CITIES " +
                         ("(NAME TEXT PRIMARY KEY NOT NULL UNIQUE , " +
                                 " LATITUDE    double precision     NOT NULL, " +
@@ -84,13 +84,16 @@ public class DBProvider {
         Statement statement;
         try {
             if (connection != null) {
-                connection.setAutoCommit(false);
                 statement = connection.createStatement();
-                String drop="ALTER TABLE USERS DROP COLUMN NOTIFICATION_DAYS;";
+                String drop="ALTER TABLE USERS DROP  COLUMN  NOTIFICATION_DAYS;";
                 String add = "ALTER TABLE USERS " +
-                        "ADD NOTIFICATION_DAYS INT [7] DEFAULT '{1,2,3,4,5,0,0}';";
+                        "ADD NOTIFICATION_DAYS INT [] DEFAULT '{1,2,3,4,5,0,0}';";
+                String addConstraint="ALTER TABLE USERS ADD CONSTRAINT arr_len CHECK (array_length(notification_days, 0) < 6);";
+                //statement.executeUpdate(drop);
                 statement.executeUpdate(add);
+                statement.executeUpdate(addConstraint);
                 System.out.println("Succes!");
+                statement.close();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -100,11 +103,10 @@ public class DBProvider {
     public void addNotificationsDay(long userID,int day){
         Logger logger = Logger.getGlobal();
         Statement statement;
-        int position=day-1;
         try {
             if(connection!=null) {
                 statement = connection.createStatement();
-                String update = "UPDATE USERS SET NOTIFICATION_DAYS["+position+"]='"+day+"' WHERE USER_ID=" + userID + ";";
+                String update = "UPDATE USERS SET NOTIFICATION_DAYS["+day+"]='"+day+"' WHERE USER_ID=" + userID + ";";
                 System.out.println(update);
                 statement.executeUpdate(update);
                 statement.close();
@@ -117,11 +119,10 @@ public class DBProvider {
     public void deleteNotificationsDay(long userID,int day) {
         Logger logger = Logger.getGlobal();
         Statement statement;
-        int position = day - 1;
         try {
             if (connection != null) {
                 statement = connection.createStatement();
-                String update = "UPDATE USERS SET NOTIFICATION_DAYS[" + position + "]='" + 0 + "' WHERE USER_ID=" + userID + ";";
+                String update = "UPDATE USERS SET NOTIFICATION_DAYS[" + day + "]='" + 0 + "' WHERE USER_ID=" + userID + ";";
                 System.out.println(update);
                 statement.executeUpdate(update);
                 statement.close();
@@ -154,10 +155,12 @@ public class DBProvider {
         }
         return days;
     }
-    public boolean isNotificationDay(int day,long userID){
-        Integer[]days=getNotificationDays(userID);
-        if (days[day-1]!=0){
-            return true;
+    public boolean isNotificationDay(int day,long userID) {
+        Integer[] days = getNotificationDays(userID);
+        for (int item : days) {
+            if (day == item) {
+                return true;
+            }
         }
         return false;
     }
