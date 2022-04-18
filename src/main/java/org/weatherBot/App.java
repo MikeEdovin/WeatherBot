@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import java.io.*;
 import java.sql.Array;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -62,6 +63,9 @@ public class App {
                 case"drop":
                     dbProvider.addNotificationsDays();
                     break;
+                case"update":
+                    sendNewVersionMessage(bot,dbProvider);
+                    break;
                 case "exit":
                     System.exit(0);
                 case "create":
@@ -79,6 +83,15 @@ public class App {
         sendMessage.setChatId(BOT_ADMIN);
         sendMessage.setText("Запустился");
         bot.sendQueue.add(sendMessage);
+    }
+    private static void sendNewVersionMessage(Bot bot,DBProvider provider){
+        SendMessage message=new SendMessage();
+        ArrayList<Long>usersID= provider.getUsersIDFromDB();
+        for(long id:usersID){
+            message.setChatId(String.valueOf(id));
+            message.setText("Release V 1.1. Now you can choose days for notifications, by default were set working days");
+            bot.sendQueue.add(message);
+        }
     }
 
     public static String getCommand(){
