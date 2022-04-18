@@ -50,7 +50,7 @@ public class NotifyHandler extends AbstractHandler{
                 }
                if(time!=null) {
                    provider.setNotification(userID,chatID,city.getName(),time);
-                   bot.sendQueue.add(bot.sendNotificationWasSet(chatID,
+                   bot.sendQueue.add(bot.sendNotificationWasSet(userID,chatID,
                            provider.getCurrentCityDataFromDB(userID),
                            provider.getNotificationTime(userID)));
                }

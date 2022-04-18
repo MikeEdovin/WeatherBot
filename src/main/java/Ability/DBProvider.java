@@ -164,6 +164,15 @@ public class DBProvider {
         }
         return false;
     }
+    public boolean hasAtLeastOneNotDay(long userID){
+        Integer[] days=getNotificationDays(userID);
+        for(int item:days){
+            if(item!=0){
+                return true;
+            }
+        }
+        return false;
+    }
 
     public CityData[] getLastThree(long userID){
         CityData[] last=new CityData[3];

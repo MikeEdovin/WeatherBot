@@ -263,10 +263,24 @@ public class Bot extends TelegramLongPollingBot {
         return message;
     }
 
-    public SendMessage sendNotificationWasSet(String chatID, CityData currentCity, LocalTime time) {
-        SendMessage message=new SendMessage();
+    public SendMessage sendNotificationWasSet(long userID,String chatID, CityData currentCity, LocalTime time) {
+        SendMessage message = new SendMessage();
         message.setChatId(chatID);
-        message.setText("Notifications was set for "+currentCity.getName()+" "+"at "+time);
+        Days[] days=Days.values();
+        StringBuilder builder=new StringBuilder();
+        if(provider.hasAtLeastOneNotDay(userID)) {
+            for (Days day : days) {
+                if (provider.isNotificationDay(day.getDay(), userID)) {
+                    builder.append(day.name()).append(", ");
+                }
+            }
+            int lastCommaIndex = builder.lastIndexOf(",");
+            builder.deleteCharAt(lastCommaIndex);
+            message.setText("Notifications was set for " + currentCity.getName() + " for " + builder.toString() + " at " + time);
+
+        }else{
+            message.setText("Please, choose at least one day for notifications");
+        }
         return message;
     }
     public SendMessage sendSetTime(String chatID,long userID){
