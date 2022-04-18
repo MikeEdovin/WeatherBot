@@ -33,7 +33,7 @@ public class DBProvider {
                                 "NOTIFICATION_TIME time with time zone," +
                                 "NOTIFICATION_CITY TEXT," +
                                 "CHAT_ID TEXT," +
-                                "NOTIFICATION_DAYS INT [] DEFAULT '{1,2,3,4,5}')");
+                                "NOTIFICATION_DAYS INT [7] DEFAULT '{1,2,3,4,5,0,0}')");
                 String cities = "CREATE TABLE CITIES " +
                         ("(NAME TEXT PRIMARY KEY NOT NULL UNIQUE , " +
                                 " LATITUDE    double precision     NOT NULL, " +
@@ -86,9 +86,10 @@ public class DBProvider {
             if (connection != null) {
                 connection.setAutoCommit(false);
                 statement = connection.createStatement();
-                String drop = "ALTER TABLE USERS " +
-                        "ADD NOTIFICATION_DAYS INT [] DEFAULT '{1,2,3,4,5}';";
-                statement.executeUpdate(drop);
+                String drop="ALTER TABLE USERS DROP COLUMN NOTIFICATION_DAYS;";
+                String add = "ALTER TABLE USERS " +
+                        "ADD NOTIFICATION_DAYS INT [7] DEFAULT '{1,2,3,4,5,0,0}';";
+                statement.executeUpdate(add);
                 System.out.println("Succes!");
             }
         } catch (SQLException e) {
@@ -129,6 +130,36 @@ public class DBProvider {
         } catch (SQLException e) {
             logger.warning(e.getMessage());
         }
+    }
+    public Integer[] getNotificationDays(long userID){
+        Array array=null;
+        Integer[]days=new Integer[7];
+        Statement statement;
+        try {
+            if (connection != null) {
+                statement = connection.createStatement();
+                String query = "select notification_days from users where user_id=" + userID + ";";
+                ResultSet result = statement.executeQuery(query);
+                while (result.next()) {
+                    array = result.getArray("NOTIFICATION_DAYS");
+                }
+               days= (Integer[]) array.getArray();
+
+                    result.close();
+                    statement.close();
+                }
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+        return days;
+    }
+    public boolean isNotificationDay(int day,long userID){
+        Integer[]days=getNotificationDays(userID);
+        if (days[day-1]!=0){
+            return true;
+        }
+        return false;
     }
 
     public CityData[] getLastThree(long userID){

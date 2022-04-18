@@ -36,7 +36,7 @@ public class NotifyHandler extends AbstractHandler{
                 break;
             case SEND_TIME_SETTING_MESSAGE:
                 if(city!=null) {
-                    bot.sendQueue.add(bot.sendSetTime(chatID));
+                    bot.sendQueue.add(bot.sendSetTime(chatID,userID));
                 }
                 else{
                     bot.sendQueue.add(bot.sendTimeSettingsError(chatID));
@@ -60,6 +60,9 @@ public class NotifyHandler extends AbstractHandler{
                 break;
             case RESET_NOTIFICATIONS:
                 provider.setNotification(userID,chatID,null,null);
+                for(int i=1;i<8;i++){
+                    provider.deleteNotificationsDay(userID,i);
+                }
                 bot.sendQueue.add(bot.sendResetNotificationsMessage(chatID));
                 break;
         }

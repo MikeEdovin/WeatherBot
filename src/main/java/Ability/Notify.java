@@ -1,6 +1,7 @@
 package Ability;
 import org.weatherBot.Bot;
 
+import java.sql.Array;
 import java.sql.SQLException;
 import java.time.*;
 import java.util.ArrayList;
@@ -36,7 +37,9 @@ public class Notify implements Runnable {
                         notifyCity=provider.getNotificationCity(userID);
                         notificationTime=provider.getNotificationTime(userID);
                         chatID=provider.getChatID(userID);
-                        if (notifyCity != null && notificationTime != null) {
+                        int currentDay=LocalDate.now().getDayOfWeek().getValue();
+                        if (notifyCity != null && notificationTime != null&&
+                                provider.isNotificationDay(currentDay,userID)) {
                             timeZone=provider.getTimeZone(notifyCity.getName());
                             WeatherData data=provider.getCurrentWeatherFromDB(notifyCity);
                                 if (timeZone==null) {

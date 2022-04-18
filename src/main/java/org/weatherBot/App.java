@@ -5,6 +5,8 @@ import Service.MessageReceiver;
 import Service.MessageSender;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import java.io.*;
+import java.sql.Array;
+import java.sql.SQLException;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -13,7 +15,7 @@ public class App {
     private static final int PRIORITY_FOR_SENDER = 1;
     private static final int PRIORITY_FOR_RECEIVER = 3;
 
-    public static void main( String[] args ) {
+    public static void main( String[] args ) throws SQLException {
         String botName=System.getenv("TEST_BOT_NAME");
         String token=System.getenv("TEST_BOT_TOKEN");
         String botAdmin=System.getenv("BOT_ADMIN");
@@ -56,6 +58,9 @@ public class App {
                     break;
                 case "add":
                     dbProvider.addNotificationsDay(Long.valueOf(botAdmin),1);
+                    break;
+                case"drop":
+                    dbProvider.addNotificationsDays();
                     break;
                 case "exit":
                     System.exit(0);

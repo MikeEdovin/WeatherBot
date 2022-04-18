@@ -88,7 +88,6 @@ public class Bot extends TelegramLongPollingBot {
         List<List<InlineKeyboardButton>>keyboard=keyboardMarkup.getKeyboard();
         for(List<InlineKeyboardButton>row:keyboard) {
             for (InlineKeyboardButton button : row) {
-                if (!query.getData().contains("{")) {
                     if (Objects.equals(button.getCallbackData(), query.getData()) &&
                             !button.getText().contains(Emojies.DONE.getEmoji())) {
                         button.setText(button.getText() + " " + Emojies.DONE.getEmoji());
@@ -99,28 +98,6 @@ public class Bot extends TelegramLongPollingBot {
                         provider.deleteNotificationsDay(userID, Integer.valueOf(query.getData()));
                     }
                 }
-                else{
-                    int[]days= {1,2,3,4,5};
-                    if (Objects.equals(button.getCallbackData(), query.getData()) &&
-                            !button.getText().contains(Emojies.DONE.getEmoji())) {
-                        button.setText(button.getText() + " " + Emojies.DONE.getEmoji());
-                        for(int item:days) {
-                            provider.addNotificationsDay(userID, item);
-                                }
-                        provider.deleteNotificationsDay(userID,6);
-                        provider.deleteNotificationsDay(userID,7);
-
-                    } else if (Objects.equals(button.getCallbackData(), query.getData()) &&
-                            button.getText().contains(Emojies.DONE.getEmoji())) {
-                        button.setText(EmojiParser.removeAllEmojis(button.getText()));
-                        for(int item:days) {
-                            provider.deleteNotificationsDay(userID, item);
-                        }
-                    }
-
-
-                }
-            }
         }
         return keyboardMarkup;
     }
@@ -292,35 +269,37 @@ public class Bot extends TelegramLongPollingBot {
         message.setText("Notifications was set for "+currentCity.getName()+" "+"at "+time);
         return message;
     }
-    public SendMessage sendSetTime(String chatID){
+    public SendMessage sendSetTime(String chatID,long userID){
         SendMessage message=new SendMessage();
         message.setChatId(chatID);
-        message.setText("Enter notifications time in hh : mm");
+        message.setText("Choose days and enter notifications time in hh : mm");
         InlineKeyboardMarkup keyboardMarkup=new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> keyboard= new ArrayList<>();
         List<InlineKeyboardButton>row=new ArrayList<>();
         List<InlineKeyboardButton>row2=new ArrayList<>();
-        List<InlineKeyboardButton>row3=new ArrayList<>();
         Days[] days=Days.values();
         for(int i=0;i<4;i++) {
-            InlineKeyboardButton button=new InlineKeyboardButton();
-            button.setText(days[i].name());
-            button.setCallbackData(String.valueOf(days[i].getDay()));
-            row.add(button);
-        }
+                InlineKeyboardButton button = new InlineKeyboardButton();
+            if (!provider.isNotificationDay(i+1, userID)) {
+                button.setText(days[i].name());
+            }else{
+                button.setText(days[i].name()+" "+Emojies.DONE.getEmoji());
+            }
+                button.setCallbackData(String.valueOf(days[i].getDay()));
+                row.add(button);
+            }
         for(int i=4;i<7;i++){
             InlineKeyboardButton button=new InlineKeyboardButton();
-            button.setText(days[i].name());
+            if (!provider.isNotificationDay(i+1, userID)) {
+                button.setText(days[i].name());
+            }else{
+                button.setText(days[i].name()+" "+Emojies.DONE.getEmoji());
+            }
             button.setCallbackData(String.valueOf(days[i].getDay()));
             row2.add(button);
         }
-        InlineKeyboardButton button=new InlineKeyboardButton();
-        button.setText("Working days");
-        button.setCallbackData("{1,2,3,4,5}");
-        row3.add(button);
         keyboard.add(row);
         keyboard.add(row2);
-        keyboard.add(row3);
         keyboardMarkup.setKeyboard(keyboard);
         message.setReplyMarkup(keyboardMarkup);
         return message;
