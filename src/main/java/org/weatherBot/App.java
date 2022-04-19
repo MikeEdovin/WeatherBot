@@ -15,8 +15,8 @@ public class App {
     private static final int PRIORITY_FOR_RECEIVER = 3;
 
     public static void main( String[] args ) throws SQLException {
-        String botName=System.getenv("TEST_BOT_NAME");
-        String token=System.getenv("TEST_BOT_TOKEN");
+        String botName=System.getenv("BOT_NAME");
+        String token=System.getenv("BOT_TOKEN");
         String botAdmin=System.getenv("BOT_ADMIN");
         Bot bot = new Bot(botName, token);
         DBProvider dbProvider=new DBProvider();
@@ -26,7 +26,7 @@ public class App {
         Notify notify = new Notify(bot,dbProvider);
         bot.setProvider(dbProvider);
         bot.botConnect();
-        //sendStartReport(bot, botAdmin);
+        sendStartReport(bot, botAdmin);
 
         Thread receiver = new Thread(messageReceiver);
         receiver.setDaemon(true);
