@@ -5,9 +5,7 @@ import Service.MessageReceiver;
 import Service.MessageSender;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import java.io.*;
-import java.sql.Array;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -23,48 +21,39 @@ public class App {
         Bot bot = new Bot(botName, token);
         DBProvider dbProvider=new DBProvider();
         dbProvider.getConnection();
+        MessageReceiver messageReceiver = new MessageReceiver(bot, dbProvider);
+        MessageSender messageSender = new MessageSender(bot);
+        Notify notify = new Notify(bot,dbProvider);
+        bot.setProvider(dbProvider);
+        bot.botConnect();
+        //sendStartReport(bot, botAdmin);
+
+        Thread receiver = new Thread(messageReceiver);
+        receiver.setDaemon(true);
+        receiver.setName("MsgReceiver");
+        receiver.setPriority(PRIORITY_FOR_RECEIVER);
+        receiver.start();
+
+        Thread sender = new Thread(messageSender);
+        sender.setDaemon(true);
+        sender.setName("MsgSender");
+        sender.setPriority(PRIORITY_FOR_SENDER);
+        sender.start();
+
+        Thread notifyThread = new Thread(notify);
+        notifyThread.setDaemon(true);
+        notifyThread.setName("NotifyThread");
+        notifyThread.start();
 
 
         while (true) {
             String command = getCommand();
             switch (Objects.requireNonNull(command)) {
                 case "start":
-                    MessageReceiver messageReceiver = new MessageReceiver(bot, dbProvider);
-                    MessageSender messageSender = new MessageSender(bot);
-                    Notify notify = new Notify(bot,dbProvider);
-                    bot.setProvider(dbProvider);
-                    bot.botConnect();
-                    //sendStartReport(bot, botAdmin);
-
-                    Thread receiver = new Thread(messageReceiver);
-                    receiver.setDaemon(true);
-                    receiver.setName("MsgReceiver");
-                    receiver.setPriority(PRIORITY_FOR_RECEIVER);
-                    receiver.start();
-
-                    Thread sender = new Thread(messageSender);
-                    sender.setDaemon(true);
-                    sender.setName("MsgSender");
-                    sender.setPriority(PRIORITY_FOR_SENDER);
-                    sender.start();
-
-                    Thread notifyThread = new Thread(notify);
-                    notifyThread.setDaemon(true);
-                    notifyThread.setName("NotifyThread");
-                    notifyThread.start();
                     break;
                 case "close":
                     dbProvider.closeConnection();
                     log.info("connection was closed");
-                    break;
-                case "add":
-                    dbProvider.addNotificationsDay(Long.valueOf(botAdmin),1);
-                    break;
-                case"drop":
-                    dbProvider.addNotificationsDays();
-                    break;
-                case"update":
-                    sendNewVersionMessage(bot,dbProvider);
                     break;
                 case "exit":
                     System.exit(0);
@@ -84,15 +73,7 @@ public class App {
         sendMessage.setText("Запустился");
         bot.sendQueue.add(sendMessage);
     }
-    private static void sendNewVersionMessage(Bot bot,DBProvider provider){
-        SendMessage message=new SendMessage();
-        ArrayList<Long>usersID= provider.getUsersIDFromDB();
-        for(long id:usersID){
-            message.setChatId(String.valueOf(id));
-            message.setText("Release V 1.1. Now you can choose days for notifications, by default were set working days");
-            bot.sendQueue.add(message);
-        }
-    }
+
 
     public static String getCommand(){
         String command;

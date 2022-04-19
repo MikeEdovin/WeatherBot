@@ -355,4 +355,11 @@ public class Bot extends TelegramLongPollingBot {
         sendMessage.setText(text.toString());
         return sendMessage;
     }
+    public  SendMessage sendNewVersionMessage(long userID){
+        SendMessage message=new SendMessage();
+            message.setChatId(String.valueOf(userID));
+            message.setText("Release v 1.1. Now you can choose days for notifications, " +
+                    "by default were set working days");
+            return message;
+    }
 }

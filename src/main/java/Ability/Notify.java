@@ -1,8 +1,5 @@
 package Ability;
 import org.weatherBot.Bot;
-
-import java.sql.Array;
-import java.sql.SQLException;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.logging.Logger;

@@ -70,6 +70,9 @@ public class Parser {
         else if(trimText.equalsIgnoreCase(EmojiParser.removeAllEmojis(Command.RESET_NOTIFICATIONS.description))){
             result.setCommand(Command.RESET_NOTIFICATIONS);
         }
+        else if(trimText.equalsIgnoreCase(Command.SEND_NEW_VERSION_MESSAGE.description)){
+            result.setCommand(Command.SEND_NEW_VERSION_MESSAGE);
+        }
         else{
             result.setCommand(Command.GET_CITY_FROM_INPUT);
         }

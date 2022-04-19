@@ -5,6 +5,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import telegramBot.commands.Command;
 import telegramBot.commands.ParsedCommand;
 
+import java.util.ArrayList;
+
 
 public class SystemHandler extends AbstractHandler{
 
@@ -30,6 +32,11 @@ public class SystemHandler extends AbstractHandler{
             case SETTINGS:
                 bot.sendQueue.add(bot.sendSettingsKeyBoard(chatId));
                 break;
+            case SEND_NEW_VERSION_MESSAGE:
+                ArrayList<Long>usersID= provider.getUsersIDFromDB();
+                for(long id:usersID) {
+                    bot.sendQueue.add(bot.sendNewVersionMessage(id));
+                }
         }
         return "";
     }
