@@ -77,27 +77,7 @@ private DataSource dataSource;
             e.printStackTrace();
         }
     }
-    public void addNotificationsDays() {
-        Statement statement;
-        try {
-            Connection connection= dataSource.getConnection();
-            if (connection != null) {
-                statement = connection.createStatement();
-                String drop="ALTER TABLE USERS DROP  COLUMN  NOTIFICATION_DAYS;";
-                String add = "ALTER TABLE USERS " +
-                        "ADD NOTIFICATION_DAYS INT [] DEFAULT '{1,2,3,4,5,0,0}';";
-                String addConstraint="ALTER TABLE USERS ADD CONSTRAINT arr_len CHECK (array_length(notification_days, 0) < 6);";
-                //statement.executeUpdate(drop);
-                statement.executeUpdate(add);
-                statement.executeUpdate(addConstraint);
-                System.out.println("Succes!");
-                statement.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    
+
     public void addNotificationsDay(long userID,int day){
         Logger logger = Logger.getGlobal();
         Statement statement;
