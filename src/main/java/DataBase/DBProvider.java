@@ -1,4 +1,7 @@
-package Ability;
+package DataBase;
+
+import Ability.CityData;
+import Ability.WeatherData;
 
 import java.sql.*;
 import java.time.*;
@@ -6,24 +9,18 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class DBProvider {
-    private Connection connection;
+private DataSource dataSource;
 
-    public  void getConnection() {
-        String userName=System.getenv("POSTGRE_USER_NAME");
-        String psw=System.getenv("POSTGRE_PSW");
-        String JDBC_DATABASE_URL="jdbc:postgresql://"+System.getenv("JDBC_DATABASE_URI");
-        try {
-            connection=DriverManager.getConnection(JDBC_DATABASE_URL,userName,psw);
-        }
-        catch (SQLException  e){
-            e.printStackTrace();
-        }
+
+    public DBProvider(DataSource dSource) {
+          this.dataSource=dSource;
     }
 
     public  void createTables(){
         Logger logger=Logger.getLogger("create tables");
         Statement statement;
         try{
+            Connection connection= dataSource.getConnection();
             if(connection!=null) {
                 connection.setAutoCommit(false);
                 statement = connection.createStatement();
@@ -83,6 +80,7 @@ public class DBProvider {
     public void addNotificationsDays() {
         Statement statement;
         try {
+            Connection connection= dataSource.getConnection();
             if (connection != null) {
                 statement = connection.createStatement();
                 String drop="ALTER TABLE USERS DROP  COLUMN  NOTIFICATION_DAYS;";
@@ -104,6 +102,7 @@ public class DBProvider {
         Logger logger = Logger.getGlobal();
         Statement statement;
         try {
+            Connection connection= dataSource.getConnection();
             if(connection!=null) {
                 statement = connection.createStatement();
                 String update = "UPDATE USERS SET NOTIFICATION_DAYS["+day+"]='"+day+"' WHERE USER_ID=" + userID + ";";
@@ -120,6 +119,7 @@ public class DBProvider {
         Logger logger = Logger.getGlobal();
         Statement statement;
         try {
+            Connection connection= dataSource.getConnection();
             if (connection != null) {
                 statement = connection.createStatement();
                 String update = "UPDATE USERS SET NOTIFICATION_DAYS[" + day + "]='" + 0 + "' WHERE USER_ID=" + userID + ";";
@@ -137,6 +137,7 @@ public class DBProvider {
         Integer[]days=new Integer[7];
         Statement statement;
         try {
+            Connection connection= dataSource.getConnection();
             if (connection != null) {
                 statement = connection.createStatement();
                 String query = "select notification_days from users where user_id=" + userID + ";";
@@ -180,6 +181,7 @@ public class DBProvider {
 
         Statement statement;
         try{
+            Connection connection= dataSource.getConnection();
             if(connection!=null) {
                 statement = connection.createStatement();
                 String query = "SELECT CITIES.NAME, LATITUDE,LONGITUDE,TIME_OF_UPDATE FROM CITIES " +
@@ -208,6 +210,7 @@ public class DBProvider {
         Logger logger = Logger.getGlobal();
         Statement statement;
         try {
+            Connection connection= dataSource.getConnection();
             if(connection!=null) {
                 statement = connection.createStatement();
                 String query = "SELECT USER_ID FROM USERS WHERE USER_ID=" + userID + ";";
@@ -229,6 +232,7 @@ public class DBProvider {
         Logger logger = Logger.getGlobal();
         Statement statement;
         try {
+            Connection connection= dataSource.getConnection();
             if(connection!=null) {
                 statement = connection.createStatement();
                 String update = "INSERT INTO USERS(USER_ID)" + "VALUES(" + userID + ")" +
@@ -245,6 +249,7 @@ public class DBProvider {
         Statement statement;
         String update;
         try {
+            Connection connection= dataSource.getConnection();
             if(connection!=null) {
                 statement = connection.createStatement();
                 if (time == null) {
@@ -266,6 +271,7 @@ public class DBProvider {
         Statement statement;
         LocalTime result;
         try {
+            Connection connection= dataSource.getConnection();
             if(connection!=null) {
                 statement = connection.createStatement();
                 String query = "SELECT NOTIFICATION_TIME FROM USERS WHERE USER_ID=" + userID + ";";
@@ -288,6 +294,7 @@ public class DBProvider {
         Logger logger = Logger.getGlobal();
         Statement statement;
         try {
+            Connection connection= dataSource.getConnection();
             if(connection!=null) {
                 statement = connection.createStatement();
                 String query = "SELECT NOTIFICATION_CITY,LATITUDE,LONGITUDE FROM USERS " +
@@ -313,6 +320,7 @@ public class DBProvider {
         Statement statement;
         String timeZone;
         try {
+            Connection connection= dataSource.getConnection();
             if(connection!=null) {
                 statement = connection.createStatement();
                 String query = "SELECT TIME_ZONE FROM CURRENT_WEATHER WHERE CITY='" + city + "';";
@@ -333,6 +341,7 @@ public class DBProvider {
         Statement statement;
         String chatID;
         try {
+            Connection connection= dataSource.getConnection();
             if(connection!=null) {
                 statement = connection.createStatement();
                 String query = "SELECT CHAT_ID FROM USERS WHERE USER_ID=" + userID + ";";
@@ -352,6 +361,7 @@ public class DBProvider {
         Logger logger = Logger.getGlobal();
         Statement statement;
         try {
+            Connection connection= dataSource.getConnection();
             if(connection!=null) {
                 statement = connection.createStatement();
                 String defaultCurrent = "UPDATE LAST_CITIES SET IS_CURRENT = 'false' WHERE ID=" + userID;
@@ -371,6 +381,7 @@ public class DBProvider {
         CityData cityData=null;
         Statement statement;
         try{
+            Connection connection= dataSource.getConnection();
             if(connection!=null) {
                 statement = connection.createStatement();
                 String query = "SELECT CITIES.NAME, LATITUDE,LONGITUDE FROM CITIES JOIN LAST_CITIES  ON LAST_CITIES.NAME=CITIES.NAME  WHERE ID=" + userID +
@@ -391,10 +402,11 @@ public class DBProvider {
         }
         return cityData;
     }
-    public  WeatherData getCurrentWeatherFromDB(CityData current){
+    public WeatherData getCurrentWeatherFromDB(CityData current){
         WeatherData weatherData=null;
         Statement statement;
         try{
+            Connection connection= dataSource.getConnection();
             if(connection!=null) {
                 statement = connection.createStatement();
                 String query = "SELECT DATE, TEMPERATURE,FEELS_LIKE,PRESSURE,HUMIDITY,CLOUDS,TIME_OF_UPDATE,TIME_ZONE FROM CURRENT_WEATHER WHERE CITY='" + current.getName() +
@@ -429,6 +441,7 @@ public class DBProvider {
         int nrOfItems=0;
         Statement statement;
         try{
+            Connection connection= dataSource.getConnection();
             if(connection!=null) {
                 statement = connection.createStatement();
                 String query = "SELECT DATE, TEMPERATURE,FEELS_LIKE,PRESSURE,HUMIDITY,CLOUDS,TIME_OF_UPDATE,TIME_ZONE FROM FORECAST WHERE CITY='" + current.getName() +
@@ -476,6 +489,7 @@ public class DBProvider {
         Logger logger = Logger.getGlobal();
         Statement statement;
         try {
+            Connection connection= dataSource.getConnection();
             if(connection!=null) {
                 statement = connection.createStatement();
                 String insertCityToCities = "INSERT INTO CITIES(NAME, LATITUDE, LONGITUDE)" +
@@ -504,6 +518,7 @@ public class DBProvider {
         String tZone= data.getTimeZone();
         LocalDateTime tOfUpd=data.getTimeOfUpdate();
         try {
+            Connection connection= dataSource.getConnection();
             if(connection!=null) {
                 statement = connection.createStatement();
                 String current = "INSERT INTO CURRENT_WEATHER(CITY,DATE,TEMPERATURE,FEELS_LIKE,PRESSURE,HUMIDITY,CLOUDS,TIME_OF_UPDATE,TIME_ZONE)"
@@ -523,6 +538,7 @@ public class DBProvider {
         Statement statement;
         String cName= city.getName();
         try {
+            Connection connection= dataSource.getConnection();
             if(connection!=null) {
                 statement = connection.createStatement();
                 String clear="DELETE FROM FORECAST WHERE CITY= '"+city.getName()+"';";
@@ -558,6 +574,7 @@ public class DBProvider {
 
         Statement statement;
         try{
+            Connection connection= dataSource.getConnection();
             if(connection!=null) {
                 statement = connection.createStatement();
                 ResultSet result = statement.executeQuery("SELECT * FROM USERS;");
@@ -577,6 +594,7 @@ public class DBProvider {
 public void closeConnection(){
         Logger logger = Logger.getLogger("Close connection");
         try{
+            Connection connection= dataSource.getConnection();
             connection.close();
         } catch (SQLException e) {
             logger.warning(e.getMessage());

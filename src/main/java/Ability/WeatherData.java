@@ -29,7 +29,7 @@ public class WeatherData implements Serializable {
     public double getFeelsLikeTemp(){return this.feelsLikeTemp;}
     public LocalDateTime getTimeOfUpdate(){return this.timeOfUpdate;}
     public String getTimeZone(){return this.timeZone;}
-    void setMeasurements(LocalDate date,
+    public void setMeasurements(LocalDate date,
                          double temp, long pressure, long humidity,
                          double feelsLikeTemp, Long clouds, LocalDateTime timeOfUpdate,
                          String timeZone){

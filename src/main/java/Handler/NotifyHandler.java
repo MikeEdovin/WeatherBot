@@ -1,7 +1,7 @@
 package Handler;
 
 import Ability.CityData;
-import Ability.DBProvider;
+import DataBase.DBProvider;
 import org.weatherBot.Bot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegramBot.commands.Command;
@@ -16,7 +16,7 @@ public class NotifyHandler extends AbstractHandler{
         super(b,provider);
     }
     @Override
-    public String operate(String chatID, ParsedCommand parsedCommand, Update update) {
+    public void operate(String chatID, ParsedCommand parsedCommand, Update update) {
         Long userID=update.getMessage().getFrom().getId();
         if(provider.userIsInDB(userID)==false){
             provider.addUserToDB(userID);
@@ -66,7 +66,6 @@ public class NotifyHandler extends AbstractHandler{
                 bot.sendQueue.add(bot.sendResetNotificationsMessage(chatID));
                 break;
         }
-        return "";
     }
 
 

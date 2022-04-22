@@ -1,6 +1,7 @@
 package org.weatherBot;
 
 import Ability.*;
+import DataBase.DBProvider;
 import com.vdurmont.emoji.EmojiParser;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;

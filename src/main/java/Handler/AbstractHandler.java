@@ -1,9 +1,9 @@
 package Handler;
 
+import DataBase.DBProvider;
 import org.weatherBot.Bot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegramBot.commands.ParsedCommand;
-import Ability.DBProvider;
 public abstract class AbstractHandler {
     Bot bot;
     DBProvider provider;
@@ -12,5 +12,5 @@ public abstract class AbstractHandler {
         bot=b;
         provider=dbProvider;
     }
-    public abstract String operate(String chatId, ParsedCommand parsedCommand, Update update);
+    public abstract void operate(String chatId, ParsedCommand parsedCommand, Update update);
 }

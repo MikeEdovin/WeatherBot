@@ -1,6 +1,8 @@
 package org.weatherBot;
-import Ability.DBProvider;
+
 import Ability.Notify;
+import DataBase.DBProvider;
+import DataBase.DataSource;
 import Service.MessageReceiver;
 import Service.MessageSender;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -15,12 +17,11 @@ public class App {
     private static final int PRIORITY_FOR_RECEIVER = 3;
 
     public static void main( String[] args ) throws SQLException {
-        String botName=System.getenv("BOT_NAME");
-        String token=System.getenv("BOT_TOKEN");
+        String botName=System.getenv("TEST_BOT_NAME");
+        String token=System.getenv("TEST_BOT_TOKEN");
         String botAdmin=System.getenv("BOT_ADMIN");
         Bot bot = new Bot(botName, token);
-        DBProvider dbProvider=new DBProvider();
-        dbProvider.getConnection();
+        DBProvider dbProvider=new DBProvider(DataSource.getInstance());
         MessageReceiver messageReceiver = new MessageReceiver(bot, dbProvider);
         MessageSender messageSender = new MessageSender(bot);
         Notify notify = new Notify(bot,dbProvider);

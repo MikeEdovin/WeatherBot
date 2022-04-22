@@ -1,5 +1,5 @@
 package Handler;
-import Ability.DBProvider;
+import DataBase.DBProvider;
 import org.weatherBot.Bot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import telegramBot.commands.Command;
@@ -14,7 +14,7 @@ public class SystemHandler extends AbstractHandler{
         super(b, provider);
     }
     @Override
-    public String operate(String chatId, ParsedCommand parsedCommand, Update update) {
+    public void operate(String chatId, ParsedCommand parsedCommand, Update update) {
         Command command=parsedCommand.getCommand();
         long userID=update.getMessage().getFrom().getId();
         provider.addUserToDB(userID);
@@ -38,6 +38,5 @@ public class SystemHandler extends AbstractHandler{
                     bot.sendQueue.add(bot.sendNewVersionMessage(id));
                 }
         }
-        return "";
     }
 }

@@ -1,9 +1,9 @@
 package Service;
 
-import Ability.DBProvider;
+
+import DataBase.DBProvider;
 import Handler.*;
 import org.weatherBot.Bot;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -23,17 +23,14 @@ public class MessageReceiver implements Runnable{
         this.bot=b;
         this.provider=dbProvider;
         parser=new Parser(bot.getBotUsername());
-
     }
     @Override
     public void run() {
         log.info("[STARTED] MsgReceiver.  Bot class: " + bot.getBotUsername());
         while (true) {
             for (Object object = bot.receiveQueue.poll(); object != null; object = bot.receiveQueue.poll()) {
-                if (object != null) {
-                    log.info("New object for analyze in queue " + object);
-                    analyze(object);
-                }
+                log.info("New object for analyze in queue " + object);
+                analyze(object);
             }
             try {
                 int WAIT_FOR_NEW_MESSAGE_DELAY = 1000;
@@ -68,35 +65,22 @@ public class MessageReceiver implements Runnable{
             parsedCommand.setCommand(Command.ADD_CITY_TO_USER);
         }
         AbstractHandler handlerForCommand = getHandlerForCommand(parsedCommand.getCommand());
-        String operationResult = handlerForCommand.operate(chatId.toString(), parsedCommand, update);
-        if (!"".equals(operationResult)) {
-            SendMessage messageOut = new SendMessage();
-            messageOut.setChatId(String.valueOf(chatId));
-            messageOut.setText(operationResult);
-            bot.sendQueue.add(messageOut);
-        }
+        handlerForCommand.operate(chatId.toString(), parsedCommand, update);
+
     }
     private AbstractHandler getHandlerForCommand(Command command) {
-        if (command == null) {
-            log.warning("Null command accepted.");
-            return new DefaultHandler(bot,provider);
-        }
         switch (command) {
             case START:
             case HELP:
             case SETTINGS:
             case BACK:
             case SEND_NEW_VERSION_MESSAGE:
-                SystemHandler systemHandler = new SystemHandler(bot,provider);
-                log.info("Handler for command[" + command + "] is: " + systemHandler);
-                return systemHandler;
+                return new SystemHandler(bot,provider);
             case NOTIFICATION:
             case SET_NOTIFICATION_TIME:
             case SEND_TIME_SETTING_MESSAGE:
             case RESET_NOTIFICATIONS:
-                NotifyHandler notifyHandler = new NotifyHandler(bot,provider);
-                log.info("Handler for command[" + command + "] is: " + notifyHandler);
-                return notifyHandler;
+                return new NotifyHandler(bot,provider);
             case WEATHER_NOW:
             case GET_CITY_FROM_INPUT:
             case ADD_CITY_TO_USER:
@@ -104,12 +88,8 @@ public class MessageReceiver implements Runnable{
             case SET_CITY:
             case FOR_48_HOURS:
             case FOR_7_DAYS:
-                WeatherHandler weatherHandler=new WeatherHandler(bot,provider);
-                log.info("Handler for command[" + command + "] is: " + weatherHandler);
-                return weatherHandler;
-
+                return new WeatherHandler(bot,provider);
             default:
-                log.info("Handler for command[" + command + "] not Set. Return DefaultHandler");
                 return new DefaultHandler(bot,provider);
         }
     }
