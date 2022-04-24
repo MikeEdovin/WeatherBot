@@ -9,9 +9,9 @@ public class DataSource {
     private Connection connection;
 
 private DataSource(){
-    String userName = System.getenv("POSTGRE_USER_NAME_LOCAL");
-    String psw = System.getenv("POSTGRE_PSW_LOCAL");
-    String JDBC_DATABASE_URL = "jdbc:postgresql://" + System.getenv("JDBC_DATABASE_URI_LOCAL");
+    String userName = System.getenv("POSTGRE_USER_NAME");
+    String psw = System.getenv("POSTGRE_PSW");
+    String JDBC_DATABASE_URL = "jdbc:postgresql://" + System.getenv("JDBC_DATABASE_URI");
     try {
         connection = DriverManager.getConnection(JDBC_DATABASE_URL, userName, psw);
     } catch (SQLException e) {
