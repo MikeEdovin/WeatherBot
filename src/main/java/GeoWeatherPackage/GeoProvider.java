@@ -1,12 +1,9 @@
-package Ability;
-
-
+package GeoWeatherPackage;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.telegram.telegrambots.meta.api.objects.Location;
-
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,16 +16,14 @@ import java.util.logging.Logger;
 public class GeoProvider {
     public static CityData getCityData(String response){
         Logger log=Logger.getLogger("getCityData");
-        CityData cityData=new CityData();
         try {
             Object obj = new JSONParser().parse(response);
             JSONArray jsonArray=(JSONArray) obj;
             JSONObject jsonObject = (JSONObject) jsonArray.get(0);
             String city = (String) jsonObject.get("name");
-            double lon=(double)jsonObject.get("lon");
             double lat=(double)jsonObject.get("lat");
-            cityData.setCityData(city, lon,lat);
-            return cityData;
+            double lon=(double)jsonObject.get("lon");
+            return new CityData(city,lat,lon);
         } catch (ParseException | IndexOutOfBoundsException e) {
             log.warning(e.getMessage());
         }
@@ -73,7 +68,7 @@ public class GeoProvider {
     public static String getCityNameFromLocation(Double latitude, Double longitude) {
         Logger log= Logger.getLogger("Geo provider");
         final String URL_API = "http://api.openweathermap.org/geo/1.0/reverse?lat=";
-        final String APP_ID = "5a1a2ebae8f3c31263be33c36cdc727c";
+        final String APP_ID=System.getenv("WEATHER_MAP_APP_ID");
         HttpURLConnection connection = null;
         try {
             URL u = new URL(URL_API+latitude+"&lon="+longitude+"&limit=1&appid="+APP_ID);
@@ -109,17 +104,15 @@ public class GeoProvider {
 
     public static CityData getCityDataFromLocation(Location location){
         Logger log=Logger.getLogger("getCityDataFromLocation");
-        Double longitude=location.getLongitude();
-        Double latitude= location.getLatitude();
-        CityData cityData=new CityData();
-        String response=getCityNameFromLocation(latitude,longitude);
+        Double lat= location.getLatitude();
+        Double lon=location.getLongitude();
+        String response=getCityNameFromLocation(lat,lon);
         try {
             Object obj = new JSONParser().parse(response);
             JSONArray jsonArray=(JSONArray) obj;
             JSONObject jsonObject = (JSONObject) jsonArray.get(0);
             String city = (String) jsonObject.get("name");
-            cityData.setCityData(city, longitude,latitude);
-            return cityData;
+            return new CityData(city,lat,lon);
         } catch (ParseException e) {
             log.warning(e.getMessage());
         }

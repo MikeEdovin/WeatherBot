@@ -1,7 +1,7 @@
 package DataBase;
 
-import Ability.CityData;
-import Ability.WeatherData;
+import GeoWeatherPackage.CityData;
+import GeoWeatherPackage.WeatherData;
 import java.sql.*;
 import java.time.*;
 import java.util.ArrayList;
@@ -174,7 +174,7 @@ private DataSource dataSource;
                     String name = result.getString("NAME");
                     double lat = result.getDouble("LATITUDE");
                     double lon = result.getDouble("LONGITUDE");
-                    CityData cityData = new CityData(name, lon, lat);
+                    CityData cityData = new CityData(name, lat, lon);
                     last[nrOfCities++] = cityData;
                 }
                 result.close();
@@ -285,7 +285,7 @@ private DataSource dataSource;
                     String name = resultSet.getString("NOTIFICATION_CITY");
                     double lat = resultSet.getDouble("LATITUDE");
                     double lon = resultSet.getDouble("LONGITUDE");
-                    return new CityData(name, lon, lat);
+                    return new CityData(name, lat, lon);
                 }
                 statement.close();
             }
@@ -370,7 +370,7 @@ private DataSource dataSource;
                     String name = result.getString("NAME");
                     double lat = result.getDouble("LATITUDE");
                     double lon = result.getDouble("LONGITUDE");
-                    cityData = new CityData(name, lon, lat);
+                    cityData = new CityData(name, lat, lon);
                 }
                 result.close();
                 statement.close();

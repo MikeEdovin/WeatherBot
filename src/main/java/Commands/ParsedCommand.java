@@ -1,4 +1,4 @@
-package telegramBot.commands;
+package Commands;
 
 public class ParsedCommand {
     Command command;

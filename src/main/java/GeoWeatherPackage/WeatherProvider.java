@@ -1,4 +1,4 @@
-package Ability;
+package GeoWeatherPackage;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

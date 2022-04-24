@@ -1,7 +1,5 @@
-package Ability;
+package GeoWeatherPackage;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.telegram.telegrambots.meta.api.objects.Location;
 
@@ -15,21 +13,20 @@ public class GeoProviderTest {
     public void getCityData() {
         double latitude=59.9387;
         double longitude=30.3162;
-        CityData cityData=new CityData();
-        cityData.setCityData("Saint Petersburg",longitude,latitude);
+        CityData cityData=new CityData("Saint Petersburg", latitude, longitude);
         CityData result=GeoProvider.getCityData(geoResponse);
         assertEquals(cityData.getName(),result.getName());
         assertEquals(cityData.getLatitude(),result.getLatitude(),1);
         assertEquals(cityData.getLongitude(),cityData.getLongitude(),1);
     }
-/*
+
     @Test
     public void getLocationFromCityName() {
         String name="Санкт-Петербург";
         double latitude=59.9387;
         double longitude=30.3162;
-        CityData cityData=new CityData();
-        cityData.setCityData("Saint Petersburg",longitude,latitude);
+        CityData cityData=new CityData("Saint Petersburg",latitude,longitude);
+
         String result=GeoProvider.getLocationFromCityName(name);
         CityData res=GeoProvider.getCityData(result);
         assertEquals(cityData.getName(),res.getName());
@@ -38,17 +35,11 @@ public class GeoProviderTest {
 
 
     }
-
- */
-
-
-
     @Test
     public void getCityNameFromLocation() {
         double latitude=59.9387;
         double longitude=30.3162;
-        CityData cityData=new CityData();
-        cityData.setCityData("Saint Petersburg",longitude,latitude);
+        CityData cityData=new CityData("Saint Petersburg", latitude, longitude);
         CityData result=GeoProvider.getCityData(GeoProvider.getCityNameFromLocation(latitude,longitude));
         assertEquals(cityData.getName(),result.getName());
         assertEquals(cityData.getLatitude(),result.getLatitude(),0.01);
@@ -63,8 +54,7 @@ public class GeoProviderTest {
         Location location=new Location();
         location.setLatitude(latitude);
         location.setLongitude(longitude);
-        CityData cityData=new CityData();
-        cityData.setCityData("Saint Petersburg",longitude,latitude);
+        CityData cityData=new CityData("Saint Petersburg", latitude, longitude);
         CityData result=GeoProvider.getCityDataFromLocation(location);
         assertEquals(cityData.getName(),result.getName());
         assertEquals(cityData.getLatitude(),result.getLatitude(),1);

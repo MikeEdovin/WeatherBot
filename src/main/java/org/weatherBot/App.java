@@ -1,6 +1,6 @@
 package org.weatherBot;
 
-import Ability.Notify;
+import GeoWeatherPackage.Notify;
 import DataBase.DBProvider;
 import DataBase.DataSource;
 import Service.MessageReceiver;

@@ -2,14 +2,14 @@ package Service;
 
 
 import DataBase.DBProvider;
-import Handler.*;
+import Handlers.*;
 import org.weatherBot.Bot;
 import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import telegramBot.commands.Command;
-import telegramBot.commands.ParsedCommand;
-import telegramBot.commands.Parser;
+import Commands.Command;
+import Commands.ParsedCommand;
+import Commands.Parser;
 import java.util.logging.Logger;
 
 public class MessageReceiver implements Runnable{

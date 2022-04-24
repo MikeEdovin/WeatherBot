@@ -1,4 +1,4 @@
-package telegramBot.commands;
+package Commands;
 
 import com.vdurmont.emoji.EmojiParser;
 

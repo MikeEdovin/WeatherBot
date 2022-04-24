@@ -1,11 +1,11 @@
-package Handler;
+package Handlers;
 
-import Ability.CityData;
+import GeoWeatherPackage.CityData;
 import DataBase.DBProvider;
 import org.weatherBot.Bot;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import telegramBot.commands.Command;
-import telegramBot.commands.ParsedCommand;
+import Commands.Command;
+import Commands.ParsedCommand;
 import java.time.LocalTime;
 import java.util.logging.Logger;
 

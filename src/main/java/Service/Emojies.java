@@ -1,4 +1,4 @@
-package Ability;
+package Service;
 import com.vdurmont.emoji.EmojiParser;
 
 public enum Emojies {

@@ -1,4 +1,4 @@
-package Ability;
+package GeoWeatherPackage;
 import DataBase.DBProvider;
 import org.weatherBot.Bot;
 import java.time.*;

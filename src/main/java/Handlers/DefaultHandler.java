@@ -1,9 +1,9 @@
-package Handler;
+package Handlers;
 
 import DataBase.DBProvider;
 import org.weatherBot.Bot;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import telegramBot.commands.ParsedCommand;
+import Commands.ParsedCommand;
 
 public class DefaultHandler extends AbstractHandler{
     public DefaultHandler(Bot b, DBProvider provider){

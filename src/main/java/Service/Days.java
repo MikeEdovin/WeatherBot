@@ -1,4 +1,4 @@
-package Ability;
+package Service;
 
 public enum Days {
     Mon(1),

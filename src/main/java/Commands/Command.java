@@ -1,5 +1,5 @@
-package telegramBot.commands;
-import Ability.Emojies;
+package Commands;
+import Service.Emojies;
 public enum Command{
         NONE(""),
         START("/start"),
