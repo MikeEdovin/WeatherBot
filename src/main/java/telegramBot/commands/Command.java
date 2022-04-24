@@ -20,7 +20,7 @@ public enum Command{
         RESET_NOTIFICATIONS("Reset notification time"),
         SEND_NEW_VERSION_MESSAGE("Sending new version message");
 
-        String description;
+        final String description;
         Command(String text){
             this.description=text;
         }

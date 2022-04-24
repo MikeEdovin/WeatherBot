@@ -2,7 +2,6 @@ package DataBase;
 
 import Ability.CityData;
 import Ability.WeatherData;
-
 import java.sql.*;
 import java.time.*;
 import java.util.ArrayList;
@@ -125,8 +124,9 @@ private DataSource dataSource;
                 while (result.next()) {
                     array = result.getArray("NOTIFICATION_DAYS");
                 }
-               days= (Integer[]) array.getArray();
-
+                if(array!=null) {
+                    days = (Integer[]) array.getArray();
+                }
                     result.close();
                     statement.close();
                 }
@@ -285,8 +285,7 @@ private DataSource dataSource;
                     String name = resultSet.getString("NOTIFICATION_CITY");
                     double lat = resultSet.getDouble("LATITUDE");
                     double lon = resultSet.getDouble("LONGITUDE");
-                    CityData city = new CityData(name, lon, lat);
-                    return city;
+                    return new CityData(name, lon, lat);
                 }
                 statement.close();
             }

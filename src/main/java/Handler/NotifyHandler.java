@@ -17,11 +17,11 @@ public class NotifyHandler extends AbstractHandler{
     }
     @Override
     public void operate(String chatID, ParsedCommand parsedCommand, Update update) {
-        Long userID=update.getMessage().getFrom().getId();
-        if(provider.userIsInDB(userID)==false){
+        long userID=update.getMessage().getFrom().getId();
+        if(!provider.userIsInDB(userID)){
             provider.addUserToDB(userID);
         }
-        CityData city=provider.getCurrentCityDataFromDB(userID);;
+        CityData city=provider.getCurrentCityDataFromDB(userID);
         Command command=parsedCommand.getCommand();
         String timeInput= parsedCommand.getText();
         LocalTime time=null;

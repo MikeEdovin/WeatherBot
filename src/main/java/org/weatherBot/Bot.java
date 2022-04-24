@@ -92,11 +92,11 @@ public class Bot extends TelegramLongPollingBot {
                     if (Objects.equals(button.getCallbackData(), query.getData()) &&
                             !button.getText().contains(Emojies.DONE.getEmoji())) {
                         button.setText(button.getText() + " " + Emojies.DONE.getEmoji());
-                        provider.addNotificationsDay(userID, Integer.valueOf(query.getData()));
+                        provider.addNotificationsDay(userID, Integer.parseInt(query.getData()));
                     } else if (Objects.equals(button.getCallbackData(), query.getData()) &&
                             button.getText().contains(Emojies.DONE.getEmoji())) {
                         button.setText(EmojiParser.removeAllEmojis(button.getText()));
-                        provider.deleteNotificationsDay(userID, Integer.valueOf(query.getData()));
+                        provider.deleteNotificationsDay(userID, Integer.parseInt(query.getData()));
                     }
                 }
         }
@@ -175,11 +175,11 @@ public class Bot extends TelegramLongPollingBot {
         StringBuilder text = new StringBuilder();
         text.append(Emojies.CURRENT.getEmoji()).append(" Current weather for ").append(cityName).append(END_LINE).append(END_LINE);
         text.append(Emojies.TEMPERATURE.getEmoji()).append(" Temperature ").append(data.getTemp()).append(" °C").append(END_LINE);
-        text.append(Emojies.TEMPERATURE.getEmoji()+" Feels like temperature "+data.getFeelsLikeTemp()).append(" °C").append(END_LINE);
-        text.append(Emojies.PRESSURE.getEmoji()+" Pressure "+data.getPressure()).append(" hPa").append(END_LINE);
-        text.append(Emojies.HUMIDITY.getEmoji()+" Humidity "+data.getHumidity()).append(" %").append(END_LINE);
+        text.append(Emojies.TEMPERATURE.getEmoji()).append(" Feels like temperature ").append(data.getFeelsLikeTemp()).append(" °C").append(END_LINE);
+        text.append(Emojies.PRESSURE.getEmoji()).append(" Pressure ").append(data.getPressure()).append(" hPa").append(END_LINE);
+        text.append(Emojies.HUMIDITY.getEmoji()).append(" Humidity ").append(data.getHumidity()).append(" %").append(END_LINE);
         text.append(chooseCloudsIcon(data.getClouds())).append(END_LINE);
-        text.append("Update time "+data.getTimeOfUpdate()).append(END_LINE);
+        text.append("Update time ").append(data.getTimeOfUpdate()).append(END_LINE);
         message.setText(text.toString());
         return message;
     }
@@ -187,17 +187,17 @@ public class Bot extends TelegramLongPollingBot {
         SendMessage message=new SendMessage();
         message.setChatId(chatID);
         StringBuilder text = new StringBuilder();
-        text.append(Emojies.DATE.getEmoji()+" Forecast for "+cityName).append(END_LINE).append(END_LINE);
+        text.append(Emojies.DATE.getEmoji()).append(" Forecast for ").append(cityName).append(END_LINE).append(END_LINE);
         for(int i=0;i< nrOfDays;i++){
             WeatherData data=forecast[i];
             if(data!=null) {
-                text.append(Emojies.DATE.getEmoji()+" Date " + data.getDate()).append(END_LINE);
-                text.append(Emojies.TEMPERATURE.getEmoji()+" Temperature " + data.getTemp()).append(" °C").append(END_LINE);
-                text.append(Emojies.TEMPERATURE.getEmoji()+" Feels like temperature " + data.getFeelsLikeTemp()).append(" °C").append(END_LINE);
-                text.append(Emojies.PRESSURE.getEmoji()+" Pressure " + data.getPressure()).append(" hPa").append(END_LINE);
-                text.append(Emojies.HUMIDITY.getEmoji()+" Humidity " + data.getHumidity()).append(" %").append(END_LINE);
+                text.append(Emojies.DATE.getEmoji()).append(" Date ").append(data.getDate()).append(END_LINE);
+                text.append(Emojies.TEMPERATURE.getEmoji()).append(" Temperature ").append(data.getTemp()).append(" °C").append(END_LINE);
+                text.append(Emojies.TEMPERATURE.getEmoji()).append(" Feels like temperature ").append(data.getFeelsLikeTemp()).append(" °C").append(END_LINE);
+                text.append(Emojies.PRESSURE.getEmoji()).append(" Pressure ").append(data.getPressure()).append(" hPa").append(END_LINE);
+                text.append(Emojies.HUMIDITY.getEmoji()).append(" Humidity ").append(data.getHumidity()).append(" %").append(END_LINE);
                 text.append(chooseCloudsIcon(data.getClouds())).append(END_LINE);
-                text.append("Update time " + data.getTimeOfUpdate()).append(END_LINE).append(END_LINE);
+                text.append("Update time ").append(data.getTimeOfUpdate()).append(END_LINE).append(END_LINE);
             }
         }
         message.setText(text.toString());
@@ -277,7 +277,7 @@ public class Bot extends TelegramLongPollingBot {
             }
             int lastCommaIndex = builder.lastIndexOf(",");
             builder.deleteCharAt(lastCommaIndex);
-            message.setText("Notifications was set for " + currentCity.getName() + " for " + builder.toString() + " at " + time);
+            message.setText("Notifications was set for " + currentCity.getName() + " for " + builder + " at " + time);
 
         }else{
             message.setText("Please, choose at least one day for notifications");
@@ -344,16 +344,15 @@ public class Bot extends TelegramLongPollingBot {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatID);
         sendMessage.enableMarkdown(true);
-        StringBuilder text = new StringBuilder();
-        text.append("*This is help message*").append(END_LINE).append(END_LINE);
-        text.append("[/start](/start) - show main menu").append(END_LINE);
-        text.append("Help "+Emojies.HELP.getEmoji()+" - show help message").append(END_LINE);
-        text.append("Weather now " +Emojies.PARTLY_SUNNY.getEmoji()+" - show current weather ").append(END_LINE);
-        text.append("For "+Emojies.FOR_48_HOURS.getEmoji()+" hours - show weather forecast for 48 hours ").append(END_LINE);
-        text.append("For "+Emojies.FOR_7_DAYS.getEmoji()+" days - show weather forecast for 7 days ").append(END_LINE);
-        text.append("Notifications "+Emojies.NOTIFICATIONS.getEmoji()+" - set weather notifications ").append(END_LINE);
-        text.append("Settings "+Emojies.SETTINGS.getEmoji()+" - show settings ").append(END_LINE);
-        sendMessage.setText(text.toString());
+        String text = "*This is help message*" + END_LINE + END_LINE +
+                "[/start](/start) - show main menu" + END_LINE +
+                "Help " + Emojies.HELP.getEmoji() + " - show help message" + END_LINE +
+                "Weather now " + Emojies.PARTLY_SUNNY.getEmoji() + " - show current weather " + END_LINE +
+                "For " + Emojies.FOR_48_HOURS.getEmoji() + " hours - show weather forecast for 48 hours " + END_LINE +
+                "For " + Emojies.FOR_7_DAYS.getEmoji() + " days - show weather forecast for 7 days " + END_LINE +
+                "Notifications " + Emojies.NOTIFICATIONS.getEmoji() + " - set weather notifications " + END_LINE +
+                "Settings " + Emojies.SETTINGS.getEmoji() + " - show settings " + END_LINE;
+        sendMessage.setText(text);
         return sendMessage;
     }
     public  SendMessage sendNewVersionMessage(long userID){

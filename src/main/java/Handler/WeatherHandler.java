@@ -15,7 +15,7 @@ public class WeatherHandler extends AbstractHandler{
 
     @Override
     public void operate(String chatId, ParsedCommand parsedCommand, Update update) {
-        Long userID=update.getMessage().getFrom().getId();
+        long userID=update.getMessage().getFrom().getId();
         if(!provider.userIsInDB(userID)){
             provider.addUserToDB(userID);
         }

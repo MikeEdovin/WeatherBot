@@ -9,7 +9,7 @@ public enum Days {
     Sat(6),
     Sun(7);
 
-    int day;
+    final int day;
     Days(int day){this.day=day;}
     public int getDay(){return day;}
 }

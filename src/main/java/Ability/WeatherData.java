@@ -1,11 +1,8 @@
 package Ability;
-
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class WeatherData implements Serializable {
-    static final long serialVersionUID = 7588980448693010399L;
+public class WeatherData {
     private LocalDate date;
     private double temp;
     private long pressure;

@@ -23,7 +23,7 @@ public enum Emojies {
     HUMIDITY("\uD83C\uDF2B️"),
     DONE("✅"),
     ;
-    String emojiUnicode;
+    final String emojiUnicode;
     Emojies(String code){
         this.emojiUnicode=code;
     }
