@@ -27,7 +27,7 @@ public class App {
         Notify notify = new Notify(bot,dbProvider);
         bot.setProvider(dbProvider);
         bot.botConnect();
-        sendStartReport(bot, botAdmin);
+        //sendStartReport(bot, botAdmin);
 
         Thread receiver = new Thread(messageReceiver);
         receiver.setDaemon(true);
